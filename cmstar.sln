@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar", "src\cmstar\cmstar.csproj", "{87564CC7-CB46-4250-9F19-1CD1D145CA67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Tests", "src\cmstar.Tests\cmstar.Tests.csproj", "{7D9015FA-FBAD-4E8C-80FA-165A6138752B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87564CC7-CB46-4250-9F19-1CD1D145CA67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87564CC7-CB46-4250-9F19-1CD1D145CA67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87564CC7-CB46-4250-9F19-1CD1D145CA67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87564CC7-CB46-4250-9F19-1CD1D145CA67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
