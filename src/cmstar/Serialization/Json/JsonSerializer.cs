@@ -113,19 +113,18 @@ namespace cmstar.Serialization.Json
         /// and writes the JSON to the specified <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="obj">The object to be serialized.</param>
-        /// <param name="textWriter">
+        /// <param name="jsonWriter">
         /// The instance of <see cref="JsonWriter"/> which the JSON will be written to.
         /// It will not be disposed automatically after the method call.
         /// </param>
-        public void Serialize(object obj, JsonWriter textWriter)
+        public void Serialize(object obj, JsonWriter jsonWriter)
         {
-            ArgAssert.NotNull(textWriter, "textWriter");
+            ArgAssert.NotNull(jsonWriter, "jsonWriter");
 
             var state = new JsonSerializingState();
             state.CheckCycleReference = CheckCycleReference;
 
-            var contract = ContractResolver.ResolveContract(obj);
-            contract.Write(textWriter, state, ContractResolver, obj);
+            DoSerialize(obj, jsonWriter, state);
         }
 
         /// <summary>
@@ -149,6 +148,29 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
+        /// Serializes the given object to a JSON.
+        /// This is a faster version than <see cref="Serialize(object)"/>. It does not include
+        /// the validation of JSON format and the check of cycle reference.
+        /// </summary>
+        /// <param name="obj">The object to be serialized.</param>
+        /// <returns>The JSON string.</returns>
+        public string FastSerialize(object obj)
+        {
+            var stringBuilder = new StringBuilder(256);
+            var stringWriter = new StringWriter(stringBuilder);
+
+            using (var jsonWriter = new JsonWriter(stringWriter))
+            {
+                var state = new JsonSerializingState();
+                state.CheckCycleReference = false;
+
+                DoSerialize(obj, jsonWriter, state);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
         /// Deserializes a string which represents a JSON to a CLR object.
         /// </summary>
         /// <typeparam name="T">The type of the CLR object.</typeparam>
@@ -167,10 +189,7 @@ namespace cmstar.Serialization.Json
         /// <returns>The object deserialized from the JSON.</returns>
         public object Deserialize(string json, Type type)
         {
-            using (var stringReader = new StringReader(json))
-            {
-                return Deserialize(stringReader, type);
-            }
+            return Deserialize(new StringReader(json), type);
         }
 
         /// <summary>
@@ -184,11 +203,22 @@ namespace cmstar.Serialization.Json
             ArgAssert.NotNull(textReader, "reader");
             ArgAssert.NotNull(type, "type");
 
-            var contract = ContractResolver.ResolveContract(type);
             using (var jsonReader = new JsonReader(textReader))
             {
-                return contract.Read(jsonReader, new JsonDeserializingState());
+                return DoDeserialize(jsonReader, type, new JsonDeserializingState());
             }
+        }
+
+        private void DoSerialize(object obj, JsonWriter jsonWriter, JsonSerializingState state)
+        {
+            var contract = ContractResolver.ResolveContract(obj);
+            contract.Write(jsonWriter, state, ContractResolver, obj);
+        }
+
+        private object DoDeserialize(JsonReader jsonReader, Type type, JsonDeserializingState state)
+        {
+            var contract = ContractResolver.ResolveContract(type);
+            return contract.Read(jsonReader, state);
         }
     }
 }
