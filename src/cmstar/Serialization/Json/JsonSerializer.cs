@@ -113,19 +113,19 @@ namespace cmstar.Serialization.Json
         /// and writes the JSON to the specified <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="obj">The object to be serialized.</param>
-        /// <param name="writer">
+        /// <param name="textWriter">
         /// The instance of <see cref="JsonWriter"/> which the JSON will be written to.
         /// It will not be disposed automatically after the method call.
         /// </param>
-        public void Serialize(object obj, JsonWriter writer)
+        public void Serialize(object obj, JsonWriter textWriter)
         {
-            ArgAssert.NotNull(writer, "writer");
+            ArgAssert.NotNull(textWriter, "textWriter");
 
             var state = new JsonSerializingState();
             state.CheckCycleReference = CheckCycleReference;
 
             var contract = ContractResolver.ResolveContract(obj);
-            contract.Write(writer, state, ContractResolver, obj);
+            contract.Write(textWriter, state, ContractResolver, obj);
         }
 
         /// <summary>
@@ -133,15 +133,15 @@ namespace cmstar.Serialization.Json
         /// and writes the JSON to the specified <see cref="TextWriter"/>.
         /// </summary>
         /// <param name="obj">The object to be serialized.</param>
-        /// <param name="writer">
+        /// <param name="textWriter">
         /// The instance of <see cref="TextWriter"/> which the JSON will be written to.
         /// It will not be disposed automatically after the method call.
         /// </param>
-        public void Serialize(object obj, TextWriter writer)
+        public void Serialize(object obj, TextWriter textWriter)
         {
-            ArgAssert.NotNull(writer, "writer");
+            ArgAssert.NotNull(textWriter, "textWriter");
 
-            using (var jsonWriter = new JsonWriterImproved(new IndentedTextWriter(writer)))
+            using (var jsonWriter = new JsonWriterImproved(new IndentedTextWriter(textWriter)))
             {
                 jsonWriter.AutoCloseInternalWriter = false;
                 Serialize(obj, jsonWriter);
@@ -149,7 +149,7 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Deserializes a JSON to a CLR object.
+        /// Deserializes a string which represents a JSON to a CLR object.
         /// </summary>
         /// <typeparam name="T">The type of the CLR object.</typeparam>
         /// <param name="json">The JSON.</param>
@@ -160,19 +160,34 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Deserializes a JSON to a CLR object.
+        /// Deserializes a string which represents a JSON to a CLR object.
         /// </summary>
         /// <param name="json">The JSON.</param>
         /// <param name="type">The type of the CLR object.</param>
         /// <returns>The object deserialized from the JSON.</returns>
         public object Deserialize(string json, Type type)
         {
+            using (var stringReader = new StringReader(json))
+            {
+                return Deserialize(stringReader, type);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes a JSON read from a <see cref="TextReader"/> to a CLR object.
+        /// </summary>
+        /// <param name="textReader">The <see cref="TextReader"/> from which to read the JSON.</param>
+        /// <param name="type">The type of the CLR object.</param>
+        /// <returns>The object deserialized from the JSON.</returns>
+        public object Deserialize(TextReader textReader, Type type)
+        {
+            ArgAssert.NotNull(textReader, "reader");
             ArgAssert.NotNull(type, "type");
 
             var contract = ContractResolver.ResolveContract(type);
-            using (var reader = new JsonReader(new StringReader(json)))
+            using (var jsonReader = new JsonReader(textReader))
             {
-                return contract.Read(reader, new JsonDeserializingState());
+                return contract.Read(jsonReader, new JsonDeserializingState());
             }
         }
     }
