@@ -63,6 +63,7 @@
     <Compile Include="Serialization\Json\Contracts\ArrayContract.cs" />
     <Compile Include="Serialization\Json\Contracts\StringContract.cs" />
     <Compile Include="Serialization\Json\JsonConvert.cs" />
+    <Compile Include="Serialization\Json\JsonIgnoreAttribute.cs" />
     <Compile Include="Serialization\Json\JsonSerializingState.cs" />
     <Compile Include="Serialization\Json\JsonTokenStack.cs" />
     <Compile Include="Serialization\Json\JsonTokenValidator.cs" />

@@ -271,74 +271,138 @@ namespace cmstar.Serialization.Json
 
             private List<ContractMemberInfo> ResolveMemberInfos(Type type)
             {
-                var contractMemberInfos = new List<ContractMemberInfo>();
+                var memberInfoDescriptions = new List<MemberInfoDescription>();
+                var hasJsonProperty = false;
+                var hasJsonIgnore = false;
 
                 var fieldInfos = type.GetFields(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var fieldInfo in fieldInfos)
                 {
-                    var contractMemberInfo = ResolveMemberInfoFromJsonMemberAttribute(fieldInfo);
-                    if (contractMemberInfo != null)
-                        contractMemberInfos.Add(contractMemberInfo);
+                    var memberInfoDescription = GetMemberInfoDescription(fieldInfo,
+                       ref hasJsonProperty, ref hasJsonIgnore);
+                    memberInfoDescriptions.Add(memberInfoDescription);
                 }
 
                 var propertyInfos = type.GetProperties(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var propertyInfo in propertyInfos)
                 {
-                    var contractMemberInfo = ResolveMemberInfoFromJsonMemberAttribute(propertyInfo);
-                    if (contractMemberInfo != null)
-                        contractMemberInfos.Add(contractMemberInfo);
+                    var memberInfoDescription = GetMemberInfoDescription(propertyInfo,
+                        ref hasJsonProperty, ref hasJsonIgnore);
+                    memberInfoDescriptions.Add(memberInfoDescription);
                 }
 
-                if (contractMemberInfos.Count > 0)
-                    return contractMemberInfos;
+                if (hasJsonProperty)
+                    return ResolveMemberInfoFromJsonProperties(memberInfoDescriptions);
 
-                return ResolveMemberInfosFromPublicProperties(propertyInfos);
+                if (hasJsonIgnore)
+                    return ResolveMemberInfosFromPublicMembers(memberInfoDescriptions);
+
+                return ResolveMemberInfosFromPublicMembers(memberInfoDescriptions);
             }
 
-            private ContractMemberInfo ResolveMemberInfoFromJsonMemberAttribute(MemberInfo memberInfo)
+            private MemberInfoDescription GetMemberInfoDescription(MemberInfo memberInfo,
+                ref bool hasJsonProperty, ref bool hasJsonIgnore)
             {
-                var attrs = memberInfo.GetCustomAttributes(true);
-                foreach (var attr in attrs)
+                var memberInfoDescription = new MemberInfoDescription();
+                memberInfoDescription.MemberInfo = memberInfo;
+
+                var attributes = memberInfo.GetCustomAttributes(true);
+                foreach (var attribute in attributes)
                 {
-                    var jsonPropertyAttribute = attr as JsonPropertyAttribute;
-                    if (jsonPropertyAttribute == null)
+                    var jsonPropertyAttribute = attribute as JsonPropertyAttribute;
+                    if (jsonPropertyAttribute != null)
+                    {
+                        memberInfoDescription.JsonPropertyAttribute = jsonPropertyAttribute;
+                        hasJsonProperty = true;
+                        continue;
+                    }
+
+                    var jsonIgnoreAttribute = attribute as JsonIgnoreAttribute;
+                    if (jsonIgnoreAttribute != null)
+                    {
+                        memberInfoDescription.JsonIgnoreAttribute = jsonIgnoreAttribute;
+                        hasJsonIgnore = true;
+                        continue;
+                    }
+                }
+
+                return memberInfoDescription;
+            }
+
+            private List<ContractMemberInfo> ResolveMemberInfoFromJsonProperties(
+                List<MemberInfoDescription> memberInfoDescriptions)
+            {
+                var memberInfos = new List<ContractMemberInfo>(memberInfoDescriptions.Count);
+
+                foreach (var memberInfoDescription in memberInfoDescriptions)
+                {
+                    if (memberInfoDescription.JsonPropertyAttribute == null)
                         continue;
 
-                    var type = (memberInfo is PropertyInfo) ?
-                        ((PropertyInfo)memberInfo).PropertyType :
-                        ((FieldInfo)memberInfo).FieldType;
-                    var contract = ResolveContract(type);
+                    if (memberInfoDescription.JsonIgnoreAttribute != null)
+                        continue;
+
+                    var memberType = (memberInfoDescription.MemberInfo is PropertyInfo) ?
+                        ((PropertyInfo)memberInfoDescription.MemberInfo).PropertyType :
+                        ((FieldInfo)memberInfoDescription.MemberInfo).FieldType;
+                    var contract = ResolveContract(memberType);
                     var contractMemberInfo = new ContractMemberInfo(
-                        memberInfo, jsonPropertyAttribute.PropertyName, contract);
+                        memberInfoDescription.MemberInfo, memberInfoDescription.JsonPropertyAttribute.PropertyName, contract);
 
                     _buffer[contractMemberInfo.Type] = contractMemberInfo.Contract;
-
-                    return contractMemberInfo;
-                }
-
-                return null;
-            }
-
-            private List<ContractMemberInfo> ResolveMemberInfosFromPublicProperties(PropertyInfo[] propertyInfos)
-            {
-                var memberInfos = new List<ContractMemberInfo>(propertyInfos.Length);
-
-                foreach (var propertyInfo in propertyInfos)
-                {
-                    if (propertyInfo.GetGetMethod() == null || propertyInfo.GetSetMethod() == null)
-                        continue;
-
-                    var contract = ResolveContract(propertyInfo.PropertyType);
-                    var contractMemberInfo = new ContractMemberInfo(propertyInfo, propertyInfo.Name, contract);
-
-                    _buffer[propertyInfo.PropertyType] = contractMemberInfo.Contract;
                     memberInfos.Add(contractMemberInfo);
                 }
 
                 return memberInfos;
             }
+
+            private List<ContractMemberInfo> ResolveMemberInfosFromPublicMembers(
+                List<MemberInfoDescription> memberInfoDescriptions)
+            {
+                var memberInfos = new List<ContractMemberInfo>(memberInfoDescriptions.Count);
+
+                foreach (var memberInfoDescription in memberInfoDescriptions)
+                {
+                    if (memberInfoDescription.JsonIgnoreAttribute != null)
+                        continue;
+
+                    var fieldInfo = memberInfoDescription.MemberInfo as FieldInfo;
+                    if (fieldInfo != null)
+                    {
+                        if (!fieldInfo.IsPublic)
+                            continue;
+
+                        var contract = ResolveContract(fieldInfo.FieldType);
+                        var contractMemberInfo = new ContractMemberInfo(fieldInfo, fieldInfo.Name, contract);
+
+                        _buffer[fieldInfo.FieldType] = contractMemberInfo.Contract;
+                        memberInfos.Add(contractMemberInfo);
+                    }
+                    else
+                    {
+                        var propertyInfo = (PropertyInfo)memberInfoDescription.MemberInfo;
+                        if (propertyInfo.GetGetMethod() == null || propertyInfo.GetSetMethod() == null)
+                            continue;
+
+                        var contract = ResolveContract(propertyInfo.PropertyType);
+                        var contractMemberInfo = new ContractMemberInfo(propertyInfo, propertyInfo.Name, contract);
+
+                        _buffer[propertyInfo.PropertyType] = contractMemberInfo.Contract;
+                        memberInfos.Add(contractMemberInfo);
+                    }
+                }
+
+                return memberInfos;
+            }
+        }
+
+        private class MemberInfoDescription
+        {
+            public MemberInfo MemberInfo;
+            public JsonPropertyAttribute JsonPropertyAttribute;
+            public JsonIgnoreAttribute JsonIgnoreAttribute;
         }
     }
 }

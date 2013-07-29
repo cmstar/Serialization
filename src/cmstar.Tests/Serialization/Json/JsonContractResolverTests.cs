@@ -197,6 +197,35 @@ namespace cmstar.Serialization.Json
         }
 
         [Test]
+        public void ResolveObjectWithJsonIgnoreAttribute()
+        {
+            var resolver = new JsonContractResolver();
+            var contract = AssertTypeContract<ObjectContract>(resolver, typeof(ClassWithJsonIgnoreAttr));
+            Assert.NotNull(contract.Members);
+            Assert.AreEqual(2, contract.Members.Count);
+
+            ContractMemberInfo contractMemberInfo;
+            Assert.IsTrue(contract.Members.TryGetContractMember("PublicProperty", out contractMemberInfo));
+            Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("PublicField", out contractMemberInfo));
+            Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
+        }
+
+        [Test]
+        public void ResolveObjectWithMixedJsonAttributes()
+        {
+            var resolver = new JsonContractResolver();
+            var contract = AssertTypeContract<ObjectContract>(resolver, typeof(ClassWithMixedAttr));
+            Assert.NotNull(contract.Members);
+            Assert.AreEqual(1, contract.Members.Count);
+
+            ContractMemberInfo contractMemberInfo;
+            Assert.IsTrue(contract.Members.TryGetContractMember("pub_field", out contractMemberInfo));
+            Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
+        }
+
+        [Test]
         public void ResolveCycleTypeReferenceStartFromA()
         {
             var resolver = new JsonContractResolver();
@@ -313,6 +342,32 @@ namespace cmstar.Serialization.Json
 
         private class Collection : CollectionBase
         {
+        }
+
+        private class ClassWithJsonIgnoreAttr
+        {
+            public int PublicProperty { get; set; }
+            public int PublicField { get; set; }
+
+            [JsonIgnore]
+            public int IngoredProperty { get; set; }
+
+            [JsonIgnore]
+            public int IngoredPropertyWithJsonProperty { get; set; }
+        }
+
+        private class ClassWithMixedAttr
+        {
+            public int PublicProperty { get; set; }
+
+            [JsonProperty("pub_field")]
+            public int PublicField { get; set; }
+
+            [JsonIgnore]
+            public int IngoredProperty { get; set; }
+
+            [JsonProperty("ignored"), JsonIgnore]
+            public int IngoredPropertyWithJsonProperty { get; set; }
         }
     }
 }
