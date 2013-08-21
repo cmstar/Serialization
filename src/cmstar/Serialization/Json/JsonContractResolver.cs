@@ -156,6 +156,9 @@ namespace cmstar.Serialization.Json
                 if (type == typeof(DateTime))
                     return new DateTimeContract();
 
+                if (type == typeof(Guid))
+                    return new GuidContract();
+
                 if (type.IsSubclassOf(typeof(Enum)))
                     return new EnumContract(type);
 

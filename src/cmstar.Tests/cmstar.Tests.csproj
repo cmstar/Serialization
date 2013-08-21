@@ -53,6 +53,7 @@
     <Compile Include="Serialization\Json\Contracts\DateTimeContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\DictionaryContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\EnumContractTests.cs" />
+    <Compile Include="Serialization\Json\Contracts\GuidContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\NumberContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\NullableTypeContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\ObjectContractTests.cs" />

@@ -49,6 +49,7 @@
     <Compile Include="Serialization\Formatting.cs" />
     <Compile Include="Serialization\Json\Contracts\ContractMemberCollection.cs" />
     <Compile Include="Serialization\Json\Contracts\DictionaryContract.cs" />
+    <Compile Include="Serialization\Json\Contracts\GuidContract.cs" />
     <Compile Include="Serialization\Json\JsonContractErrors.cs" />
     <Compile Include="Serialization\Json\JsonContractException.cs" />
     <Compile Include="Serialization\Json\JsonDeserializingState.cs" />
