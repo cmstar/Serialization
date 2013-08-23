@@ -66,7 +66,6 @@
     <Compile Include="Serialization\Json\JsonConvert.cs" />
     <Compile Include="Serialization\Json\JsonIgnoreAttribute.cs" />
     <Compile Include="Serialization\Json\JsonSerializingState.cs" />
-    <Compile Include="Serialization\Json\JsonTokenStack.cs" />
     <Compile Include="Serialization\Json\JsonTokenValidator.cs" />
     <Compile Include="Serialization\Json\JsonWriter.cs" />
     <Compile Include="Serialization\Json\IJsonContractResolver.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="Serialization\IndentedTextWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ArgAssert.cs" />
+    <Compile Include="Serialization\Json\SimpleStack.cs" />
     <Compile Include="Util\ReflectionUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

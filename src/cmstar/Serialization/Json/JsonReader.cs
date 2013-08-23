@@ -37,7 +37,7 @@ namespace cmstar.Serialization.Json
     public class JsonReader : IDisposable
     {
         private readonly TextReader _reader;
-        private readonly JsonTokenStack _containerTokenStack = new JsonTokenStack();
+        private readonly SimpleStack<JsonToken> _containerTokenStack = new SimpleStack<JsonToken>(JsonToken.None);
         private int _lineNumber = 1;
         private int _columnNumber = 1;
         private bool _autoCloseInternalReader = true;

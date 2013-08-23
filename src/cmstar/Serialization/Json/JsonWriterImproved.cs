@@ -34,7 +34,7 @@ namespace cmstar.Serialization.Json
     /// </summary>
     public class JsonWriterImproved : JsonWriter
     {
-        private readonly JsonTokenStack _containerTokenStack = new JsonTokenStack();
+        private readonly SimpleStack<JsonToken> _containerTokenStack = new SimpleStack<JsonToken>(JsonToken.None);
         private readonly IndentedTextWriter _indentedTextWriter;
         private JsonToken _lastToken = JsonToken.None;
 
