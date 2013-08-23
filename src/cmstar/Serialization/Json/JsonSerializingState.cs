@@ -30,7 +30,7 @@ namespace cmstar.Serialization.Json
     /// </summary>
     public class JsonSerializingState
     {
-        private Stack _serializingObjectStack;
+        private SimpleStack<object> _serializingObjectStack;
 
         /// <summary>
         /// Gets or sets a value that indicates whether to check for 
@@ -41,11 +41,11 @@ namespace cmstar.Serialization.Json
         /// <summary>
         /// Gets a <see cref="Stack"/> storing the object references during serializing.
         /// </summary>
-        internal Stack SerializingObjectStack
+        internal SimpleStack<object> SerializingObjectStack
         {
             get
             {
-                return _serializingObjectStack ?? (_serializingObjectStack = new Stack(4));
+                return _serializingObjectStack ?? (_serializingObjectStack = new SimpleStack<object>(4));
             }
         }
     }
