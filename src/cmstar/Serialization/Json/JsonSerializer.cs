@@ -32,6 +32,16 @@ namespace cmstar.Serialization.Json
     /// </summary>
     public class JsonSerializer
     {
+        private static JsonSerializer _defaultSerializer;
+
+        /// <summary>
+        /// Gets the default instance of <see cref="JsonSerializer"/>.
+        /// </summary>
+        public static JsonSerializer Default
+        {
+            get { return _defaultSerializer ?? (_defaultSerializer = new JsonSerializer()); }
+        }
+
         /// <summary>
         /// Initializes a new instance of <see cref="JsonSerializer"/>.
         /// </summary>
