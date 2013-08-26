@@ -351,8 +351,15 @@ namespace cmstar.Serialization.Json
                         ((PropertyInfo)memberInfoDescription.MemberInfo).PropertyType :
                         ((FieldInfo)memberInfoDescription.MemberInfo).FieldType;
                     var contract = ResolveContract(memberType);
+
+                    var jsonPropertyName = memberInfoDescription.JsonPropertyAttribute.PropertyName;
+                    if (string.IsNullOrEmpty(jsonPropertyName))
+                    {
+                        jsonPropertyName = memberInfoDescription.MemberInfo.Name;
+                    }
+
                     var contractMemberInfo = new ContractMemberInfo(
-                        memberInfoDescription.MemberInfo, memberInfoDescription.JsonPropertyAttribute.PropertyName, contract);
+                        memberInfoDescription.MemberInfo, jsonPropertyName, contract);
 
                     _buffer[contractMemberInfo.Type] = contractMemberInfo.Contract;
                     memberInfos.Add(contractMemberInfo);

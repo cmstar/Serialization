@@ -47,6 +47,7 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<BooleanContract>(resolver, typeof(bool));
             AssertTypeContract<DateTimeContract>(resolver, typeof(DateTime));
             AssertTypeContract<EnumContract>(resolver, typeof(SaleOrderType));
+            AssertTypeContract<GuidContract>(resolver, typeof(Guid));
 
             var contract = AssertTypeContract<NullableTypeContract>(resolver, typeof(SaleOrderPoint?));
             Assert.IsInstanceOf<ObjectContract>(contract.UnderlyingTypeContract);
@@ -218,11 +219,14 @@ namespace cmstar.Serialization.Json
             var resolver = new JsonContractResolver();
             var contract = AssertTypeContract<ObjectContract>(resolver, typeof(ClassWithMixedAttr));
             Assert.NotNull(contract.Members);
-            Assert.AreEqual(1, contract.Members.Count);
+            Assert.AreEqual(2, contract.Members.Count);
 
             ContractMemberInfo contractMemberInfo;
             Assert.IsTrue(contract.Members.TryGetContractMember("pub_field", out contractMemberInfo));
             Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("NoExplicicName", out contractMemberInfo));
+            Assert.IsInstanceOf<GuidContract>(contractMemberInfo.Contract);
         }
 
         [Test]
@@ -368,6 +372,9 @@ namespace cmstar.Serialization.Json
 
             [JsonProperty("ignored"), JsonIgnore]
             public int IngoredPropertyWithJsonProperty { get; set; }
+
+            [JsonProperty]
+            public Guid NoExplicicName { get; set; }
         }
     }
 }
