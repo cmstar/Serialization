@@ -47,7 +47,7 @@ namespace cmstar.Serialization.Json.Contracts
             if (obj == null)
                 throw JsonContractErrors.NullValueNotSupported();
 
-            var dateTimeValue = JsonConvert.ToJsonDateTimeValue((DateTime)obj, true);
+            var dateTimeValue = ToStringValue((DateTime)obj);
             writer.WriteStringValue(dateTimeValue);
         }
 
@@ -80,6 +80,16 @@ namespace cmstar.Serialization.Json.Contracts
         {
             return JsonConvert.TryParseJsonDateTimeValue(value, out dateTime)
                 || DateTime.TryParse(value, out dateTime);
+        }
+
+        /// <summary>
+        /// Converts the specified <see cref="DateTime"/> to it's corresponding string representation.
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTime"/>.</param>
+        /// <returns>The string value represents the <see cref="DateTime"/>.</returns>
+        protected virtual string ToStringValue(DateTime dateTime)
+        {
+            return JsonConvert.ToJsonDateTimeValue(dateTime, true);
         }
     }
 }

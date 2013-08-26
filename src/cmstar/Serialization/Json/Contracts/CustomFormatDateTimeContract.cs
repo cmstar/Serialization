@@ -51,14 +51,10 @@ namespace cmstar.Serialization.Json.Contracts
             }
         }
 
-        protected override void DoWrite(
-            JsonWriter writer,
-            JsonSerializingState state,
-            IJsonContractResolver contractResolver,
-            object obj)
+        protected override string ToStringValue(DateTime dateTime)
         {
-            var datetime = (DateTime)obj;
-            writer.WriteStringValue(datetime.ToString(_format));
+            //if _format is null the default format would be used
+            return dateTime.ToString(_format);
         }
     }
 }
