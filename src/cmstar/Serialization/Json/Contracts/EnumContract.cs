@@ -30,11 +30,20 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class EnumContract : JsonContract
     {
+        private readonly IEnumNameParser _enumNameParser;
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="EnumContract"/>.
+        /// </summary>
+        /// <param name="type">The type of the enum.</param>
         public EnumContract(Type type)
             : base(type)
         {
             if (!typeof(Enum).IsAssignableFrom(type))
                 throw new ArgumentException("The type must be an enum.", "type");
+
+            var parserType = typeof(EnumNameParser<>).MakeGenericType(type);
+            _enumNameParser = (IEnumNameParser)Activator.CreateInstance(parserType);
         }
 
         /// <summary>
@@ -94,19 +103,39 @@ namespace cmstar.Serialization.Json.Contracts
                     return Enum.ToObject(UnderlyingType, (int)value);
 
                 case JsonToken.StringValue:
-                    try
-                    {
-                        return Enum.Parse(UnderlyingType, (string)reader.Value, true);
-                    }
-                    catch (Exception ex)
+                    object enumValue;
+                    if (!_enumNameParser.TryParse((string)reader.Value, out enumValue))
                     {
                         var msg = string.Format(
                             "Cannot cast the string value \"{0}\" to enumeration {1}.", reader.Value, UnderlyingType);
-                        throw new JsonContractException(msg, ex);
+                        throw new JsonContractException(msg);
                     }
+
+                    return enumValue;
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(reader.Token);
+            }
+        }
+
+        private interface IEnumNameParser
+        {
+            bool TryParse(string s, out object value);
+        }
+
+        private class EnumNameParser<T> : IEnumNameParser where T : struct
+        {
+            public bool TryParse(string s, out object value)
+            {
+                T v;
+                if (Enum.TryParse(s, out v))
+                {
+                    value = v;
+                    return true;
+                }
+
+                value = null;
+                return false;
             }
         }
     }
