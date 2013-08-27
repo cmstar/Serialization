@@ -156,12 +156,12 @@ The table below gives out the default contracts, which will convert the CLR type
 |Decimal|NumberContarct|Number|
 |DateTime|DateTimeContarct|String|
 |Guid|GuidContarct|String|
-|Nullable<T\>|NullableTypeContract|Depends on typeof(T)|
+|Nullable&lt;T&gt;|NullableTypeContract|Depends on typeof(T)|
 |Types derived from Enum|EnumContarct|Number|
 |Implementations of IDictionary|DictionaryContarct|Object|
-|Implementations of IDictionary<K,V\>|DictionaryContarct|Object|
+|Implementations of IDictionary&lt;K,V&gt;|DictionaryContarct|Object|
 |Implementations of ICollection|ArrayContarct|Array|
-|Implementations of ICollection<T\>|ArrayContarct|Array|
+|Implementations of ICollection&lt;T&gt;|ArrayContarct|Array|
 |Other types not listed above|ObjectContarct|Object|
 
 - CLR `null` (`Nothing` in VB.net) will be serialized to JSON `null`.
