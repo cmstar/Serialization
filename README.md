@@ -58,7 +58,7 @@ Each instance of `JsonSerializer` is isolated, it can keep different instances o
 ### Using Attributes
 
 To serialize a POCO, by default, only public properties will be serialized.
-You can use the `JsonPropertyAttribute` to customize the serializing:
+You can use the `JsonPropertyAttribute` to select the members you need:
 
     class Data
     {
@@ -88,6 +88,10 @@ or use `JsonIgnoreAttribute`:
 
     JsonSerializer.Default.Serialize(new Data { String = "s", Int = 3 });
     //-> {"String":"s"}
+
+Note: If you mix `JsonIgnoreAttribute` and `JsonPropertyAttribute` together, the  serializer ignores `JsonPropertyAttribute`.
+
+Note: If a property has no getter accessor (public or non-public), it will be ignored during the serialization; and the value of a property without a setter accessor will not be set.
 
 ### Pretty-print JSON
 
