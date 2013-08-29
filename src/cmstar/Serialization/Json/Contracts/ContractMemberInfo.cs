@@ -23,7 +23,6 @@
 
 using System;
 using System.Reflection;
-using cmstar.RapidReflection.Emit;
 
 namespace cmstar.Serialization.Json.Contracts
 {
@@ -34,72 +33,30 @@ namespace cmstar.Serialization.Json.Contracts
     public class ContractMemberInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractMemberInfo"/> class
-        /// </summary>
-        /// <param name="memberInfo">
-        /// The instance of <see cref="MemberInfo"/>.
-        /// Must be an instance of <see cref="PropertyInfo"/> or <see cref="FieldInfo"/>.
-        /// </param>
-        /// <param name="jsonPropertyName">The property name in the JSON.</param>
-        /// <param name="contract">The contract used to serialize the property/field.</param>
-        public ContractMemberInfo(MemberInfo memberInfo, string jsonPropertyName, JsonContract contract)
-        {
-            ArgAssert.NotNull(memberInfo, "memberInfo");
-            ArgAssert.NotNullOrEmptyOrWhitespace(jsonPropertyName, "jsonPropertyName");
-            ArgAssert.NotNull(contract, "contract");
-
-            if (!(memberInfo is PropertyInfo) && !(memberInfo is FieldInfo))
-                throw new ArgumentException("The member should be a property or a field.", "memberInfo");
-
-            MemberInfo = memberInfo;
-            JsonPropertyName = jsonPropertyName;
-            Contract = contract;
-            IsProperty = memberInfo is PropertyInfo;
-
-            if (IsProperty)
-            {
-                var propertyInfo = (PropertyInfo)memberInfo;
-                Type = propertyInfo.PropertyType;
-                ValueGetter = PropertyAccessorGenerator.CreateGetter(propertyInfo, true);
-                ValueSetter = PropertyAccessorGenerator.CreateSetter(propertyInfo, true);
-            }
-            else
-            {
-                var fieldInfo = (FieldInfo)memberInfo;
-                Type = fieldInfo.FieldType;
-                ValueGetter = FieldAccessorGenerator.CreateGetter(fieldInfo);
-                ValueSetter = FieldAccessorGenerator.CreateSetter(fieldInfo);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the <see cref="JsonContract"/> used to serialize this property/field.
         /// </summary>
-        public JsonContract Contract { get; private set; }
+        public JsonContract Contract { get; set; }
 
         /// <summary>
         /// Gets the name of the property/field.
         /// </summary>
-        public string Name
-        {
-            get { return MemberInfo.Name; }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the property type or field type of the member.
         /// </summary>
-        public Type Type { get; private set; }
+        public Type Type { get; set; }
 
         /// <summary>
         /// Gets or sets the property name in JSON of this property/field.
         /// </summary>
-        public string JsonPropertyName { get; private set; }
+        public string JsonPropertyName { get; set; }
 
         /// <summary>
         /// Indicates if the class member is a property.
         /// <c>true</c> if the member is a property; otherwise is a field.
         /// </summary>
-        public bool IsProperty { get; private set; }
+        public bool IsProperty { get; set; }
 
         /// <summary>
         /// Gets the <see cref="MemberInfo"/> of this property/field.
@@ -107,16 +64,18 @@ namespace cmstar.Serialization.Json.Contracts
         /// an instance of <see cref="PropertyInfo"/>; 
         /// otherwise an instance of <see cref="FieldInfo"/>.
         /// </summary>
-        public MemberInfo MemberInfo { get; private set; }
+        public MemberInfo MemberInfo { get; set; }
 
         /// <summary>
-        /// Gets the method for getting the value of the property or field.
+        /// Gets or sets the method for getting the value of the property or field.
+        /// <c>null</c> if the getter is not available.
         /// </summary>
-        public Func<object, object> ValueGetter { get; private set; }
+        public Func<object, object> ValueGetter { get; set; }
 
         /// <summary>
-        /// Gets the method for setting the value of the property or field.
+        /// Gets or sets the method for setting the value of the property or field.
+        /// <c>null</c> if the setter is not available.
         /// </summary>
-        public Action<object, object> ValueSetter { get; private set; }
+        public Action<object, object> ValueSetter { get; set; }
     }
 }

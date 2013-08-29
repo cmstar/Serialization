@@ -230,6 +230,60 @@ namespace cmstar.Serialization.Json
         }
 
         [Test]
+        public void ResolveObjectWithReadOnlyWriteOnlyProperty()
+        {
+            var resolver = new JsonContractResolver();
+            var contract = AssertTypeContract<ObjectContract>(
+                resolver, typeof(ClassWithReadOnlyWriteOnlyProperty));
+
+            Assert.AreEqual(4, contract.Members.Count);
+
+            ContractMemberInfo contractMemberInfo;
+            Assert.IsTrue(contract.Members.TryGetContractMember("NoSetter", out contractMemberInfo));
+            Assert.IsNotNull(contractMemberInfo.ValueGetter);
+            Assert.IsNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("NoGetter", out contractMemberInfo));
+            Assert.IsNull(contractMemberInfo.ValueGetter);
+            Assert.IsNotNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("PrivateSetter", out contractMemberInfo));
+            Assert.IsNotNull(contractMemberInfo.ValueGetter);
+            Assert.IsNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("ProtectedGetter", out contractMemberInfo));
+            Assert.IsNull(contractMemberInfo.ValueGetter);
+            Assert.IsNotNull(contractMemberInfo.ValueSetter);
+        }
+
+        [Test]
+        public void ResolveObjectWithReadOnlyWriteOnlyPropertyAndJsonAttr()
+        {
+            var resolver = new JsonContractResolver();
+            var contract = AssertTypeContract<ObjectContract>(
+                resolver, typeof(ClassWithReadOnlyWriteOnlyPropertyAndJsonAttr));
+
+            Assert.AreEqual(4, contract.Members.Count);
+
+            ContractMemberInfo contractMemberInfo;
+            Assert.IsTrue(contract.Members.TryGetContractMember("no_setter", out contractMemberInfo));
+            Assert.IsNotNull(contractMemberInfo.ValueGetter);
+            Assert.IsNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("no_getter", out contractMemberInfo));
+            Assert.IsNull(contractMemberInfo.ValueGetter);
+            Assert.IsNotNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("private_setter", out contractMemberInfo));
+            Assert.IsNotNull(contractMemberInfo.ValueGetter);
+            Assert.IsNotNull(contractMemberInfo.ValueSetter);
+
+            Assert.IsTrue(contract.Members.TryGetContractMember("internal_getter", out contractMemberInfo));
+            Assert.IsNotNull(contractMemberInfo.ValueGetter);
+            Assert.IsNotNull(contractMemberInfo.ValueSetter);
+        }
+
+        [Test]
         public void ResolveCycleTypeReferenceStartFromA()
         {
             var resolver = new JsonContractResolver();
@@ -375,6 +429,29 @@ namespace cmstar.Serialization.Json
 
             [JsonProperty]
             public Guid NoExplicicName { get; set; }
+        }
+
+        private class ClassWithReadOnlyWriteOnlyProperty
+        {
+            public int NoSetter { get { return 1; } }
+            public int NoGetter { set { } }
+            public int PrivateSetter { get; private set; }
+            public int ProtectedGetter { protected get; set; }
+        }
+
+        private class ClassWithReadOnlyWriteOnlyPropertyAndJsonAttr
+        {
+            [JsonProperty("no_setter")]
+            public int NoSetter { get { return 1; } }
+
+            [JsonProperty("no_getter")]
+            public int NoGetter { set { } }
+
+            [JsonProperty("private_setter")]
+            public int PrivateSetter { get; private set; }
+
+            [JsonProperty("internal_getter")]
+            public int InternalGetter { internal get; set; }
         }
     }
 }

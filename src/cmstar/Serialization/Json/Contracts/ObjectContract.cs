@@ -32,6 +32,7 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class ObjectContract : JsonContract
     {
+        private readonly ContractMemberCollection _members = new ContractMemberCollection();
         private readonly Func<object> _instanceCreator;
 
         /// <summary>
@@ -42,7 +43,6 @@ namespace cmstar.Serialization.Json.Contracts
         public ObjectContract(Type type)
             : base(type)
         {
-            Members = new ContractMemberCollection();
             _instanceCreator = ConstructorInvokerGenerator.CreateDelegate(type);
         }
 
@@ -50,7 +50,10 @@ namespace cmstar.Serialization.Json.Contracts
         /// Gets the colleciton of <see cref="ContractMemberInfo"/> which describes
         /// how to serialize the properties or fields of the underlying type.
         /// </summary>
-        public ContractMemberCollection Members { get; private set; }
+        public ContractMemberCollection Members
+        {
+            get { return _members; }
+        }
 
         protected override void DoWrite(
             JsonWriter writer,
@@ -69,6 +72,10 @@ namespace cmstar.Serialization.Json.Contracts
             var first = true;
             foreach (var member in Members)
             {
+                //only write the memebers which has a getter
+                if (member.ValueGetter == null)
+                    continue;
+
                 if (first)
                 {
                     first = false;
@@ -113,6 +120,11 @@ namespace cmstar.Serialization.Json.Contracts
                         if (Members.TryGetContractMember((string)reader.Value, out member))
                         {
                             var value = member.Contract.Read(reader, state);
+
+                            //ignores a member without a setter
+                            if (member.ValueSetter == null)
+                                continue;
+
                             member.ValueSetter(instance, value);
                         }
                         break;

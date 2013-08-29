@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using cmstar.RapidReflection.Emit;
 using cmstar.Serialization.Json.Contracts;
 using cmstar.Util;
 
@@ -276,37 +277,33 @@ namespace cmstar.Serialization.Json
             {
                 var memberInfoDescriptions = new List<MemberInfoDescription>();
                 var hasJsonProperty = false;
-                var hasJsonIgnore = false;
 
                 var fieldInfos = type.GetFields(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var fieldInfo in fieldInfos)
                 {
-                    var memberInfoDescription = GetMemberInfoDescription(fieldInfo,
-                       ref hasJsonProperty, ref hasJsonIgnore);
+                    var memberInfoDescription = GetMemberInfoDescription(fieldInfo);
                     memberInfoDescriptions.Add(memberInfoDescription);
+
+                    if (!hasJsonProperty)
+                        hasJsonProperty = (memberInfoDescription.JsonPropertyAttribute != null);
                 }
 
                 var propertyInfos = type.GetProperties(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var propertyInfo in propertyInfos)
                 {
-                    var memberInfoDescription = GetMemberInfoDescription(propertyInfo,
-                        ref hasJsonProperty, ref hasJsonIgnore);
+                    var memberInfoDescription = GetMemberInfoDescription(propertyInfo);
                     memberInfoDescriptions.Add(memberInfoDescription);
+
+                    if (!hasJsonProperty)
+                        hasJsonProperty = (memberInfoDescription.JsonPropertyAttribute != null);
                 }
 
-                if (hasJsonProperty)
-                    return ResolveMemberInfoFromJsonProperties(memberInfoDescriptions);
-
-                if (hasJsonIgnore)
-                    return ResolveMemberInfosFromPublicMembers(memberInfoDescriptions);
-
-                return ResolveMemberInfosFromPublicMembers(memberInfoDescriptions);
+                return ResolveMemberInfos(memberInfoDescriptions, hasJsonProperty);
             }
 
-            private MemberInfoDescription GetMemberInfoDescription(MemberInfo memberInfo,
-                ref bool hasJsonProperty, ref bool hasJsonIgnore)
+            private MemberInfoDescription GetMemberInfoDescription(MemberInfo memberInfo)
             {
                 var memberInfoDescription = new MemberInfoDescription();
                 memberInfoDescription.MemberInfo = memberInfo;
@@ -318,7 +315,6 @@ namespace cmstar.Serialization.Json
                     if (jsonPropertyAttribute != null)
                     {
                         memberInfoDescription.JsonPropertyAttribute = jsonPropertyAttribute;
-                        hasJsonProperty = true;
                         continue;
                     }
 
@@ -326,40 +322,24 @@ namespace cmstar.Serialization.Json
                     if (jsonIgnoreAttribute != null)
                     {
                         memberInfoDescription.JsonIgnoreAttribute = jsonIgnoreAttribute;
-                        hasJsonIgnore = true;
-                        continue;
                     }
                 }
 
                 return memberInfoDescription;
             }
 
-            private List<ContractMemberInfo> ResolveMemberInfoFromJsonProperties(
-                List<MemberInfoDescription> memberInfoDescriptions)
+            private List<ContractMemberInfo> ResolveMemberInfos(
+                List<MemberInfoDescription> memberInfoDescriptions, bool useJsonPropertyAttribute)
             {
                 var memberInfos = new List<ContractMemberInfo>(memberInfoDescriptions.Count);
 
                 foreach (var memberInfoDescription in memberInfoDescriptions)
                 {
-                    if (memberInfoDescription.JsonPropertyAttribute == null)
+                    var contractMemberInfo = CreateContractMemberInfo(
+                        memberInfoDescription, useJsonPropertyAttribute);
+
+                    if (contractMemberInfo == null)
                         continue;
-
-                    if (memberInfoDescription.JsonIgnoreAttribute != null)
-                        continue;
-
-                    var memberType = (memberInfoDescription.MemberInfo is PropertyInfo) ?
-                        ((PropertyInfo)memberInfoDescription.MemberInfo).PropertyType :
-                        ((FieldInfo)memberInfoDescription.MemberInfo).FieldType;
-                    var contract = ResolveContract(memberType);
-
-                    var jsonPropertyName = memberInfoDescription.JsonPropertyAttribute.PropertyName;
-                    if (string.IsNullOrEmpty(jsonPropertyName))
-                    {
-                        jsonPropertyName = memberInfoDescription.MemberInfo.Name;
-                    }
-
-                    var contractMemberInfo = new ContractMemberInfo(
-                        memberInfoDescription.MemberInfo, jsonPropertyName, contract);
 
                     _buffer[contractMemberInfo.Type] = contractMemberInfo.Contract;
                     memberInfos.Add(contractMemberInfo);
@@ -368,43 +348,71 @@ namespace cmstar.Serialization.Json
                 return memberInfos;
             }
 
-            private List<ContractMemberInfo> ResolveMemberInfosFromPublicMembers(
-                List<MemberInfoDescription> memberInfoDescriptions)
+            //Returns null in any case of:
+            //  The member marked with JsonIgnoreAttribute;
+            //  Intends to use JsonPropertyAttribute but the member not marked with it;
+            //  Neither ValueGetter nor ValueSetter is available;
+            private ContractMemberInfo CreateContractMemberInfo(
+                MemberInfoDescription memberInfoDescription, bool useJsonPropertyAttribute)
             {
-                var memberInfos = new List<ContractMemberInfo>(memberInfoDescriptions.Count);
+                if (memberInfoDescription.JsonIgnoreAttribute != null)
+                    return null;
 
-                foreach (var memberInfoDescription in memberInfoDescriptions)
+                if (useJsonPropertyAttribute && memberInfoDescription.JsonPropertyAttribute == null)
+                    return null;
+
+                var memberInfo = memberInfoDescription.MemberInfo;
+                var info = new ContractMemberInfo();
+
+                var propertyInfo = memberInfo as PropertyInfo;
+                if (propertyInfo != null)
                 {
-                    if (memberInfoDescription.JsonIgnoreAttribute != null)
-                        continue;
+                    var getMethod = propertyInfo.GetGetMethod(useJsonPropertyAttribute);
+                    var setMethod = propertyInfo.GetSetMethod(useJsonPropertyAttribute);
 
-                    var fieldInfo = memberInfoDescription.MemberInfo as FieldInfo;
-                    if (fieldInfo != null)
-                    {
-                        if (!fieldInfo.IsPublic)
-                            continue;
+                    if (getMethod == null && setMethod == null)
+                        return null;
 
-                        var contract = ResolveContract(fieldInfo.FieldType);
-                        var contractMemberInfo = new ContractMemberInfo(fieldInfo, fieldInfo.Name, contract);
+                    if (getMethod != null)
+                        info.ValueGetter = PropertyAccessorGenerator.CreateGetter(propertyInfo, true);
 
-                        _buffer[fieldInfo.FieldType] = contractMemberInfo.Contract;
-                        memberInfos.Add(contractMemberInfo);
-                    }
-                    else
-                    {
-                        var propertyInfo = (PropertyInfo)memberInfoDescription.MemberInfo;
-                        if (propertyInfo.GetGetMethod() == null || propertyInfo.GetSetMethod() == null)
-                            continue;
+                    if (setMethod != null)
+                        info.ValueSetter = PropertyAccessorGenerator.CreateSetter(propertyInfo, true);
 
-                        var contract = ResolveContract(propertyInfo.PropertyType);
-                        var contractMemberInfo = new ContractMemberInfo(propertyInfo, propertyInfo.Name, contract);
+                    info.Type = propertyInfo.PropertyType;
+                    info.IsProperty = true;
+                }
+                else
+                {
+                    var fieldInfo = (FieldInfo)memberInfo;
 
-                        _buffer[propertyInfo.PropertyType] = contractMemberInfo.Contract;
-                        memberInfos.Add(contractMemberInfo);
-                    }
+                    if (!useJsonPropertyAttribute && !fieldInfo.IsPublic)
+                        return null;
+
+                    info.ValueGetter = FieldAccessorGenerator.CreateGetter(fieldInfo);
+                    info.ValueSetter = FieldAccessorGenerator.CreateSetter(fieldInfo);
+                    info.Type = fieldInfo.FieldType;
+                    info.IsProperty = false;
                 }
 
-                return memberInfos;
+                info.Contract = ResolveContract(info.Type);
+                info.MemberInfo = memberInfo;
+                info.Name = memberInfo.Name;
+
+                if (useJsonPropertyAttribute)
+                {
+                    info.JsonPropertyName = memberInfoDescription.JsonPropertyAttribute.PropertyName;
+                    if (string.IsNullOrEmpty(info.JsonPropertyName))
+                    {
+                        info.JsonPropertyName = memberInfo.Name;
+                    }
+                }
+                else
+                {
+                    info.JsonPropertyName = memberInfo.Name;
+                }
+
+                return info;
             }
         }
 
