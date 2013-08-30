@@ -189,7 +189,7 @@ The table below gives out the default contracts, which will convert the CLR type
 |Other types not listed above|ObjectContarct|Object|
 
 - CLR `null` (`Nothing` in VB.net) will be serialized to JSON `null`.
-- If an object is `Nullable<T>` and has value, it will be serialized using the  underlying value; otherwise, will be serialized to JSON `null`.
+- For an object of type `Nullable<T>`, if has value, it will be serialized using the underlying value; otherwise, will be serialized to JSON `null`.
 - Non-generic implementations of `ICollection` or `IDictionary` can be serialized but can not be deserialized because when deserializing the application doesn't know which CLR type should be used - the JSON type to CLR type mapping is 1 to N. 
 
 ### JsonContractResolver
