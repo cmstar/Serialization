@@ -21,7 +21,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -130,6 +129,16 @@ namespace cmstar.Serialization.Json
     ]
 }";
             Assert.AreEqual(expected, json);
+        }
+
+        [Test]
+        public void DeserializeAnonymousObject()
+        {
+            var template = new { Foo = "foooo", Bar = 3.1415926 };
+            var json = "{\"Foo\":\"foooo\",\"Bar\":3.1415926}";
+            var s = new JsonSerializer();
+            var result = s.Deserialize(json, template);
+            Assert.AreEqual(template, result);
         }
 
         [Test]

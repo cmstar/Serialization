@@ -47,6 +47,26 @@ The `JsonSerializer` class is the entry for serializing/deserializing.
     //generic version
     int[] array = serializer.Deserialize<int[]>("[1,2,3]");
 
+### Anonymous Objects
+
+Serializing anonymouse objects is just the same:
+
+    var anonymousObject = new {
+        Foo = 123,
+        Bar = "xx",
+        Array = new int[] { 1, 2, 3 }
+    };
+    JsonSerializer.Default.Serialize(anonymousObject);
+    //-> {"Foo":123,"Bar":"xx","Array":[1,2,3]}
+
+To deserialize, a template object should be provided:
+
+    var template = new { Foo = 0, Bar = (string)null };
+    var json = "{\"Foo\":10,\"Bar\":\"s\"}";
+
+    //call JsonSerializer.Deserialize<T>(string json, T template)
+    var result = JsonSerializer.Default.Deserialize(json, template);
+
 ### The default JsonSerializer
 
 Each instance of `JsonSerializer` is isolated, it can keep different instances of `JsonContract` and can be customized separately from another `JsonSerializer`. But in most time, we need just one `JsonSerializer`, in the case we can use `JsonSerializer.Default`:
@@ -67,7 +87,7 @@ You can use the `JsonPropertyAttribute` to select the members you need:
         [JsonProperty("string_value")] //mark a private field
         private string String;
 
-        [JsonProperty] //no name specified, will use the original name
+        [JsonProperty] //no name specified, will use 'Int' directly
         public int Int { get; set; }
 
         public int WillBeIngored { get; set; }

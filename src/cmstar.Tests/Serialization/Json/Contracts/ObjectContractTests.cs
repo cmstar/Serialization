@@ -124,4 +124,60 @@ namespace cmstar.Serialization.Json.Contracts
             return order;
         }
     }
+
+    [TestFixture]
+    public class AnonymousObjectContractTests : ContractTestBase
+    {
+        private object _AnonymousObject;
+        private string _expected =
+@"{
+    ""Int"":123,
+    ""String"":""s"",
+    ""Array"":[
+        1,
+        2,
+        3
+    ]
+}";
+
+        protected override Type UnderlyingType
+        {
+            get { return _AnonymousObject.GetType(); }
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            _AnonymousObject = new
+            {
+                Int = 123,
+                String = "s",
+                Array = new[] { 1, 2, 3 }
+            };
+        }
+
+        [Test]
+        public void WriteObject()
+        {
+            var json = DoWrite(_AnonymousObject, true);
+            Assert.AreEqual(_expected, json);
+        }
+
+        [Test]
+        public void ReadObject()
+        {
+            var result = DoRead(_expected);
+            Assert.IsInstanceOf(_AnonymousObject.GetType(), result);
+
+            var type = result.GetType();
+            var intValue = type.GetProperty("Int").GetValue(result, null);
+            Assert.AreEqual(123, intValue);
+
+            var stringValue = type.GetProperty("String").GetValue(result, null);
+            Assert.AreEqual("s", stringValue);
+
+            var arrayValue = (int[])type.GetProperty("Array").GetValue(result, null);
+            Assert.AreEqual(3, arrayValue.Length);
+        }
+    }
 }

@@ -206,10 +206,10 @@ namespace cmstar.Serialization.Json
             Assert.AreEqual(2, contract.Members.Count);
 
             ContractMemberInfo contractMemberInfo;
-            Assert.IsTrue(contract.Members.TryGetContractMember("PublicProperty", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("PublicProperty", out contractMemberInfo));
             Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("PublicField", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("PublicField", out contractMemberInfo));
             Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
         }
 
@@ -222,10 +222,10 @@ namespace cmstar.Serialization.Json
             Assert.AreEqual(2, contract.Members.Count);
 
             ContractMemberInfo contractMemberInfo;
-            Assert.IsTrue(contract.Members.TryGetContractMember("pub_field", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("pub_field", out contractMemberInfo));
             Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("NoExplicicName", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("NoExplicicName", out contractMemberInfo));
             Assert.IsInstanceOf<GuidContract>(contractMemberInfo.Contract);
         }
 
@@ -239,19 +239,19 @@ namespace cmstar.Serialization.Json
             Assert.AreEqual(4, contract.Members.Count);
 
             ContractMemberInfo contractMemberInfo;
-            Assert.IsTrue(contract.Members.TryGetContractMember("NoSetter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("NoSetter", out contractMemberInfo));
             Assert.IsNotNull(contractMemberInfo.ValueGetter);
             Assert.IsNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("NoGetter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("NoGetter", out contractMemberInfo));
             Assert.IsNull(contractMemberInfo.ValueGetter);
             Assert.IsNotNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("PrivateSetter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("PrivateSetter", out contractMemberInfo));
             Assert.IsNotNull(contractMemberInfo.ValueGetter);
             Assert.IsNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("ProtectedGetter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("ProtectedGetter", out contractMemberInfo));
             Assert.IsNull(contractMemberInfo.ValueGetter);
             Assert.IsNotNull(contractMemberInfo.ValueSetter);
         }
@@ -266,19 +266,19 @@ namespace cmstar.Serialization.Json
             Assert.AreEqual(4, contract.Members.Count);
 
             ContractMemberInfo contractMemberInfo;
-            Assert.IsTrue(contract.Members.TryGetContractMember("no_setter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("no_setter", out contractMemberInfo));
             Assert.IsNotNull(contractMemberInfo.ValueGetter);
             Assert.IsNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("no_getter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("no_getter", out contractMemberInfo));
             Assert.IsNull(contractMemberInfo.ValueGetter);
             Assert.IsNotNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("private_setter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("private_setter", out contractMemberInfo));
             Assert.IsNotNull(contractMemberInfo.ValueGetter);
             Assert.IsNotNull(contractMemberInfo.ValueSetter);
 
-            Assert.IsTrue(contract.Members.TryGetContractMember("internal_getter", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("internal_getter", out contractMemberInfo));
             Assert.IsNotNull(contractMemberInfo.ValueGetter);
             Assert.IsNotNull(contractMemberInfo.ValueSetter);
         }
@@ -294,10 +294,10 @@ namespace cmstar.Serialization.Json
             AssertContractDEFromB(contractB);
 
             ContractMemberInfo member;
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefA", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefA", out member));
             Assert.AreEqual(contractA, member.Contract);
 
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefC", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefC", out member));
             var contractC = member.Contract as ArrayContract;
             Assert.NotNull(contractC);
             Assert.AreEqual(contractA, contractC.ElementContract);
@@ -312,12 +312,12 @@ namespace cmstar.Serialization.Json
             AssertContractDEFromB(contractB);
 
             ContractMemberInfo member;
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefA", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefA", out member));
             var contractA = member.Contract as ArrayContract;
             Assert.NotNull(contractA);
             Assert.AreEqual(contractB, contractA.ElementContract);
 
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefC", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefC", out member));
             var contractC = member.Contract as ArrayContract;
             Assert.NotNull(contractC);
             Assert.AreEqual(contractA, contractC.ElementContract);
@@ -339,28 +339,28 @@ namespace cmstar.Serialization.Json
             AssertContractDEFromB(contractB);
 
             ContractMemberInfo member;
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefA", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefA", out member));
             Assert.AreEqual(contractA, member.Contract);
 
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefC", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefC", out member));
             Assert.AreEqual(contractC, member.Contract);
         }
 
         private void AssertContractDEFromB(ObjectContract contractB)
         {
             ContractMemberInfo member;
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefE", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefE", out member));
             var contractE = member.Contract as ObjectContract;
             Assert.NotNull(contractE);
 
-            Assert.IsTrue(contractB.Members.TryGetContractMember("RefD", out member));
+            Assert.IsTrue(contractB.Members.TryGetValue("RefD", out member));
             var contractD = member.Contract as ObjectContract;
             Assert.NotNull(contractD);
 
-            Assert.IsTrue(contractD.Members.TryGetContractMember("RefE", out member));
+            Assert.IsTrue(contractD.Members.TryGetValue("RefE", out member));
             Assert.AreEqual(contractE, member.Contract);
 
-            Assert.IsTrue(contractE.Members.TryGetContractMember("RefD", out member));
+            Assert.IsTrue(contractE.Members.TryGetValue("RefD", out member));
             Assert.AreEqual(contractD, member.Contract);
         }
 

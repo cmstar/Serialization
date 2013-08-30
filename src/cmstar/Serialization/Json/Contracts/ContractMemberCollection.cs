@@ -21,6 +21,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace cmstar.Serialization.Json.Contracts
@@ -29,29 +30,85 @@ namespace cmstar.Serialization.Json.Contracts
     /// A key-value map which takes the property names as the keys and instances of
     /// the <see cref="ContractMemberInfo"/> as the values.
     /// </summary>
-    public class ContractMemberCollection : KeyedCollection<string, ContractMemberInfo>
+    public class ContractMemberCollection : IndexedKeyedCollection<string, ContractMemberInfo>
     {
-        /// <summary>
-        /// Gets the instance of <see cref="ContractMemberInfo"/> with the specified property name.
-        /// </summary>
-        /// <param name="propertyName">
-        /// The property name used to lookup the <see cref="ContractMemberInfo"/>.
-        /// </param>
-        /// <param name="member">
-        /// The result of the lookup.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the <see cref="ContractMemberInfo"/> is retrieved successfully;
-        /// otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryGetContractMember(string propertyName, out ContractMemberInfo member)
-        {
-            return Dictionary.TryGetValue(propertyName, out member);
-        }
-
         protected override string GetKeyForItem(ContractMemberInfo item)
         {
             return item.JsonPropertyName;
+        }
+    }
+
+    public abstract class IndexedKeyedCollection<TKey, TItem> : Collection<TItem>
+    {
+        protected readonly Dictionary<TKey, int> Dictionary = new Dictionary<TKey, int>();
+
+        public bool TryGetValue(TKey key, out TItem member)
+        {
+            int index;
+            return TryGetValueAndIndex(key, out member, out index);
+        }
+
+        public bool TryGetValueAndIndex(TKey key, out TItem member, out int index)
+        {
+            if (!Dictionary.TryGetValue(key, out index))
+            {
+                member = default(TItem);
+                return false;
+            }
+
+            member = base[index];
+            return true;
+        }
+
+        protected abstract TKey GetKeyForItem(TItem item);
+
+        protected override void ClearItems()
+        {
+            base.ClearItems();
+            Dictionary.Clear();
+        }
+
+        protected override void InsertItem(int index, TItem item)
+        {
+            var key = GetKeyForItem(item);
+            Dictionary.Add(key, index);
+
+            base.InsertItem(index, item);
+            ResetIndexAfter(index + 1);
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            var key = GetKeyForItem(base[index]);
+            Dictionary.Remove(key);
+
+            base.RemoveItem(index);
+            ResetIndexAfter(index);
+        }
+
+        protected override void SetItem(int index, TItem item)
+        {
+            var key = GetKeyForItem(item);
+
+            int existItemIndex;
+            if (!Dictionary.TryGetValue(key, out existItemIndex) || index != existItemIndex)
+            {
+                Dictionary.Add(key, index);
+
+                var oldKey = GetKeyForItem(base[index]);
+                Dictionary.Remove(oldKey);
+            }
+
+            base.SetItem(index, item);
+        }
+
+        private void ResetIndexAfter(int startIndex)
+        {
+            for (int i = startIndex; i < Count; i++)
+            {
+                var key = GetKeyForItem(base[i]);
+                Dictionary[key] = i;
+            }
         }
     }
 }

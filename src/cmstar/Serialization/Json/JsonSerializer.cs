@@ -192,6 +192,19 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
+        /// Deserializes a string which represents a JSON to a CLR object,
+        /// and specifies a template object which is used to be an anonymous object.
+        /// </summary>
+        /// <typeparam name="T">The type of the CLR object.</typeparam>
+        /// <param name="json">The JSON.</param>
+        /// <param name="template">The template object for the deserialization.</param>
+        /// <returns>The object deserialized from the JSON.</returns>
+        public T Deserialize<T>(string json, T template) where T : class
+        {
+            return (T)Deserialize(json, typeof(T));
+        }
+
+        /// <summary>
         /// Deserializes a string which represents a JSON to a CLR object.
         /// </summary>
         /// <param name="json">The JSON.</param>

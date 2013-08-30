@@ -23,6 +23,7 @@
 
 using System;
 using cmstar.RapidReflection.Emit;
+using cmstar.Util;
 
 namespace cmstar.Serialization.Json.Contracts
 {
@@ -34,6 +35,8 @@ namespace cmstar.Serialization.Json.Contracts
     {
         private readonly ContractMemberCollection _members = new ContractMemberCollection();
         private readonly Func<object> _instanceCreator;
+        private readonly Func<object[], object> _anonymousInstanceCreator;
+        private readonly bool _underlyingTypeIsAnonymous;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ObjectContract"/>
@@ -43,7 +46,17 @@ namespace cmstar.Serialization.Json.Contracts
         public ObjectContract(Type type)
             : base(type)
         {
-            _instanceCreator = ConstructorInvokerGenerator.CreateDelegate(type);
+            _underlyingTypeIsAnonymous = ReflectionUtils.IsAnonymousType(type);
+
+            if (_underlyingTypeIsAnonymous)
+            {
+                var contructor = type.GetConstructors()[0];
+                _anonymousInstanceCreator = ConstructorInvokerGenerator.CreateDelegate(contructor);
+            }
+            else
+            {
+                _instanceCreator = ConstructorInvokerGenerator.CreateDelegate(type);
+            }
         }
 
         /// <summary>
@@ -72,7 +85,7 @@ namespace cmstar.Serialization.Json.Contracts
             var first = true;
             foreach (var member in Members)
             {
-                //only write the memebers which has a getter
+                //only write the members which has a getter
                 if (member.ValueGetter == null)
                     continue;
 
@@ -104,34 +117,66 @@ namespace cmstar.Serialization.Json.Contracts
             if (reader.Token != JsonToken.ObjectStart)
                 throw JsonContractErrors.UnexpectedToken(JsonToken.ObjectStart, reader.Token);
 
-            var instance = _instanceCreator();
+            if (_underlyingTypeIsAnonymous)
+                return ReadAnononymouseInstance(reader, state);
+
+            return ReadOnymousInstance(reader, state);
+        }
+
+        private object ReadAnononymouseInstance(JsonReader reader, JsonDeserializingState state)
+        {
+            var args = new object[Members.Count];
+
             while (reader.Read())
             {
                 if (reader.Token == JsonToken.ObjectEnd)
                     break;
 
-                switch (reader.Token)
-                {
-                    case JsonToken.Comma:
-                        break;
+                if (reader.Token == JsonToken.Comma)
+                    continue;
 
-                    case JsonToken.PropertyName:
-                        ContractMemberInfo member;
-                        if (Members.TryGetContractMember((string)reader.Value, out member))
-                        {
-                            var value = member.Contract.Read(reader, state);
+                if (reader.Token != JsonToken.PropertyName)
+                    throw JsonContractErrors.UnexpectedToken(reader.Token);
 
-                            //ignores a member without a setter
-                            if (member.ValueSetter == null)
-                                continue;
+                ContractMemberInfo member;
+                int index;
+                if (!Members.TryGetValueAndIndex((string)reader.Value, out member, out index))
+                    continue;
 
-                            member.ValueSetter(instance, value);
-                        }
-                        break;
+                var value = member.Contract.Read(reader, state);
+                args[index] = value;
+            }
 
-                    default:
-                        throw JsonContractErrors.UnexpectedToken(reader.Token);
-                }
+            var instance = _anonymousInstanceCreator(args);
+            return instance;
+        }
+
+        private object ReadOnymousInstance(JsonReader reader, JsonDeserializingState state)
+        {
+            var instance = _instanceCreator();
+
+            while (reader.Read())
+            {
+                if (reader.Token == JsonToken.ObjectEnd)
+                    break;
+
+                if (reader.Token == JsonToken.Comma)
+                    continue;
+
+                if (reader.Token != JsonToken.PropertyName)
+                    throw JsonContractErrors.UnexpectedToken(reader.Token);
+
+                ContractMemberInfo member;
+                if (!Members.TryGetValue((string)reader.Value, out member))
+                    continue;
+
+                var value = member.Contract.Read(reader, state);
+
+                //ignores a member without a setter
+                if (member.ValueSetter == null)
+                    continue;
+
+                member.ValueSetter(instance, value);
             }
 
             return instance;

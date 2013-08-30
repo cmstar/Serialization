@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace cmstar.Util
 {
@@ -76,6 +78,22 @@ namespace cmstar.Util
             }
 
             return null;
+        }
+
+        public static bool IsAnonymousType(Type type)
+        {
+            ArgAssert.NotNull(type, "type");
+
+            if (!type.IsGenericType)
+                return false;
+
+            if (!Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false))
+                return false;
+
+            if ((type.Attributes & TypeAttributes.NotPublic) != TypeAttributes.NotPublic)
+                return false;
+
+            return type.Name.Contains("AnonymousType");
         }
     }
 }
