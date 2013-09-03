@@ -83,6 +83,27 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.IsInstanceOf<SaleOrder>(result);
             Assert.IsTrue(_example.Equals((SaleOrder)result));
         }
+
+        [Test]
+        public void ReadEmptyObject()
+        {
+            var result = DoRead("{}");
+            Assert.IsInstanceOf<SaleOrder>(result);
+        }
+
+        [Test]
+        public void ReadMissingProperty()
+        {
+            var result = DoRead("{\"Mobile\":\"1234567890\"}");
+            Assert.IsInstanceOf<SaleOrder>(result);
+        }
+
+        [Test]
+        public void ReadUnknownProperty()
+        {
+            var result = DoRead("{\"XXXX\":\"xxxx\"}");
+            Assert.IsInstanceOf<SaleOrder>(result);
+        }
     }
 
     [TestFixture]
@@ -178,6 +199,31 @@ namespace cmstar.Serialization.Json.Contracts
 
             var arrayValue = (int[])type.GetProperty("Array").GetValue(result, null);
             Assert.AreEqual(3, arrayValue.Length);
+        }
+
+        [Test]
+        public void ReadMissingProperty()
+        {
+            //miss a value type
+            var jsonWithoutInt = "{\"String\":\"s\"}";
+            var result = DoRead(jsonWithoutInt);
+
+            var type = result.GetType();
+            var intValue = type.GetProperty("Int").GetValue(result, null);
+            Assert.AreEqual(0, intValue);
+
+            var stringValue = type.GetProperty("String").GetValue(result, null);
+            Assert.AreEqual("s", stringValue);
+
+            //miss a reference type
+            var jsonWithoutString = "{\"Int\":123}";
+            result = DoRead(jsonWithoutString);
+
+            intValue = type.GetProperty("Int").GetValue(result, null);
+            Assert.AreEqual(123, intValue);
+
+            stringValue = type.GetProperty("String").GetValue(result, null);
+            Assert.AreEqual(null, stringValue);
         }
     }
 }

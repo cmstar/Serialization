@@ -22,6 +22,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using cmstar.RapidReflection.Emit;
 using cmstar.Util;
 
@@ -37,6 +38,7 @@ namespace cmstar.Serialization.Json.Contracts
         private readonly Func<object> _instanceCreator;
         private readonly Func<object[], object> _anonymousInstanceCreator;
         private readonly bool _underlyingTypeIsAnonymous;
+        private readonly Dictionary<string, IndexType> _constructorArgumentIndexTypes;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ObjectContract"/>
@@ -52,6 +54,15 @@ namespace cmstar.Serialization.Json.Contracts
             {
                 var contructor = type.GetConstructors()[0];
                 _anonymousInstanceCreator = ConstructorInvokerGenerator.CreateDelegate(contructor);
+
+                var args = contructor.GetParameters();
+                _constructorArgumentIndexTypes = new Dictionary<string, IndexType>(args.Length);
+                for (int i = 0; i < args.Length; i++)
+                {
+                    var arg = args[i];
+                    var indexType = new IndexType { Index = i, Type = arg.ParameterType };
+                    _constructorArgumentIndexTypes.Add(arg.Name, indexType);
+                }
             }
             else
             {
@@ -83,7 +94,7 @@ namespace cmstar.Serialization.Json.Contracts
             writer.WriteObjectStart();
 
             var first = true;
-            foreach (var member in Members)
+            foreach (var member in _members)
             {
                 //only write the members which has a getter
                 if (member.ValueGetter == null)
@@ -118,14 +129,15 @@ namespace cmstar.Serialization.Json.Contracts
                 throw JsonContractErrors.UnexpectedToken(JsonToken.ObjectStart, reader.Token);
 
             if (_underlyingTypeIsAnonymous)
-                return ReadAnononymouseInstance(reader, state);
+                return ReadAnononymousInstance(reader, state);
 
             return ReadOnymousInstance(reader, state);
         }
 
-        private object ReadAnononymouseInstance(JsonReader reader, JsonDeserializingState state)
+        private object ReadAnononymousInstance(JsonReader reader, JsonDeserializingState state)
         {
-            var args = new object[Members.Count];
+            //read and store the argument values first
+            var argumentsPresented = new Dictionary<IndexType, object>();
 
             while (reader.Read())
             {
@@ -138,13 +150,36 @@ namespace cmstar.Serialization.Json.Contracts
                 if (reader.Token != JsonToken.PropertyName)
                     throw JsonContractErrors.UnexpectedToken(reader.Token);
 
+                var name = (string)reader.Value;
                 ContractMemberInfo member;
-                int index;
-                if (!Members.TryGetValueAndIndex((string)reader.Value, out member, out index))
+                if (!_members.TryGetValue(name, out member))
+                {
+                    reader.Read();
                     continue;
+                }
 
                 var value = member.Contract.Read(reader, state);
-                args[index] = value;
+                var indexType = _constructorArgumentIndexTypes[name];
+                argumentsPresented.Add(indexType, value);
+            }
+
+            //build the argument array for the constructor,
+            //determine if any property was presented in the JSON,
+            //if not, a default value of the argument type should be used
+            var args = new object[_members.Count];
+
+            foreach (var indexType in _constructorArgumentIndexTypes.Values)
+            {
+                object argumentValue;
+                if (argumentsPresented.TryGetValue(indexType, out argumentValue))
+                {
+                    args[indexType.Index] = argumentValue;
+                }
+                else if (indexType.Type.IsValueType)
+                {
+                    //Activator.CreateInstance should be slow, any good idea?
+                    args[indexType.Index] = Activator.CreateInstance(indexType.Type);
+                }
             }
 
             var instance = _anonymousInstanceCreator(args);
@@ -167,8 +202,11 @@ namespace cmstar.Serialization.Json.Contracts
                     throw JsonContractErrors.UnexpectedToken(reader.Token);
 
                 ContractMemberInfo member;
-                if (!Members.TryGetValue((string)reader.Value, out member))
+                if (!_members.TryGetValue((string)reader.Value, out member))
+                {
+                    reader.Read();
                     continue;
+                }
 
                 var value = member.Contract.Read(reader, state);
 
@@ -180,6 +218,17 @@ namespace cmstar.Serialization.Json.Contracts
             }
 
             return instance;
+        }
+
+        private struct IndexType : IComparable<IndexType>
+        {
+            public int Index;
+            public Type Type;
+
+            public int CompareTo(IndexType other)
+            {
+                return Index.CompareTo(other.Index);
+            }
         }
     }
 }
