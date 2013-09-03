@@ -220,14 +220,20 @@ namespace cmstar.Serialization.Json.Contracts
             return instance;
         }
 
-        private struct IndexType : IComparable<IndexType>
+        //keeps the index and type of an pararmeter of the type constructor
+        private class IndexType : IEqualityComparer<IndexType>
         {
             public int Index;
             public Type Type;
 
-            public int CompareTo(IndexType other)
+            public bool Equals(IndexType x, IndexType y)
             {
-                return Index.CompareTo(other.Index);
+                return x.Index == y.Index;
+            }
+
+            public int GetHashCode(IndexType obj)
+            {
+                return Index.GetHashCode();
             }
         }
     }
