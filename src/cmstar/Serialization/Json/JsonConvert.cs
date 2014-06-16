@@ -209,7 +209,7 @@ namespace cmstar.Serialization.Json
             return true;
         }
 
-        //Ignores the prefex an suffix in the string:
+        //Ignores the prefix an suffix in the string:
         ///\Date(1xxxxxxxxxxxx+yyyy)\
         //      |start          |end
         //or:

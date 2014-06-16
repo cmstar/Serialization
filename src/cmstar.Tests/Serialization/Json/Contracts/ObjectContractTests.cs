@@ -226,4 +226,41 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual(null, stringValue);
         }
     }
+
+    [TestFixture]
+    public class StructObjectContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof(CustomStruct); }
+        }
+
+        private CustomStruct _example = new CustomStruct { S = "s", I = 123 };
+        private string _expected =
+@"{
+    ""S"":""s"",
+    ""I"":123
+}";
+
+        [Test]
+        public void WriteStruct()
+        {
+            var json = DoWrite(_example, true);
+            Assert.AreEqual(_expected, json);
+        }
+
+        [Test]
+        public void ReadStruct()
+        {
+            var result = DoRead(_expected);
+            Assert.IsInstanceOf<CustomStruct>(result);
+            Assert.IsTrue(_example.Equals(result));
+        }
+
+        private struct CustomStruct
+        {
+            public string S;
+            public int I;
+        }
+    }
 }
