@@ -37,6 +37,12 @@ namespace cmstar.Serialization.Json
     public class JsonContractResolver : IJsonContractResolver
     {
         private static readonly JsonContract NullValueContract = new ObjectContract(typeof(object));
+
+        /// <summary>
+        /// An object that can be used to synchronize access the cache of JSON contracts.
+        /// </summary>
+        public readonly object SyncRoot = new object();
+
         private readonly Dictionary<Type, JsonContract> _contractCache = new Dictionary<Type, JsonContract>();
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace cmstar.Serialization.Json
             if (_contractCache.TryGetValue(type, out contract))
                 return contract;
 
-            lock (_contractCache)
+            lock (SyncRoot)
             {
                 return DoResolve(type);
             }
