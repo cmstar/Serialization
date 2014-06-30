@@ -149,7 +149,7 @@ namespace cmstar.Serialization.Json.Contracts
     [TestFixture]
     public class AnonymousObjectContractTests : ContractTestBase
     {
-        private object _AnonymousObject;
+        private object _anonymousObject;
         private string _expected =
 @"{
     ""Int"":123,
@@ -163,13 +163,13 @@ namespace cmstar.Serialization.Json.Contracts
 
         protected override Type UnderlyingType
         {
-            get { return _AnonymousObject.GetType(); }
+            get { return _anonymousObject.GetType(); }
         }
 
         [SetUp]
         public void Setup()
         {
-            _AnonymousObject = new
+            _anonymousObject = new
             {
                 Int = 123,
                 String = "s",
@@ -180,7 +180,7 @@ namespace cmstar.Serialization.Json.Contracts
         [Test]
         public void WriteObject()
         {
-            var json = DoWrite(_AnonymousObject, true);
+            var json = DoWrite(_anonymousObject, true);
             Assert.AreEqual(_expected, json);
         }
 
@@ -188,7 +188,7 @@ namespace cmstar.Serialization.Json.Contracts
         public void ReadObject()
         {
             var result = DoRead(_expected);
-            Assert.IsInstanceOf(_AnonymousObject.GetType(), result);
+            Assert.IsInstanceOf(_anonymousObject.GetType(), result);
 
             var type = result.GetType();
             var intValue = type.GetProperty("Int").GetValue(result, null);
@@ -261,6 +261,35 @@ namespace cmstar.Serialization.Json.Contracts
         {
             public string S;
             public int I;
+        }
+    }
+
+    [TestFixture]
+    public class DerivedObjectContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof (object); }
+        }
+
+        private string _expected =
+@"{
+    ""S"":""s"",
+    ""I"":123
+}";
+
+        [Test]
+        public void WriteObject()
+        {
+            var json = DoWrite(new { S = "s", I = 123 }, true);
+            Assert.AreEqual(_expected, json);
+        }
+
+        [Test]
+        public void ReadObject()
+        {
+            var result = DoRead(_expected);
+            Assert.IsInstanceOf(UnderlyingType, result);
         }
     }
 }
