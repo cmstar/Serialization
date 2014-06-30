@@ -127,12 +127,23 @@ namespace cmstar.Serialization.Json.Contracts
         {
             public bool TryParse(string s, out object value)
             {
+#if NET35
+                foreach (var name in Enum.GetNames(typeof(T)))
+                {
+                    if (name != s)
+                        continue;
+
+                    value = (T)Enum.Parse(typeof (T), s);
+                    return true;
+                }
+#else
                 T v;
                 if (Enum.TryParse(s, out v))
                 {
                     value = v;
                     return true;
                 }
+#endif
 
                 value = null;
                 return false;
