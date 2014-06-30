@@ -162,17 +162,19 @@ namespace cmstar.Serialization.Json
 
                 case ',':
                     return JsonToken.Comma;
+            }
 
+            if (_containerTokenStack.Top == JsonToken.ObjectStart)
+            {
+                if (Token == JsonToken.Comma || Token == JsonToken.ObjectStart)
+                    return JsonToken.PropertyName;
+            }
+
+            switch (c)
+            {
                 case '"':
-                    if (_containerTokenStack.Top == JsonToken.ObjectStart
-                        && (Token == JsonToken.Comma || Token == JsonToken.ObjectStart))
-                    {
-                        return JsonToken.PropertyName;
-                    }
-                    else
-                    {
-                        return JsonToken.StringValue;
-                    }
+                case '\'':
+                    return JsonToken.StringValue;
 
                 case 't': //true
                 case 'f': //false
@@ -198,8 +200,8 @@ namespace cmstar.Serialization.Json
         /// </returns>
         public bool Read()
         {
-            int c = NextNonSpace();
-            if (c < 0)
+            var next = NextNonSpace();
+            if (next < 0)
             {
                 if (_containerTokenStack.Count != 0 || Token == JsonToken.Comma)
                     throw FormatError("The JSON does not end correctly.", JsonToken.None);
@@ -208,44 +210,48 @@ namespace cmstar.Serialization.Json
                 return false;
             }
 
+            var c = (char)next;
             switch (c)
             {
                 case '{':
                     ReachObjectStart();
-                    break;
+                    return true;
 
                 case '}':
                     ReachObjectEnd();
-                    break;
+                    return true;
 
                 case '[':
                     ReachArrayStart();
-                    break;
+                    return true;
 
                 case ']':
                     ReachArrayEnd();
-                    break;
+                    return true;
 
                 case ',':
                     ReachComma();
-                    break;
-
-                case '"':
-                    if (_containerTokenStack.Top == JsonToken.ObjectStart
-                        && (Token == JsonToken.Comma || Token == JsonToken.ObjectStart))
-                    {
-                        ReadPropertyName();
-                    }
-                    else
-                    {
-                        ReadStringValue();
-                    }
-                    break;
-
-                default:
-                    ReadNonStringValue(c);
-                    break;
+                    return true;
             }
+
+            if (_containerTokenStack.Top == JsonToken.ObjectStart
+                && Token == JsonToken.Comma || Token == JsonToken.ObjectStart)
+            {
+                ReadPropertyName(c);
+            }
+            else if (c == '"')
+            {
+                ReadStringValue('"');
+            }
+            else if (c == '\'')
+            {
+                ReadStringValue('\'');
+            }
+            else
+            {
+                ReadNonStringValue(c);
+            }
+
             return true;
         }
 
@@ -288,22 +294,15 @@ namespace cmstar.Serialization.Json
             Token = JsonToken.Comma;
         }
 
-        private void ReadPropertyName()
+        private void ReadPropertyName(char firstChar)
         {
             ValidateTokenState(JsonToken.PropertyName);
 
-            var value = ParseString();
-
-            //check there's a ':' follows the property name
-            var next = NextNonSpace();
-            if (next != ':')
-                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
-
-            Value = value;
+            Value = ParsePropertyName(firstChar);
             Token = JsonToken.PropertyName;
         }
 
-        private void ReadNonStringValue(int firstChar)
+        private void ReadNonStringValue(char firstChar)
         {
             switch (firstChar)
             {
@@ -344,15 +343,87 @@ namespace cmstar.Serialization.Json
             }
         }
 
-        private void ReadStringValue()
+        private void ReadStringValue(char quoteChar)
         {
             ValidateTokenState(JsonToken.StringValue);
 
-            Value = ParseString();
+            Value = ParseString(quoteChar);
             Token = JsonToken.StringValue;
         }
 
-        private double ParseNumber(int firstChar)
+        private string ParsePropertyName(char firstChar)
+        {
+            var buffer = new StringBuilder();
+            bool quoted;
+            if (firstChar == '"' || firstChar == '\'')
+            {
+                quoted = true;
+            }
+            else if (IsValidVariableChar(firstChar))
+            {
+                buffer.Append(firstChar);
+                quoted = false;
+            }
+            else
+            {
+                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+            }
+
+            var formatError = false;
+            int next;
+
+            while ((next = Next()) >= 0)
+            {
+                var c = (char)next;
+
+                if (IsValidVariableChar(c))
+                {
+                    buffer.Append(c);
+                    continue;
+                }
+
+                if (quoted)
+                {
+                    if (c != '"' && c != '\'')
+                    {
+                        formatError = true;
+                        break;
+                    }
+
+                    next = Next();
+                    c = (char)next;
+                }
+
+                //ensure there's a ':' follows the property name
+                if (c == ':')
+                    break;
+
+                if (char.IsWhiteSpace(c))
+                {
+                    next = NextNonSpace();
+                    if (next == ':')
+                        break;
+                }
+
+                formatError = true;
+                break;
+            }
+
+            if (formatError || buffer.Length == 0)
+                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+
+            return buffer.ToString();
+        }
+
+        private bool IsValidVariableChar(char c)
+        {
+            if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')
+                return true;
+
+            return c == '$' || c == '_';
+        }
+
+        private double ParseNumber(char firstChar)
         {
             switch (firstChar)
             {
@@ -420,10 +491,11 @@ namespace cmstar.Serialization.Json
             return number;
         }
 
-        private string ParseString()
+        private string ParseString(char quoteChar)
         {
-            var escaped = false;
             var buffer = new StringBuilder();
+            var escaped = false;
+
             while (true)
             {
                 int c = Next();
@@ -473,7 +545,7 @@ namespace cmstar.Serialization.Json
                     continue;
                 }
 
-                if (c == '"')
+                if (c == quoteChar)
                     return buffer.ToString();
 
                 if (c == '\\')
