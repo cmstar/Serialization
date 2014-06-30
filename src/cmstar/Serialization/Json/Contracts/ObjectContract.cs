@@ -91,6 +91,15 @@ namespace cmstar.Serialization.Json.Contracts
                 return;
             }
 
+            //try serialize memebers of derived types
+            var objType = obj.GetType();
+            if (objType != UnderlyingType)
+            {
+                var contract = contractResolver.ResolveContract(objType);
+                contract.Write(writer, state, contractResolver, obj);
+                return;
+            }
+
             writer.WriteObjectStart();
 
             var first = true;
