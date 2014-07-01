@@ -125,14 +125,34 @@ namespace cmstar.Serialization.Json.Contracts
 
         private class EnumNameParser<T> : IEnumNameParser where T : struct
         {
+#if NET35
+            private readonly Dictionary<string, object> _enumNameMap;
+
+            public EnumNameParser()
+            {
+                var names = Enum.GetNames(typeof(T));
+                var values = Enum.GetValues(typeof(T));
+
+                _enumNameMap = new Dictionary<string, object>(names.Length, StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < names.Length; i++)
+                {
+                    _enumNameMap.Add(names[i], values.GetValue(i));
+                }
+            }
+#endif
+
             public bool TryParse(string s, out object value)
             {
+#if NET35
+                return _enumNameMap.TryGetValue(s, out value);
+#else
                 T v;
                 if (Enum.TryParse(s, out v))
                 {
                     value = v;
                     return true;
                 }
+#endif
 
                 value = null;
                 return false;
