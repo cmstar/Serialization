@@ -50,7 +50,7 @@ namespace cmstar.Serialization.Json.Contracts
                 throw JsonContractErrors.UnexpectedToken(JsonToken.StringValue, reader.Token);
 
             Guid result;
-            if (!Guid.TryParse((string)reader.Value, out result))
+            if (!TryParseGuid((string)reader.Value, out result))
             {
                 var msg = string.Format(
                     "Cannot cast the string value \"{0}\" to a GUID.", reader.Value);
@@ -58,6 +58,25 @@ namespace cmstar.Serialization.Json.Contracts
             }
 
             return result;
+        }
+
+        private bool TryParseGuid(string s, out Guid result)
+        {
+#if NET35
+            // there isn't a public Guid.TryParse before .net4, so...
+            try
+            {
+                result = new Guid(s);
+                return true;
+            }
+            catch
+            {
+                result = Guid.Empty;
+                return false;
+            }
+#else
+            return Guid.TryParse(s, out result);
+#endif
         }
     }
 }

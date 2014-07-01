@@ -138,7 +138,7 @@ namespace cmstar.Serialization.Json.Contracts
 
             public override string ToString()
             {
-                return string.Format("{0}:{1}", _x, _y);
+                return string.Format("{0}_{1}", _x, _y);
             }
 
             public override int GetHashCode()
@@ -175,7 +175,7 @@ namespace cmstar.Serialization.Json.Contracts
                 if (s == null)
                     return null;
 
-                var xy = s.Split(new[] { ':' });
+                var xy = s.Split(new[] { '_' });
                 if (xy.Length != 2)
                     return null;
 
@@ -208,9 +208,9 @@ namespace cmstar.Serialization.Json.Contracts
 
         string _expected =
 @"{
-    ""1:2"":12,
-    ""3:4"":34,
-    ""5:6"":56
+    ""1_2"":12,
+    ""3_4"":34,
+    ""5_6"":56
 }";
 
         [Test]

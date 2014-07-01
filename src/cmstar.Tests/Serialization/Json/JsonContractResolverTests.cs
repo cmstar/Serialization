@@ -169,31 +169,45 @@ namespace cmstar.Serialization.Json
             Assert.NotNull(contract.Members);
 
             //value: contract type, json property name, is property
-            var memberContractTypes = new Dictionary<string, Tuple<Type, string, bool>>();
-            memberContractTypes["OrderId"] = new Tuple<Type, string, bool>(typeof(NumberContract), "order_id", true);
-            memberContractTypes["_name"] = new Tuple<Type, string, bool>(typeof(StringContract), "name", false);
-            memberContractTypes["OrderType"] = new Tuple<Type, string, bool>(typeof(EnumContract), "order_type", true);
-            memberContractTypes["OrderDate"] = new Tuple<Type, string, bool>(typeof(DateTimeContract), "order_date", true);
-            memberContractTypes["ClassLevel"] = new Tuple<Type, string, bool>(typeof(NullableTypeContract), "class_level", false);
-            memberContractTypes["OrderPoint"] = new Tuple<Type, string, bool>(typeof(ObjectContract), "order_point", true);
-            memberContractTypes["Items"] = new Tuple<Type, string, bool>(typeof(ArrayContract), "items", true);
+            var memberContractTypes = new Dictionary<string, MemberContractInfo>();
+            memberContractTypes["OrderId"] = new MemberContractInfo(typeof(NumberContract), "order_id", true);
+            memberContractTypes["_name"] = new MemberContractInfo(typeof(StringContract), "name", false);
+            memberContractTypes["OrderType"] = new MemberContractInfo(typeof(EnumContract), "order_type", true);
+            memberContractTypes["OrderDate"] = new MemberContractInfo(typeof(DateTimeContract), "order_date", true);
+            memberContractTypes["ClassLevel"] = new MemberContractInfo(typeof(NullableTypeContract), "class_level", false);
+            memberContractTypes["OrderPoint"] = new MemberContractInfo(typeof(ObjectContract), "order_point", true);
+            memberContractTypes["Items"] = new MemberContractInfo(typeof(ArrayContract), "items", true);
 
             Assert.AreEqual(memberContractTypes.Count, contract.Members.Count);
             foreach (var m in contract.Members)
             {
                 Console.WriteLine(m.Name);
 
-                Tuple<Type, string, bool> resultAssertion;
+                MemberContractInfo resultAssertion;
                 Assert.IsTrue(memberContractTypes.TryGetValue(m.Name, out resultAssertion));
-                Assert.IsInstanceOf(resultAssertion.Item1, m.Contract);
-                Assert.AreEqual(resultAssertion.Item2, m.JsonPropertyName);
-                Assert.AreEqual(resultAssertion.Item3, m.IsProperty);
+                Assert.IsInstanceOf(resultAssertion.ContractType, m.Contract);
+                Assert.AreEqual(resultAssertion.JsonPropertyName, m.JsonPropertyName);
+                Assert.AreEqual(resultAssertion.IsProperty, m.IsProperty);
 
                 MemberInfo memberInfo = typeof(SaleOrderWithJsonAttr).GetProperty(
                     m.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 memberInfo = memberInfo ?? typeof(SaleOrderWithJsonAttr).GetField(
                     m.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 Assert.AreEqual(memberInfo, m.MemberInfo);
+            }
+        }
+
+        private class MemberContractInfo
+        {
+            public readonly Type ContractType;
+            public readonly string JsonPropertyName;
+            public readonly bool IsProperty;
+
+            public MemberContractInfo(Type contractType, string jsonPropertyName, bool isProperty)
+            {
+                ContractType = contractType;
+                JsonPropertyName = jsonPropertyName;
+                IsProperty = isProperty;
             }
         }
 
