@@ -25,7 +25,7 @@ using System;
 
 namespace cmstar.Serialization.Json
 {
-    internal static class JsonContractErrors
+    public static class JsonContractErrors
     {
         public static JsonContractException UnexpectedToken(JsonToken expected, JsonToken actual)
         {
