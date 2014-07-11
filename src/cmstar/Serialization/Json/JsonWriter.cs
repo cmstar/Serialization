@@ -84,30 +84,48 @@ namespace cmstar.Serialization.Json
             }
         }
 
+        /// <summary>
+        /// Write a '{' which indicates a beginning of a JSON object.
+        /// </summary>
         public virtual void WriteObjectStart()
         {
             Writer.Write('{');
         }
 
+        /// <summary>
+        /// Write a '}' which indicates an end of a JSON object.
+        /// </summary>
         public virtual void WriteObjectEnd()
         {
             Writer.Write('}');
         }
 
+        /// <summary>
+        /// Write a '[' which indicates a beginning of a JSON array.
+        /// </summary>
         public virtual void WriteArrayStart()
         {
             Writer.Write('[');
         }
 
+        /// <summary>
+        /// Write a ']' which indicates a end of a JSON array.
+        /// </summary>
         public virtual void WriteArrayEnd()
         {
             Writer.Write(']');
         }
 
+        /// <summary>
+        /// Write a JSON property name like '"name":'.
+        /// A <c>null</c> name is treated as an empty string.
+        /// </summary>
+        /// <param name="name">The property name.</param>
         public virtual void WritePropertyName(string name)
         {
-            WriteEscapedString(name);
-            Writer.Write(':');
+            Writer.Write('"');
+            Writer.Write(name);
+            Writer.Write("\":");
         }
 
         /// <summary>
@@ -158,7 +176,15 @@ namespace cmstar.Serialization.Json
         /// <param name="value">The string value.</param>
         public virtual void WriteStringValue(string value)
         {
-            WriteEscapedString(value);
+            if (value == null)
+            {
+                WriteNullValue();
+                return;
+            }
+
+            Writer.Write('"');
+            WriteEscapedStringBody(value);
+            Writer.Write('"');
         }
 
         /// <summary>
@@ -234,93 +260,82 @@ namespace cmstar.Serialization.Json
             Writer.Write(number.ToString(CultureInfo.InvariantCulture));
         }
 
-        private void WriteEscapedString(string value)
+        private void WriteEscapedStringBody(string value)
         {
-            if (value == null)
+            int len = 0;
+            int position = 0;
+            for (int i = 0; i < value.Length; )
             {
-                WriteNullValue();
-            }
-            else
-            {
-                Writer.Write('"');
-
-                int len = 0;
-                int position = 0;
-                for (int i = 0; i < value.Length; )
+                char c = value[i];
+                string escaped = null;
+                switch (c)
                 {
-                    char c = value[i];
-                    string escaped = null;
-                    switch (c)
-                    {
-                        case '"':
-                            escaped = @"\""";
-                            break;
+                    case '"':
+                        escaped = @"\""";
+                        break;
 
-                        case '/':
-                            if (_escapeSolidus)
-                            {
-                                escaped = @"\/";
-                            }
-                            else
-                            {
-                                len++;
-                            }
-                            break;
-
-                        case '\\':
-                            escaped = @"\\";
-                            break;
-
-                        case '\n':
-                            escaped = @"\n";
-                            break;
-
-                        case '\r':
-                            escaped = @"\r";
-                            break;
-
-                        case '\t':
-                            escaped = @"\t";
-                            break;
-
-                        case '\b':
-                            escaped = @"\b";
-                            break;
-
-                        case '\f':
-                            escaped = @"\f";
-                            break;
-
-                        default:
-                            len++;
-                            break;
-                    }
-
-                    i++;
-
-                    if (escaped != null)
-                    {
-                        if (len > 0)
+                    case '/':
+                        if (_escapeSolidus)
                         {
-                            Writer.Write(value.ToCharArray(position, len));
+                            escaped = @"\/";
                         }
+                        else
+                        {
+                            len++;
+                        }
+                        break;
 
-                        Writer.Write(escaped);
-                        position = i;
-                        len = 0;
+                    case '\\':
+                        escaped = @"\\";
+                        break;
+
+                    case '\n':
+                        escaped = @"\n";
+                        break;
+
+                    case '\r':
+                        escaped = @"\r";
+                        break;
+
+                    case '\t':
+                        escaped = @"\t";
+                        break;
+
+                    case '\b':
+                        escaped = @"\b";
+                        break;
+
+                    case '\f':
+                        escaped = @"\f";
+                        break;
+
+                    default:
+                        len++;
+                        break;
+                }
+
+                i++;
+
+                if (escaped != null)
+                {
+                    if (len > 0)
+                    {
+                        Writer.Write(value.ToCharArray(position, len));
                     }
-                }
 
-                if (len == value.Length)
-                {
-                    Writer.Write(value);
+                    Writer.Write(escaped);
+                    position = i;
+                    len = 0;
                 }
-                else if (len > 0)
-                {
-                    Writer.Write(value.ToCharArray(position, len));
-                }
+            }
 
-                Writer.Write('"');
+            if (len == value.Length)
+            {
+                Writer.Write(value);
+            }
+            else if (len > 0)
+            {
+                Writer.Write(value.ToCharArray(position, len));
             }
         }
     }
