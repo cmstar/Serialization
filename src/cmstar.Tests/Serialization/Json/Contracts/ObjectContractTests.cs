@@ -292,4 +292,41 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.IsInstanceOf(UnderlyingType, result);
         }
     }
+
+    [TestFixture]
+    public class NoPublicParameterlessConstructorObjectContractTests : ContractTestBase
+    {
+        private class NoPublicParameterlessConstructorClass
+        {
+            public NoPublicParameterlessConstructorClass(int n)
+            {
+                N = n;
+            }
+
+            public int N;
+        }
+
+        protected override Type UnderlyingType
+        {
+            get { return typeof(NoPublicParameterlessConstructorClass); }
+        }
+
+        private string _expected =
+@"{
+    ""N"":123
+}";
+
+        [Test]
+        public void WriteObject()
+        {
+            var json = DoWrite(new NoPublicParameterlessConstructorClass(123), true);
+            Assert.AreEqual(_expected, json);
+        }
+
+        [Test]
+        public void ReadObject()
+        {
+            Assert.Throws<JsonContractException>(() => DoRead(_expected));
+        }
+    }
 }

@@ -64,7 +64,7 @@ namespace cmstar.Serialization.Json.Contracts
                     _constructorArgumentIndexTypes.Add(arg.Name, indexType);
                 }
             }
-            else
+            else if (type.IsValueType || type.GetConstructor(Type.EmptyTypes) != null)
             {
                 _instanceCreator = ConstructorInvokerGenerator.CreateDelegate(type);
             }
@@ -197,6 +197,9 @@ namespace cmstar.Serialization.Json.Contracts
 
         private object ReadOnymousInstance(JsonReader reader, JsonDeserializingState state)
         {
+            if (_instanceCreator == null)
+                throw JsonContractErrors.CannotCreateInstance(UnderlyingType, null);
+
             var instance = _instanceCreator();
 
             while (reader.Read())
