@@ -98,7 +98,15 @@ namespace cmstar.Serialization.Json
 
             lock (SyncRoot)
             {
-                return DoResolve(type);
+                try
+                {
+                    return DoResolve(type);
+                }
+                catch (Exception ex)
+                {
+                    var msg = string.Format("Failed on resolving the JsonContract for type {0}.", type);
+                    throw new JsonContractException(msg, ex);
+                }
             }
         }
 

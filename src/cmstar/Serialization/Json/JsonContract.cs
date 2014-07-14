@@ -81,7 +81,11 @@ namespace cmstar.Serialization.Json
             else
             {
                 if (state.SerializingObjectStack.Contains(obj))
-                    throw new JsonContractException("There is a cycle object reference.");
+                {
+                    var msg = string.Format(
+                        "There is a cycle object reference to the object of type {0}.", obj.GetType());
+                    throw new JsonContractException(msg);
+                }
 
                 state.SerializingObjectStack.Push(obj);
                 DoWrite(writer, state, contractResolver, obj);

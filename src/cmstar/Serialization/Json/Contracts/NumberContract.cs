@@ -38,7 +38,7 @@ namespace cmstar.Serialization.Json.Contracts
             //a enum has the typecode Int32 but is not supported in this contract
             if (typeof(Enum).IsAssignableFrom(type))
                 throw new ArgumentException(
-                        "The type of enumeration is not supported in this contract.", "type");
+                    string.Format("The enumeration type {0} is not supported in this contract.", type), "type");
 
             _typeCode = Type.GetTypeCode(type);
 
@@ -50,7 +50,7 @@ namespace cmstar.Serialization.Json.Contracts
                 case TypeCode.DateTime:
                 case TypeCode.String:
                     throw new ArgumentException(
-                        "The given type is not supported in this contract.", "type");
+                        string.Format("The type {0} is not supported in this contract.", type), "type");
             }
         }
 
