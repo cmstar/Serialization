@@ -104,6 +104,32 @@ namespace cmstar.Serialization.Json.Contracts
             var result = DoRead("{\"XXXX\":\"xxxx\"}");
             Assert.IsInstanceOf<SaleOrder>(result);
         }
+        
+        [Test]
+        public void IgnoreUnknownProperty()
+        {
+            var json = 
+@"{
+    ""unknonwString1"": ""v1"",
+    ""Mobile"": ""12345"",
+    ""unknonwArray"": [1, 3, 5, 7],
+    ""Rate"": 3.3,
+    ""unknonwObject"": {
+        ""prop1"": ""value1"",
+        ""Mobile"": ""54321"",
+        ""Rate"": 1.1
+    },
+    ""unknonwString2"": ""v2"",
+    ""Amount"": 10
+}";
+            var result = DoRead(json);
+            Assert.IsInstanceOf<SaleOrder>(result);
+
+            var saleOrder = (SaleOrder) result;
+            Assert.AreEqual("12345", saleOrder.Mobile);
+            Assert.AreEqual(3.3F, saleOrder.Rate);
+            Assert.AreEqual(10M, saleOrder.Amount);
+        }
     }
 
     [TestFixture]

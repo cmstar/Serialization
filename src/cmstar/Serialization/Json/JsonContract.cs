@@ -148,5 +148,46 @@ namespace cmstar.Serialization.Json
         /// </param>
         /// <returns>An intance of the <see cref="UnderlyingType"/>.</returns>
         protected abstract object DoRead(JsonReader reader, JsonDeserializingState state);
+
+        /// <summary>
+        /// Skip the property value at the current position on the reader.
+        /// The method can only be called after a <see cref="JsonToken.PropertyName"/> being read.
+        /// </summary>
+        /// <param name="reader">The instance of <see cref="JsonReader"/>.</param>
+        protected void SkipPropertyValue(JsonReader reader)
+        {
+            var token = reader.Token;
+            if (token != JsonToken.PropertyName)
+                throw JsonContractErrors.UnexpectedToken(token);
+
+            reader.Read();
+            token = reader.Token;
+
+            if (token == JsonToken.ObjectStart)
+            {
+                SkipTo(reader, JsonToken.ObjectEnd);
+            }
+            else if (token == JsonToken.ArrayStart)
+            {
+                SkipTo(reader, JsonToken.ArrayEnd);
+            }
+        }
+
+        // read till the specified token, ignores all JSON containers (with a recursively call)
+        private void SkipTo(JsonReader reader, JsonToken toToken)
+        {
+            while (reader.Read())
+            {
+                var token = reader.Token;
+                if (token == toToken)
+                    return;
+
+                if (token == JsonToken.ObjectStart)
+                    SkipTo(reader, JsonToken.ObjectEnd);
+
+                if (token == JsonToken.ArrayStart)
+                    SkipTo(reader, JsonToken.ArrayEnd);
+            }
+        }
     }
 }

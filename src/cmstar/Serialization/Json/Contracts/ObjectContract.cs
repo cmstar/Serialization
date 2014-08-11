@@ -163,7 +163,7 @@ namespace cmstar.Serialization.Json.Contracts
                 ContractMemberInfo member;
                 if (!_members.TryGetValue(name, out member))
                 {
-                    reader.Read();
+                    SkipPropertyValue(reader);
                     continue;
                 }
 
@@ -216,7 +216,7 @@ namespace cmstar.Serialization.Json.Contracts
                 ContractMemberInfo member;
                 if (!_members.TryGetValue((string)reader.Value, out member))
                 {
-                    reader.Read();
+                    SkipPropertyValue(reader);
                     continue;
                 }
 
