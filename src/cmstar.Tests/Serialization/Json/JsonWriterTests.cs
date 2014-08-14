@@ -156,6 +156,55 @@ namespace cmstar.Serialization.Json
             }
         }
 
+        [Test]
+        public void WriteSingleQuoteJson()
+        {
+            var sb = new StringBuilder();
+            using (var w = CreateWriterWithoutFormatting(sb))
+            {
+                w.QuoteChar = '\'';
+
+                w.WriteObjectStart();
+
+                w.WritePropertyName("intProp");
+                w.WriteNumberValue(123);
+                w.WriteComma();
+
+                w.WritePropertyName("floatProp");
+                w.WriteNumberValue(1.116);
+                w.WriteComma();
+
+                w.WritePropertyName("nullProp");
+                w.WriteNullValue();
+                w.WriteComma();
+
+                w.WritePropertyName("stringProp");
+                w.WriteStringValue("stringValue");
+                w.WriteComma();
+
+                //array
+                w.WritePropertyName("arrayProp");
+                w.WriteArrayStart();
+
+                w.WriteStringValue("s");
+                w.WriteComma();
+                w.WriteStringValue("1\t2");
+
+                w.WriteArrayEnd();
+                w.WriteComma();
+                //
+
+                w.WritePropertyName("escapedStringProp");
+                w.WriteStringValue("stringValue\tV\r\nsay 'hello'.");
+
+                w.WriteObjectEnd();
+
+                var expected = "{'intProp':123,'floatProp':1.116,'nullProp':null,'stringProp':'stringValue',"
+                    + @"'arrayProp':['s','1\t2'],'escapedStringProp':'stringValue\tV\r\nsay \'hello\'.'}";
+                Assert.AreEqual(expected, sb.ToString());
+            }
+        }
+
         protected virtual JsonWriter CreateWriterWithoutFormatting(StringBuilder stringBuilder)
         {
             var indentedTextWriter = new IndentedTextWriter(new StringWriter(stringBuilder), string.Empty);

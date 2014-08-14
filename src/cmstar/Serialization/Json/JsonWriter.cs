@@ -39,6 +39,7 @@ namespace cmstar.Serialization.Json
 
         private bool _escapeSolidus = true;
         private bool _autoCloseInternalWriter = true;
+        private char _quoteChar = '"';
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonWriter"/> with the given 
@@ -72,6 +73,15 @@ namespace cmstar.Serialization.Json
         {
             get { return _escapeSolidus; }
             set { _escapeSolidus = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the character used for a quote.
+        /// </summary>
+        public char QuoteChar
+        {
+            get { return _quoteChar; }
+            set { _quoteChar = value; }
         }
 
         public void Dispose()
@@ -123,9 +133,10 @@ namespace cmstar.Serialization.Json
         /// <param name="name">The property name.</param>
         public virtual void WritePropertyName(string name)
         {
-            Writer.Write('"');
+            Writer.Write(_quoteChar);
             Writer.Write(name);
-            Writer.Write("\":");
+            Writer.Write(_quoteChar);
+            Writer.Write(':');
         }
 
         /// <summary>
@@ -164,9 +175,9 @@ namespace cmstar.Serialization.Json
             }
             else
             {
-                Writer.Write('"');
+                Writer.Write(_quoteChar);
                 Writer.Write(value);
-                Writer.Write('"');
+                Writer.Write(_quoteChar);
             }
         }
 
@@ -182,9 +193,9 @@ namespace cmstar.Serialization.Json
                 return;
             }
 
-            Writer.Write('"');
+            Writer.Write(_quoteChar);
             WriteEscapedStringBody(value);
-            Writer.Write('"');
+            Writer.Write(_quoteChar);
         }
 
         /// <summary>
@@ -268,50 +279,54 @@ namespace cmstar.Serialization.Json
             {
                 char c = value[i];
                 string escaped = null;
-                switch (c)
+
+                if (c == _quoteChar)
                 {
-                    case '"':
-                        escaped = @"\""";
-                        break;
+                    escaped = @"\" + _quoteChar;
+                }
+                else
+                {
+                    switch (c)
+                    {
+                        case '/':
+                            if (_escapeSolidus)
+                            {
+                                escaped = @"\/";
+                            }
+                            else
+                            {
+                                len++;
+                            }
+                            break;
 
-                    case '/':
-                        if (_escapeSolidus)
-                        {
-                            escaped = @"\/";
-                        }
-                        else
-                        {
+                        case '\\':
+                            escaped = @"\\";
+                            break;
+
+                        case '\n':
+                            escaped = @"\n";
+                            break;
+
+                        case '\r':
+                            escaped = @"\r";
+                            break;
+
+                        case '\t':
+                            escaped = @"\t";
+                            break;
+
+                        case '\b':
+                            escaped = @"\b";
+                            break;
+
+                        case '\f':
+                            escaped = @"\f";
+                            break;
+
+                        default:
                             len++;
-                        }
-                        break;
-
-                    case '\\':
-                        escaped = @"\\";
-                        break;
-
-                    case '\n':
-                        escaped = @"\n";
-                        break;
-
-                    case '\r':
-                        escaped = @"\r";
-                        break;
-
-                    case '\t':
-                        escaped = @"\t";
-                        break;
-
-                    case '\b':
-                        escaped = @"\b";
-                        break;
-
-                    case '\f':
-                        escaped = @"\f";
-                        break;
-
-                    default:
-                        len++;
-                        break;
+                            break;
+                    }
                 }
 
                 i++;
