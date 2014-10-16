@@ -205,6 +205,33 @@ namespace cmstar.Serialization.Json
             }
         }
 
+        [Test]
+        public void WriteSpecialPropertyName()
+        {
+            var sb = new StringBuilder();
+            using (var w = CreateWriterWithoutFormatting(sb))
+            {
+                w.QuoteChar = '\'';
+
+                w.WriteObjectStart();
+                
+                w.WritePropertyName("###");
+                w.WriteStringValue(null);
+                w.WriteComma();
+
+                w.WritePropertyName("1.2.3");
+                w.WriteStringValue(null);
+                w.WriteComma();
+
+                w.WritePropertyName("line1\r\nline2");
+                w.WriteStringValue(null);
+
+                w.WriteObjectEnd();
+
+                Assert.AreEqual("{'###':null,'1.2.3':null,'line1\r\nline2':null}", sb.ToString());
+            }
+        }
+
         protected virtual JsonWriter CreateWriterWithoutFormatting(StringBuilder stringBuilder)
         {
             var indentedTextWriter = new IndentedTextWriter(new StringWriter(stringBuilder), string.Empty);
