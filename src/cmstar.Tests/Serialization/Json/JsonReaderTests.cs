@@ -137,7 +137,7 @@ namespace cmstar.Serialization.Json
         [Test]
         public void ReadInvalidPropertyName()
         {
-            var json = @"{""na*me"":123}";
+            var json = @"{'name:123}";
             using (var r = CreateReader(json))
             {
                 Assert.IsTrue(r.Read());
@@ -147,7 +147,14 @@ namespace cmstar.Serialization.Json
                 Assert.Throws<JsonFormatException>(() => r.Read());
             }
 
-            json = @"{'na me':123}";
+            json = @"{\na me :123}";
+            using (var r = CreateReader(json))
+            {
+                Assert.IsTrue(r.Read());
+                Assert.Throws<JsonFormatException>(() => r.Read());
+            }
+
+            json = @"{name"" :123}";
             using (var r = CreateReader(json))
             {
                 Assert.IsTrue(r.Read());
@@ -163,6 +170,31 @@ namespace cmstar.Serialization.Json
         }
 
         [Test]
+        public void ReadQuotedPropertyName()
+        {
+            var json = @"{""na*me"":123}";
+            using (var r = CreateReader(json))
+            {
+                Assert.IsTrue(r.Read());
+                AssertReading(r, JsonToken.PropertyName, true, "na*me", JsonToken.ObjectStart);
+            }
+
+            json = @"{'na me':123}";
+            using (var r = CreateReader(json))
+            {
+                Assert.IsTrue(r.Read());
+                AssertReading(r, JsonToken.PropertyName, true, "na me", JsonToken.ObjectStart);
+            }
+
+            json = @"{  '___\r\r___\n\n___'  :123}";
+            using (var r = CreateReader(json))
+            {
+                Assert.IsTrue(r.Read());
+                AssertReading(r, JsonToken.PropertyName, true, "___\r\r___\n\n___", JsonToken.ObjectStart);
+            }
+        }
+
+        [Test]
         public void ReadUnQuotedPropertyName()
         {
             var json = @"{ $the_name :123}";
@@ -172,6 +204,20 @@ namespace cmstar.Serialization.Json
                 AssertReading(r, JsonToken.PropertyName, true, "$the_name", JsonToken.ObjectStart);
                 AssertReading(r, JsonToken.NumberValue, true, 123D, JsonToken.ObjectStart);
                 AssertReading(r, JsonToken.ObjectEnd, false, null, JsonToken.None);
+            }
+
+            json = @"{ $_$ :123}";
+            using (var r = CreateReader(json))
+            {
+                AssertReading(r, JsonToken.ObjectStart, false, null, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.PropertyName, true, "$_$", JsonToken.ObjectStart);
+            }
+
+            json = @"{ abcd1234 :123}";
+            using (var r = CreateReader(json))
+            {
+                AssertReading(r, JsonToken.ObjectStart, false, null, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.PropertyName, true, "abcd1234", JsonToken.ObjectStart);
             }
         }
 

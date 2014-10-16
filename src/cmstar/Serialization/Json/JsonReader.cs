@@ -298,7 +298,15 @@ namespace cmstar.Serialization.Json
         {
             ValidateTokenState(JsonToken.PropertyName);
 
-            Value = ParsePropertyName(firstChar);
+            if (firstChar == '\'' || firstChar == '"')
+            {
+                Value = ParseQuotedPropertyName(firstChar);
+            }
+            else
+            {
+                Value = ParseUnQuotedPropertyName(firstChar);
+            }
+
             Token = JsonToken.PropertyName;
         }
 
@@ -351,23 +359,25 @@ namespace cmstar.Serialization.Json
             Token = JsonToken.StringValue;
         }
 
-        private string ParsePropertyName(char firstChar)
+        private string ParseQuotedPropertyName(char firstChar)
         {
-            var buffer = new StringBuilder();
-            bool quoted;
-            if (firstChar == '"' || firstChar == '\'')
-            {
-                quoted = true;
-            }
-            else if (IsValidVariableChar(firstChar))
-            {
-                buffer.Append(firstChar);
-                quoted = false;
-            }
-            else
-            {
+            var value = ParseString(firstChar);
+
+            // ensure there's a ':' follows the property name
+            var next = NextNonSpace();
+            if (next != ':')
                 throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
-            }
+
+            return value;
+        }
+
+        private string ParseUnQuotedPropertyName(char firstChar)
+        {
+            if (!IsValidVariableChar(firstChar))
+                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+
+            var buffer = new StringBuilder();
+            buffer.Append(firstChar);
 
             var formatError = false;
             int next;
@@ -382,19 +392,7 @@ namespace cmstar.Serialization.Json
                     continue;
                 }
 
-                if (quoted)
-                {
-                    if (c != '"' && c != '\'')
-                    {
-                        formatError = true;
-                        break;
-                    }
-
-                    next = Next();
-                    c = (char)next;
-                }
-
-                //ensure there's a ':' follows the property name
+                // ensure there's a ':' follows the property name
                 if (c == ':')
                     break;
 
