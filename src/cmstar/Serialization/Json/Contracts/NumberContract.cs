@@ -118,10 +118,22 @@ namespace cmstar.Serialization.Json.Contracts
         {
             reader.Read();
 
-            if (reader.Token != JsonToken.NumberValue)
-                throw JsonContractErrors.UnexpectedToken(JsonToken.NumberValue, reader.Token);
+            double value;
+            switch (reader.Token)
+            {
+                case JsonToken.NumberValue:
+                    value = (double)reader.Value;
+                    break;
 
-            return _typeCode == TypeCode.Double ? reader.Value : Convert.ChangeType(reader.Value, UnderlyingType);
+                case JsonToken.StringValue:
+                    value = Convert.ToDouble(reader.Value);
+                    break;
+
+                default:
+                    throw JsonContractErrors.UnexpectedToken(JsonToken.NumberValue, reader.Token);
+            }
+
+            return _typeCode == TypeCode.Double ? value : Convert.ChangeType(value, UnderlyingType);
         }
     }
 }

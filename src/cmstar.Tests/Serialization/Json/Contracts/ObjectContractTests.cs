@@ -113,7 +113,7 @@ namespace cmstar.Serialization.Json.Contracts
     ""unknonwString1"": ""v1"",
     ""Mobile"": ""12345"",
     ""unknonwArray"": [1, 3, 5, 7],
-    ""Rate"": 3.3,
+    ""Rate"": '3.3',
     ""unknonwObject"": {
         ""prop1"": ""value1"",
         ""Mobile"": ""54321"",

@@ -85,6 +85,12 @@ namespace cmstar.Serialization.Json.Contracts
 
             result = DoRead("-123.4567");
             Assert.AreEqual(-123, result);
+
+            result = DoRead("'-123.4567'");
+            Assert.AreEqual(-123, result);
+
+            result = DoRead("\"-123.4567\"");
+            Assert.AreEqual(-123, result);
         }
     }
 
@@ -124,6 +130,9 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual(0, result);
 
             result = DoRead("-0.33");
+            Assert.AreEqual(-0.33, result);
+
+            result = DoRead("'-0.33'");
             Assert.AreEqual(-0.33, result);
         }
 
