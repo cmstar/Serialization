@@ -63,6 +63,12 @@ namespace cmstar.Serialization.Json.Contracts
                 case JsonToken.UndefinedValue:
                     return null;
 
+                case JsonToken.NumberValue:
+                    return reader.Value.ToString();
+
+                case JsonToken.BooleanValue:
+                    return ((bool)reader.Value) ? "true" : "false";
+
                 default:
                     throw JsonContractErrors.UnexpectedToken(reader.Token);
             }

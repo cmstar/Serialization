@@ -73,5 +73,21 @@ namespace cmstar.Serialization.Json.Contracts
             result = DoRead(@"""one line\nand another""");
             Assert.AreEqual("one line\nand another", result);
         }
+
+        [Test]
+        public void ReadNonString()
+        {
+            var result = DoRead(@"123.456");
+            Assert.AreEqual("123.456", result);
+
+            result = DoRead(@"-3335");
+            Assert.AreEqual("-3335", result);
+
+            result = DoRead(@"true");
+            Assert.AreEqual("true", result);
+
+            result = DoRead(@"false");
+            Assert.AreEqual("false", result);
+        }
     }
 }
