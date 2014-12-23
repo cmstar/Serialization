@@ -34,7 +34,7 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class ObjectContract : JsonContract
     {
-        private readonly ContractMemberCollection _members = new ContractMemberCollection();
+        private readonly ContractMemberCollection _members;
         private readonly Func<object> _instanceCreator;
         private readonly Func<object[], object> _anonymousInstanceCreator;
         private readonly bool _underlyingTypeIsAnonymous;
@@ -46,8 +46,20 @@ namespace cmstar.Serialization.Json.Contracts
         /// </summary>
         /// <param name="type">The underlying type.</param>
         public ObjectContract(Type type)
+            : this(type, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ObjectContract"/>
+        /// with the given underlying type.
+        /// </summary>
+        /// <param name="type">The underlying type.</param>
+        /// <param name="memberNameComparer"></param>
+        public ObjectContract(Type type, IEqualityComparer<string> memberNameComparer)
             : base(type)
         {
+            _members = new ContractMemberCollection(memberNameComparer);
             _underlyingTypeIsAnonymous = ReflectionUtils.IsAnonymousType(type);
 
             if (_underlyingTypeIsAnonymous)

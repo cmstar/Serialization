@@ -104,11 +104,11 @@ namespace cmstar.Serialization.Json.Contracts
             var result = DoRead("{\"XXXX\":\"xxxx\"}");
             Assert.IsInstanceOf<SaleOrder>(result);
         }
-        
+
         [Test]
         public void IgnoreUnknownProperty()
         {
-            var json = 
+            var json =
 @"{
     ""unknonwString1"": ""v1"",
     ""Mobile"": ""12345"",
@@ -125,7 +125,7 @@ namespace cmstar.Serialization.Json.Contracts
             var result = DoRead(json);
             Assert.IsInstanceOf<SaleOrder>(result);
 
-            var saleOrder = (SaleOrder) result;
+            var saleOrder = (SaleOrder)result;
             Assert.AreEqual("12345", saleOrder.Mobile);
             Assert.AreEqual(3.3F, saleOrder.Rate);
             Assert.AreEqual(10M, saleOrder.Amount);
@@ -295,7 +295,7 @@ namespace cmstar.Serialization.Json.Contracts
     {
         protected override Type UnderlyingType
         {
-            get { return typeof (object); }
+            get { return typeof(object); }
         }
 
         private string _expected =
@@ -355,4 +355,54 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.Throws<JsonContractException>(() => DoRead(_expected));
         }
     }
+
+    [TestFixture]
+    public class CaseInsensitivePropertynameObjectContractTests : ContractTestBase
+    {
+        private class CaseTestClass
+        {
+            public int number;
+            public int Number { get; set; }
+            public string LongValue { get; set; }
+        }
+
+        protected override Type UnderlyingType
+        {
+            get { return typeof(CaseTestClass); }
+        }
+
+        protected override IJsonContractResolver GetContractResolver()
+        {
+            return new JsonContractResolver { CaseSensitive = false };
+        }
+
+        [Test]
+        public void WriteObject()
+        {
+            var json = DoWrite(new CaseTestClass { Number = 123, number = 321, LongValue = "string" }, false);
+            Assert.AreEqual("{\"Number\":123,\"LongValue\":\"string\"}", json);
+        }
+
+        [Test]
+        public void ReadObject()
+        {
+            var result = DoRead("{\"Number\":123,\"LongValue\":\"string\"}") as CaseTestClass;
+            CheckValues(result);
+
+            result = DoRead("{\"number\":123,\"Longvalue\":\"string\"}") as CaseTestClass;
+            CheckValues(result);
+
+            result = DoRead("{\"NumbeR\":123,\"LONGVALUE\":\"string\"}") as CaseTestClass;
+            CheckValues(result);
+        }
+
+        private void CheckValues(CaseTestClass result)
+        {
+            Assert.NotNull(result);
+            Assert.AreEqual(123, result.Number);
+            Assert.AreEqual(0, result.number);
+            Assert.AreEqual("string", result.LongValue);
+        }
+    }
+
 }

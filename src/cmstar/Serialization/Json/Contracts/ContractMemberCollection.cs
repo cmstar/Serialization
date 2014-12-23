@@ -21,6 +21,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -32,6 +33,16 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class ContractMemberCollection : IndexedKeyedCollection<string, ContractMemberInfo>
     {
+        public ContractMemberCollection()
+            : base(null)
+        {
+        }
+
+        public ContractMemberCollection(IEqualityComparer<string> comparer)
+            : base(comparer)
+        {
+        }
+
         protected override string GetKeyForItem(ContractMemberInfo item)
         {
             return item.JsonPropertyName;
@@ -40,7 +51,17 @@ namespace cmstar.Serialization.Json.Contracts
 
     public abstract class IndexedKeyedCollection<TKey, TItem> : Collection<TItem>
     {
-        protected readonly Dictionary<TKey, int> Dictionary = new Dictionary<TKey, int>();
+        protected readonly Dictionary<TKey, int> Dictionary;
+
+        protected IndexedKeyedCollection(IEqualityComparer<TKey> equalityComparer)
+        {
+            Dictionary = new Dictionary<TKey, int>(equalityComparer);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return Dictionary.ContainsKey(key);
+        }
 
         public bool TryGetValue(TKey key, out TItem member)
         {

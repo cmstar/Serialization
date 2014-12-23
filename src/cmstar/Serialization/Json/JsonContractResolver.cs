@@ -44,6 +44,7 @@ namespace cmstar.Serialization.Json
         public readonly object SyncRoot = new object();
 
         private readonly Dictionary<Type, JsonContract> _contractCache = new Dictionary<Type, JsonContract>();
+        private bool _caseSensitive = true;
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonContractResolver"/>.
@@ -71,6 +72,16 @@ namespace cmstar.Serialization.Json
 
                 _contractCache.Add(c.Key, c.Value);
             }
+        }
+
+        /// <summary>
+        /// Indicates if the mappings between JSON property names and CLR type members (fields/properties)
+        /// are case-sensitive. The default value is <c>true</c>.
+        /// </summary>
+        public bool CaseSensitive
+        {
+            get { return _caseSensitive; }
+            set { _caseSensitive = value; }
         }
 
         /// <summary>
@@ -118,18 +129,21 @@ namespace cmstar.Serialization.Json
         /// <returns>The instance of <see cref="JsonContract"/> for the type.</returns>
         protected virtual JsonContract DoResolve(Type type)
         {
-            var innerResolver = new InnerContractResolver(_contractCache);
+            var innerResolver = new InnerContractResolver(_contractCache, _caseSensitive);
             return innerResolver.ResolveContract(type);
         }
 
         private class InnerContractResolver : IJsonContractResolver
         {
-            private Dictionary<Type, JsonContract> _contractCache;
+            private readonly Dictionary<Type, JsonContract> _contractCache;
+            private readonly bool _caseSensitive;
+
             private Dictionary<Type, JsonContract> _buffer;
 
-            public InnerContractResolver(Dictionary<Type, JsonContract> contractCache)
+            public InnerContractResolver(Dictionary<Type, JsonContract> contractCache, bool caseSensitive)
             {
                 _contractCache = contractCache;
+                _caseSensitive = caseSensitive;
             }
 
             public JsonContract ResolveContract(object obj)
@@ -275,13 +289,16 @@ namespace cmstar.Serialization.Json
 
             private ObjectContract ResolveObjectContract(Type type)
             {
-                var contract = new ObjectContract(type);
+                var comparer = _caseSensitive ? null : StringComparer.OrdinalIgnoreCase;
+                var contract = new ObjectContract(type, comparer);
                 _buffer[type] = contract;
 
                 var memberInfos = ResolveMemberInfos(type);
+                var contractMembers = contract.Members;
                 foreach (var contractMemberInfo in memberInfos)
                 {
-                    contract.Members.Add(contractMemberInfo);
+                    if (!contractMembers.ContainsKey(contractMemberInfo.Name))
+                        contractMembers.Add(contractMemberInfo);
                 }
 
                 return contract;
@@ -292,22 +309,23 @@ namespace cmstar.Serialization.Json
                 var memberInfoDescriptions = new List<MemberInfoDescription>();
                 var hasJsonProperty = false;
 
-                var fieldInfos = type.GetFields(
+                // priority: properties > fields
+                var propertyInfos = type.GetProperties(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                foreach (var fieldInfo in fieldInfos)
+                foreach (var propertyInfo in propertyInfos)
                 {
-                    var memberInfoDescription = GetMemberInfoDescription(fieldInfo);
+                    var memberInfoDescription = GetMemberInfoDescription(propertyInfo);
                     memberInfoDescriptions.Add(memberInfoDescription);
 
                     if (!hasJsonProperty)
                         hasJsonProperty = (memberInfoDescription.JsonPropertyAttribute != null);
                 }
 
-                var propertyInfos = type.GetProperties(
+                var fieldInfos = type.GetFields(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                foreach (var propertyInfo in propertyInfos)
+                foreach (var fieldInfo in fieldInfos)
                 {
-                    var memberInfoDescription = GetMemberInfoDescription(propertyInfo);
+                    var memberInfoDescription = GetMemberInfoDescription(fieldInfo);
                     memberInfoDescriptions.Add(memberInfoDescription);
 
                     if (!hasJsonProperty)

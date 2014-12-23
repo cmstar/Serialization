@@ -68,7 +68,7 @@ namespace cmstar.Serialization.Json.Contracts
 
         protected virtual JsonContract GetContarct()
         {
-            var contractResolver = new JsonContractResolver();
+            var contractResolver = GetContractResolver();
             var contract = contractResolver.ResolveContract(UnderlyingType);
             return contract;
         }
@@ -92,7 +92,7 @@ namespace cmstar.Serialization.Json.Contracts
 
                 using (var jsonWriter = new JsonWriterImproved(textWriter))
                 {
-                    var resolver = new JsonContractResolver();
+                    var resolver = GetContractResolver();
                     GetContarct().Write(jsonWriter, state, resolver, obj);
                 }
             }
@@ -112,6 +112,11 @@ namespace cmstar.Serialization.Json.Contracts
                 var result = GetContarct().Read(reader, state);
                 return result;
             }
+        }
+
+        protected virtual IJsonContractResolver GetContractResolver()
+        {
+            return new JsonContractResolver();
         }
     }
 }
