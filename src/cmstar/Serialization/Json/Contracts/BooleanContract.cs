@@ -21,8 +21,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
+
 namespace cmstar.Serialization.Json.Contracts
 {
+    /// <summary>
+    /// The contract for boolean values.
+    /// </summary>
     public class BooleanContract : JsonContract
     {
         public BooleanContract()
@@ -43,10 +48,18 @@ namespace cmstar.Serialization.Json.Contracts
         {
             reader.Read();
 
-            if (reader.Token != JsonToken.BooleanValue)
-                throw JsonContractErrors.UnexpectedToken(JsonToken.BooleanValue, reader.Token);
+            switch (reader.Token)
+            {
+                case JsonToken.BooleanValue:
+                    return (bool)reader.Value;
 
-            return (bool)reader.Value;
+                case JsonToken.StringValue:
+                case JsonToken.NumberValue:
+                    return Convert.ToBoolean(reader.Value);
+
+                default:
+                    throw JsonContractErrors.UnexpectedToken(JsonToken.BooleanValue, reader.Token);
+            }
         }
     }
 }

@@ -57,6 +57,47 @@ namespace cmstar.Serialization.Json.Contracts
 
             result = DoRead("false");
             Assert.AreEqual(false, result);
+        }        
+        
+        [Test]
+        public void ReadString()
+        {
+            var result = DoRead("\"true\"");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("\"True\"");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("\"TRue\"");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("\"false\"");
+            Assert.AreEqual(false, result);
+
+            result = DoRead("\"False\"");
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public void ReadNumber()
+        {
+            var result = DoRead("1");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("123");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("-222.232");
+            Assert.AreEqual(true, result);
+
+            result = DoRead("0");
+            Assert.AreEqual(false, result);
+
+            result = DoRead("0.0");
+            Assert.AreEqual(false, result);
+
+            result = DoRead(".0000");
+            Assert.AreEqual(false, result);
         }
     }
 }
