@@ -58,5 +58,40 @@ namespace cmstar.Serialization.Json
             var msg = string.Format("The type {0} is not supported by the contract.", type);
             return new JsonContractException(msg);
         }
+
+        public static JsonContractException CannotConverType(object value, Type targetType, Exception innException)
+        {
+            string valueDescription;
+            if (value == null)
+            {
+                valueDescription = "<null>";
+            }
+            else
+            {
+                var type = value.GetType();
+                var typeCode = Type.GetTypeCode(type);
+                switch (typeCode)
+                {
+                    case TypeCode.String:
+                        valueDescription = string.Concat("'", (string)value, "'");
+                        break;
+
+                    case TypeCode.Double:
+                        valueDescription = "number " + value;
+                        break;
+
+                    case TypeCode.Object:
+                        valueDescription = "<object>";
+                        break;
+
+                    default:
+                        valueDescription = string.Format("{0} ({1})", value, type);
+                        break;
+                }
+            }
+
+            var msg = string.Format("Can not cast {0} to type {1}.", valueDescription, targetType);
+            return new JsonContractException(msg, innException);
+        }
     }
 }

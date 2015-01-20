@@ -126,7 +126,10 @@ namespace cmstar.Serialization.Json.Contracts
                     break;
 
                 case JsonToken.StringValue:
-                    value = Convert.ToDouble(reader.Value);
+                    var s = (string)reader.Value;
+                    if (!double.TryParse(s, out value))
+                        throw JsonContractErrors.CannotConverType(s, typeof(double), null);
+
                     break;
 
                 default:

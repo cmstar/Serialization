@@ -51,11 +51,7 @@ namespace cmstar.Serialization.Json.Contracts
 
             Guid result;
             if (!TryParseGuid((string)reader.Value, out result))
-            {
-                var msg = string.Format(
-                    "Cannot cast the string value \"{0}\" to a GUID.", reader.Value);
-                throw new JsonContractException(msg);
-            }
+                throw JsonContractErrors.CannotConverType((string)reader.Value, typeof(Guid), null);
 
             return result;
         }

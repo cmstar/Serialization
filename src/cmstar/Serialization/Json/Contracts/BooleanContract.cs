@@ -55,7 +55,14 @@ namespace cmstar.Serialization.Json.Contracts
 
                 case JsonToken.StringValue:
                 case JsonToken.NumberValue:
-                    return Convert.ToBoolean(reader.Value);
+                    try
+                    {
+                        return Convert.ToBoolean(reader.Value);
+                    }
+                    catch (FormatException ex)
+                    {
+                        throw JsonContractErrors.CannotConverType(reader.Value, typeof(bool), ex);
+                    }
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(JsonToken.BooleanValue, reader.Token);
