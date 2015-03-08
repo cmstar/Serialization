@@ -221,12 +221,7 @@ namespace cmstar.Serialization.Json
                 {
                     var dictionaryContract = new DictionaryContract(type);
                     _buffer[type] = dictionaryContract;
-
-                    if (genericArguments[1] != typeof(object))
-                    {
-                        dictionaryContract.ValueContract = ResolveContract(genericArguments[1]);
-                    }
-
+                    dictionaryContract.ValueContract = ResolveContract(genericArguments[1]);
                     contract = dictionaryContract;
                     return true;
                 }

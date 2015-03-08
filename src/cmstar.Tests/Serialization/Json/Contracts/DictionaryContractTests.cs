@@ -236,4 +236,33 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual(56, dic[new CustomKey(5, 6)]);
         }
     }
+
+    public class ObjectValueGenericDictionaryContractTest : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof(Dictionary<string, object>); }
+        }
+
+        [Test]
+        public void Write()
+        {
+            var dic = new Dictionary<string, object>();
+            dic.Add("k1", 35);
+            dic.Add("k2", "s");
+            dic.Add("k3", new { x = 3, y = "v" });
+
+            var expected =
+@"{
+    ""k1"":35,
+    ""k2"":""s"",
+    ""k3"":{
+        ""x"":3,
+        ""y"":""v""
+    }
+}";
+            var json = DoWrite(dic, true);
+            Assert.AreEqual(expected, json);
+        }
+    }
 }

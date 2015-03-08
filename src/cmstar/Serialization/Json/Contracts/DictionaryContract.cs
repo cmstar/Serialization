@@ -36,13 +36,21 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class DictionaryContract : JsonContract
     {
+        /// <summary>
+        /// The type definition for generic dictionries.
+        /// </summary>
         public static readonly Type GenericDictionaryTypeDefinition = typeof(IDictionary<,>);
+
+        /// <summary>
+        /// The type definition for non-generic dictionries.
+        /// </summary>
         public static readonly Type DictionaryTypeDefinition = typeof(IDictionary);
 
         private readonly Type _keyType; //the type of the dictionary keys
         private readonly Type _valueType; //the type of the dictionary values
         private readonly Func<object> _dictionaryCreator; //medthod for creating an instance of the dictionary
         private readonly IDictionaryManager _dictionaryManager;
+        private readonly bool _isGenericDictionary;
         private TypeConverter _keyConverter;
 
         /// <summary>
@@ -58,6 +66,7 @@ namespace cmstar.Serialization.Json.Contracts
             {
                 _keyType = args[0];
                 _valueType = args[1];
+                _isGenericDictionary = true;
 
                 if (type.IsInterface)
                 {
@@ -73,7 +82,11 @@ namespace cmstar.Serialization.Json.Contracts
                 _dictionaryManager = (IDictionaryManager)Activator.CreateInstance(
                     dictionaryManagerType, _keyType, _dictionaryCreator);
             }
-            else if (!type.GetInterfaces().Contains(DictionaryTypeDefinition))
+            else if (type.GetInterfaces().Contains(DictionaryTypeDefinition))
+            {
+                _isGenericDictionary = false;
+            }
+            else // not a dictionary type
             {
                 var msg = string.Format("The type {0} is not supported by the contract.", type);
                 throw new ArgumentException(msg, "type");
@@ -127,13 +140,13 @@ namespace cmstar.Serialization.Json.Contracts
             }
 
             writer.WriteObjectStart();
-            if (ValueContract == null)
+            if (_isGenericDictionary)
             {
-                WriteWeekTypeDictionary(writer, state, contractResolver, obj);
+                WriteGenericDictionary(writer, state, contractResolver, obj);
             }
             else
             {
-                WriteGenericDictionary(writer, state, contractResolver, obj);
+                WriteWeekTypeDictionary(writer, state, contractResolver, obj);
             }
             writer.WriteObjectEnd();
         }
@@ -335,7 +348,7 @@ namespace cmstar.Serialization.Json.Contracts
                             "The key object converted from the converter is null.");
                     }
 
-                    if (!_keyType.IsAssignableFrom(key.GetType()))
+                    if (!_keyType.IsInstanceOfType(key))
                     {
                         var msg = string.Format(
                             "Cannot cast the object with type {0} from the converter to target type {1}.",
