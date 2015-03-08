@@ -314,8 +314,24 @@ namespace cmstar.Serialization.Json.Contracts
         [Test]
         public void ReadObject()
         {
-            var result = DoRead(_expected);
-            Assert.IsInstanceOf(UnderlyingType, result);
+            var res = DoRead("null");
+            Assert.IsNull(res);
+
+            res = DoRead("undefined");
+            Assert.IsNull(res);
+
+            res = DoRead("1234.45");
+            Assert.AreEqual(1234.45, res);
+
+            res = DoRead("\"abc\"");
+            Assert.AreEqual("abc", res);
+
+            res = DoRead("true");
+            Assert.AreEqual(true, res);
+
+            res = DoRead(_expected);
+            Assert.IsNotNull(res);
+            Assert.AreEqual(typeof(object), res.GetType());
         }
     }
 

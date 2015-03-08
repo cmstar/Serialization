@@ -143,16 +143,30 @@ namespace cmstar.Serialization.Json.Contracts
         {
             reader.Read();
 
-            if (reader.Token == JsonToken.NullValue)
-                return null;
+            // 1 treat JS undefined as CLR null;
+            // 2 anything can be an object, if the underlying type is Object, directly returns the value read
+            switch (reader.Token)
+            {
+                case JsonToken.NullValue:
+                case JsonToken.UndefinedValue:
+                    return null;
 
-            if (reader.Token != JsonToken.ObjectStart)
-                throw JsonContractErrors.UnexpectedToken(JsonToken.ObjectStart, reader.Token);
+                case JsonToken.StringValue:
+                case JsonToken.NumberValue:
+                case JsonToken.BooleanValue:
+                    if (UnderlyingType == typeof(object))
+                        return reader.Value;
 
-            if (_underlyingTypeIsAnonymous)
-                return ReadAnononymousInstance(reader, state);
+                    throw JsonContractErrors.UnexpectedToken(JsonToken.ObjectStart, reader.Token);
 
-            return ReadOnymousInstance(reader, state);
+                case JsonToken.ObjectStart:
+                    return _underlyingTypeIsAnonymous
+                        ? ReadAnononymousInstance(reader, state)
+                        : ReadOnymousInstance(reader, state);
+
+                default:
+                    throw JsonContractErrors.UnexpectedToken(JsonToken.ObjectStart, reader.Token);
+            }
         }
 
         private object ReadAnononymousInstance(JsonReader reader, JsonDeserializingState state)
