@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using cmstar.RapidReflection.Emit;
 using cmstar.Util;
 
@@ -246,13 +247,40 @@ namespace cmstar.Serialization.Json.Contracts
                     continue;
                 }
 
-                var value = member.Contract.Read(reader, state);
+                try
+                {
+                    var value = member.Contract.Read(reader, state);
 
-                //ignores a member without a setter
-                if (member.ValueSetter == null)
-                    continue;
+                    // ignores a member without a setter
+                    if (member.ValueSetter == null)
+                        continue;
 
-                member.ValueSetter(instance, value);
+                    member.ValueSetter(instance, value);
+                }
+                catch (Exception ex)
+                {
+                    string memberName;
+                    Type memberType;
+
+                    if (member.IsProperty)
+                    {
+                        var propInfo = (PropertyInfo)member.MemberInfo;
+                        memberName = propInfo.Name;
+                        memberType = propInfo.PropertyType;
+                    }
+                    else
+                    {
+                        var fieldInfo = (FieldInfo)member.MemberInfo;
+                        memberName = fieldInfo.Name;
+                        memberType = fieldInfo.FieldType;
+                    }
+
+                    var msg = string.Format(
+                        "Error on setting value for {0} ({1}) on type {2}.",
+                        memberName, memberType, UnderlyingType);
+
+                    throw new JsonContractException(msg, ex);
+                }
             }
 
             return instance;
