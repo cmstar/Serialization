@@ -261,7 +261,8 @@ namespace cmstar.Serialization.Json
                 }
 
                 //the contract for week type collection
-                if (type.GetInterfaces().Contains(ArrayContract.ArrayTypeDefinition))
+                if (type == ArrayContract.ArrayTypeDefinition
+                    || type.GetInterfaces().Contains(ArrayContract.ArrayTypeDefinition))
                 {
                     contract = new ArrayContract(type);
                     return true;

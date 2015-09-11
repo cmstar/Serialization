@@ -66,6 +66,12 @@ namespace cmstar.Serialization.Json.Contracts
             ""Quantity"":2,
             ""Price"":788.45
         }
+    ],
+    ""Flags"":[
+        1,
+        3,
+        4,
+        11
     ]
 }";
 
@@ -251,124 +257,87 @@ namespace cmstar.Serialization.Json.Contracts
             stringValue = type.GetProperty("String").GetValue(result, null);
             Assert.AreEqual(null, stringValue);
         }
-    }
 
-    [TestFixture]
-    public class StructObjectContractTests : ContractTestBase
-    {
-        protected override Type UnderlyingType
+        [TestFixture]
+        public class DerivedObjectContractTests : ContractTestBase
         {
-            get { return typeof(CustomStruct); }
-        }
-
-        private CustomStruct _example = new CustomStruct { S = "s", I = 123 };
-        private string _expected =
-@"{
-    ""S"":""s"",
-    ""I"":123
-}";
-
-        [Test]
-        public void WriteStruct()
-        {
-            var json = DoWrite(_example, true);
-            Assert.AreEqual(_expected, json);
-        }
-
-        [Test]
-        public void ReadStruct()
-        {
-            var result = DoRead(_expected);
-            Assert.IsInstanceOf<CustomStruct>(result);
-            Assert.IsTrue(_example.Equals(result));
-        }
-
-        private struct CustomStruct
-        {
-            public string S;
-            public int I;
-        }
-    }
-
-    [TestFixture]
-    public class DerivedObjectContractTests : ContractTestBase
-    {
-        protected override Type UnderlyingType
-        {
-            get { return typeof(object); }
-        }
-
-        private string _expected =
-@"{
-    ""S"":""s"",
-    ""I"":123
-}";
-
-        [Test]
-        public void WriteObject()
-        {
-            var json = DoWrite(new { S = "s", I = 123 }, true);
-            Assert.AreEqual(_expected, json);
-        }
-
-        [Test]
-        public void ReadObject()
-        {
-            var res = DoRead("null");
-            Assert.IsNull(res);
-
-            res = DoRead("undefined");
-            Assert.IsNull(res);
-
-            res = DoRead("1234.45");
-            Assert.AreEqual(1234.45, res);
-
-            res = DoRead("\"abc\"");
-            Assert.AreEqual("abc", res);
-
-            res = DoRead("true");
-            Assert.AreEqual(true, res);
-
-            res = DoRead(_expected);
-            Assert.IsNotNull(res);
-            Assert.AreEqual(typeof(object), res.GetType());
-        }
-    }
-
-    [TestFixture]
-    public class NoPublicParameterlessConstructorObjectContractTests : ContractTestBase
-    {
-        private class NoPublicParameterlessConstructorClass
-        {
-            public NoPublicParameterlessConstructorClass(int n)
+            protected override Type UnderlyingType
             {
-                N = n;
+                get { return typeof(object); }
             }
 
-            public int N;
+            private string _expected =
+    @"{
+    ""S"":""s"",
+    ""I"":123
+}";
+
+            [Test]
+            public void WriteObject()
+            {
+                var json = DoWrite(new { S = "s", I = 123 }, true);
+                Assert.AreEqual(_expected, json);
+            }
+
+            [Test]
+            public void ReadObject()
+            {
+                var res = DoRead("null");
+                Assert.IsNull(res);
+
+                res = DoRead("undefined");
+                Assert.IsNull(res);
+
+                res = DoRead("1234.45");
+                Assert.AreEqual(1234.45, res);
+
+                res = DoRead("\"abc\"");
+                Assert.AreEqual("abc", res);
+
+                res = DoRead("true");
+                Assert.AreEqual(true, res);
+
+                res = DoRead(_expected);
+                Assert.IsNotNull(res);
+                Assert.AreEqual(typeof(object), res.GetType());
+            }
         }
 
-        protected override Type UnderlyingType
+        [TestFixture]
+        public class NoPublicParameterlessConstructorObjectContractTests : ContractTestBase
         {
-            get { return typeof(NoPublicParameterlessConstructorClass); }
-        }
+            private class NoPublicParameterlessConstructorClass
+            {
+                public NoPublicParameterlessConstructorClass(int n)
+                {
+                    N = n;
+                }
 
-        private string _expected =
-@"{
+                public int N;
+            }
+
+            protected override Type UnderlyingType
+            {
+                get { return typeof(NoPublicParameterlessConstructorClass); }
+            }
+
+            private string _expected =
+    @"{
     ""N"":123
 }";
 
-        [Test]
-        public void WriteObject()
-        {
-            var json = DoWrite(new NoPublicParameterlessConstructorClass(123), true);
-            Assert.AreEqual(_expected, json);
-        }
+            [Test]
+            public void WriteObject()
+            {
+                var json = DoWrite(new NoPublicParameterlessConstructorClass(123), true);
+                Assert.AreEqual(_expected, json);
+            }
 
-        [Test]
-        public void ReadObject()
-        {
-            Assert.Throws<JsonContractException>(() => DoRead(_expected));
+            [Test]
+            public void ReadObject()
+            {
+                Assert.Throws<JsonContractException>(() => DoRead(_expected));
+            }
         }
     }
 
@@ -420,5 +389,4 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual("string", result.LongValue);
         }
     }
-
 }

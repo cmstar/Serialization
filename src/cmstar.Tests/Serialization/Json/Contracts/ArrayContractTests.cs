@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace cmstar.Serialization.Json.Contracts
@@ -319,6 +320,203 @@ namespace cmstar.Serialization.Json.Contracts
         public void ReadNonemptyCollectionThrowsExcpetion()
         {
             Assert.Throws<JsonContractException>(() => DoRead("[1]"));
+        }
+    }
+
+    [TestFixture]
+    public class EnumerableClassContractTests : ContractTestBase
+    {
+        private class D : IEnumerable
+        {
+            public IEnumerator GetEnumerator()
+            {
+                yield return "1";
+                yield return "2";
+                yield return "3";
+            }
+        }
+
+        protected override Type UnderlyingType
+        {
+            get { return typeof(D); }
+        }
+
+        [Test]
+        public void ReadEmptyCollection()
+        {
+            var result = DoRead("[]");
+            var castResult = result as D;
+
+            Assert.NotNull(castResult);
+        }
+
+        [Test]
+        public void WriteCollection()
+        {
+            var result = DoWrite(new D());
+            var expected = "[\"1\",\"2\",\"3\"]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void ReadNonemptyCollectionThrowsExcpetion()
+        {
+            Assert.Throws<JsonContractException>(() => DoRead("[1]"));
+        }
+    }
+
+    [TestFixture]
+    public class GenericEnumerableClassContractTests : ContractTestBase
+    {
+        private class D : IEnumerable<string>
+        {
+            public IEnumerator<string> GetEnumerator()
+            {
+                yield return "1";
+                yield return "2";
+                yield return "3";
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        protected override Type UnderlyingType
+        {
+            get { return typeof(D); }
+        }
+
+        [Test]
+        public void ReadEmptyCollection()
+        {
+            var result = DoRead("[]");
+            var castResult = result as D;
+
+            Assert.NotNull(castResult);
+        }
+
+        [Test]
+        public void WriteCollection()
+        {
+            var result = DoWrite(new D());
+            var expected = "[\"1\",\"2\",\"3\"]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void ReadNonemptyCollectionThrowsExcpetion()
+        {
+            Assert.Throws<JsonContractException>(() => DoRead("[1]"));
+        }
+    }
+
+    [TestFixture]
+    public class EnumerableInterfaceContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof(IEnumerable); }
+        }
+
+        [Test]
+        public void ReadEmptyCollection()
+        {
+            var result = DoRead("[]");
+            var castResult = result as IEnumerable;
+
+            Assert.NotNull(castResult);
+            Assert.AreEqual(0, castResult.Cast<object>().Count());
+        }
+
+        [Test]
+        public void WriteCollection()
+        {
+            var result = DoWrite(new ArrayList { 123, "str", new object() });
+            var expected = "[123,\"str\",{}]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void WriteEnumerable()
+        {
+            var result = DoWrite("123x".Select(x => x));
+            var expected = "[\"1\",\"2\",\"3\",\"x\"]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void ReadNonemptyCollectionThrowsExcpetion()
+        {
+            Assert.Throws<JsonContractException>(() => DoRead("[1]"));
+        }
+    }
+
+    [TestFixture]
+    public class GenericEnumerableInterfaceContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof(IEnumerable<string>); }
+        }
+
+        [Test]
+        public void ReadEmptyCollection()
+        {
+            var result = DoRead("[]");
+            var castResult = result as IEnumerable<string>;
+
+            Assert.NotNull(castResult);
+            Assert.AreEqual(0, castResult.Count());
+        }
+
+        [Test]
+        public void WriteCollection()
+        {
+            var result = DoWrite(new[] { "1", "abc", "gg" });
+            var expected = "[\"1\",\"abc\",\"gg\"]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void WriteEnumerable()
+        {
+            var result = DoWrite("123x".Select(x => x));
+            var expected = "[\"1\",\"2\",\"3\",\"x\"]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void ReadCollection()
+        {
+            var json = "[\"1\",\"abc\",\"gg\"]";
+            var result = DoRead(json);
+            var castResult = result as IEnumerable<string>;
+
+            Assert.NotNull(castResult);
+            Assert.AreEqual(3, castResult.Count());
+
+            int i = 0;
+            foreach (var value in castResult)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Assert.AreEqual("1", value);
+                        break;
+
+                    case 1:
+                        Assert.AreEqual("abc", value);
+                        break;
+
+                    case 2:
+                        Assert.AreEqual("gg", value);
+                        break;
+                }
+
+                i++;
+            }
         }
     }
 }

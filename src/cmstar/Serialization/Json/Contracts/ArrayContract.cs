@@ -34,11 +34,12 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class ArrayContract : JsonContract
     {
-        public static readonly Type GenericArrayTypeDefinition = typeof(ICollection<>);
-        public static readonly Type ArrayTypeDefinition = typeof(ICollection);
+        public static readonly Type GenericArrayTypeDefinition = typeof(IEnumerable<>);
+        public static readonly Type ArrayTypeDefinition = typeof(IEnumerable);
 
         private readonly Type _elementType;
         private readonly Func<IList, object> _collectionCreator;
+        private readonly bool _canAppendElement = true;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ArrayContract"/>
@@ -56,7 +57,7 @@ namespace cmstar.Serialization.Json.Contracts
 
                 if (type.IsInterface)
                 {
-                    if (type != typeof(IList) && type != typeof(ICollection))
+                    if (type != typeof(IList) && type != typeof(ICollection) && type != typeof(IEnumerable))
                         throw TypeNotSupported("type");
 
                     _collectionCreator = CreateArrayList;
@@ -80,14 +81,24 @@ namespace cmstar.Serialization.Json.Contracts
                         throw TypeNotSupported("type");
 
                     var genericTypeDefination = type.GetGenericTypeDefinition();
-                    if (genericTypeDefination != typeof(IList<>) && genericTypeDefination != typeof(ICollection<>))
+                    if (genericTypeDefination != typeof(IList<>)
+                        && genericTypeDefination != typeof(ICollection<>)
+                        && genericTypeDefination != typeof(IEnumerable<>))
+                    {
                         throw TypeNotSupported("type");
+                    }
 
                     _collectionCreator = CreateGenericList;
                 }
                 else
                 {
                     _collectionCreator = CreateTypeInstance;
+
+                    // check if the type implementes ICollection<>, while deserializing, elements are 
+                    // appended to the collection using the 'Add' method, which is defined in 
+                    // the ICollection<> interface; if the type only implementes IEnumerable<>, it
+                    // can not be deserialized except the collection is empty
+                    _canAppendElement = ReflectionUtils.GetGenericArguments(type, GenericArrayTypeDefinition) != null;
                 }
             }
         }
@@ -142,6 +153,15 @@ namespace cmstar.Serialization.Json.Contracts
                     return _collectionCreator(null);
 
                 throw new JsonContractException("The type of collection elements was not specified.");
+            }
+
+            if (!_canAppendElement)
+            {
+                // if the collection is not generic, only empty collection can be deserialized
+                if (reader.Read() && reader.Token == JsonToken.ArrayEnd)
+                    return _collectionCreator(null);
+
+                throw new JsonContractException("The type can not be deserialized.");
             }
 
             var buffer = new ArrayList();

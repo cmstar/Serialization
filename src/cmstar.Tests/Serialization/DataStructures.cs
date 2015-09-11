@@ -131,7 +131,8 @@ namespace cmstar.Serialization
                     new SaleOrderItem {ProductNo = "ProductNo1", Quantity = 3, Price = 23.3M},
                     new SaleOrderItem {ProductNo = "ProductNo2", Quantity = 1, Price = 26M},
                     new SaleOrderItem {ProductNo = "ProductNo3", Quantity = 2, Price = 788.45M},
-                }
+                },
+                Flags = new[] { 1, 3, 4, 11 }
             };
             return order;
         }
@@ -148,6 +149,7 @@ namespace cmstar.Serialization
         public float Rate { get; set; }
         public SaleOrderPoint OrderPoint { get; set; }
         public List<SaleOrderItem> Items { get; set; }
+        public IEnumerable<int> Flags { get; set; }
 
         public bool Equals(SaleOrder other)
         {
@@ -188,6 +190,30 @@ namespace cmstar.Serialization
                 {
                     if (!other.Items[i].Equals(Items[i]))
                         return false;
+                }
+            }
+            else if (Items != null || other.Items != null)
+            {
+                return false;
+            }
+
+            if (Flags != null && other.Flags != null)
+            {
+                using (var itor = Flags.GetEnumerator())
+                using (var otherItor = other.Flags.GetEnumerator())
+                {
+                    while (true)
+                    {
+                        bool moveNext;
+                        if ((moveNext = itor.MoveNext()) != otherItor.MoveNext())
+                            return false;
+
+                        if (!moveNext)
+                            break;
+
+                        if (itor.Current != otherItor.Current)
+                            return false;
+                    }
                 }
             }
             else if (Items != null || other.Items != null)

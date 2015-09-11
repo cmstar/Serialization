@@ -80,6 +80,12 @@ namespace cmstar.Serialization.Json
                 ""Quantity"":2,
                 ""Price"":788.45
             }
+        ],
+        ""Flags"":[
+            1,
+            3,
+            4,
+            11
         ]
     },
     ""k2"":2.22,
@@ -114,6 +120,12 @@ namespace cmstar.Serialization.Json
                     ""Quantity"":2,
                     ""Price"":788.45
                 }
+            ],
+            ""Flags"":[
+                1,
+                3,
+                4,
+                11
             ]
         },
         ""k4"":[

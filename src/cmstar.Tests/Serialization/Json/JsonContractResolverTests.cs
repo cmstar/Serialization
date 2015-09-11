@@ -144,6 +144,7 @@ namespace cmstar.Serialization.Json
             memberContractTypes["OrderId"] = typeof(NumberContract);
             memberContractTypes["OrderPoint"] = typeof(ObjectContract);
             memberContractTypes["Items"] = typeof(ArrayContract);
+            memberContractTypes["Flags"] = typeof(ArrayContract);
 
             Assert.AreEqual(memberContractTypes.Count, contract.Members.Count);
             foreach (var m in contract.Members)
@@ -169,24 +170,24 @@ namespace cmstar.Serialization.Json
             Assert.NotNull(contract.Members);
 
             //value: contract type, json property name, is property
-            var memberContractTypes = new Dictionary<string, MemberContractInfo>();
-            memberContractTypes["OrderId"] = new MemberContractInfo(typeof(NumberContract), "order_id", true);
-            memberContractTypes["_name"] = new MemberContractInfo(typeof(StringContract), "name", false);
-            memberContractTypes["OrderType"] = new MemberContractInfo(typeof(EnumContract), "order_type", true);
-            memberContractTypes["OrderDate"] = new MemberContractInfo(typeof(DateTimeContract), "order_date", true);
-            memberContractTypes["ClassLevel"] = new MemberContractInfo(typeof(NullableTypeContract), "class_level", false);
-            memberContractTypes["OrderPoint"] = new MemberContractInfo(typeof(ObjectContract), "order_point", true);
-            memberContractTypes["Items"] = new MemberContractInfo(typeof(ArrayContract), "items", true);
+            var memberContractTypes = new Dictionary<string, TypeAndNameAndIsProperty>();
+            memberContractTypes["OrderId"] = new TypeAndNameAndIsProperty(typeof(NumberContract), "order_id", true);
+            memberContractTypes["_name"] = new TypeAndNameAndIsProperty(typeof(StringContract), "name", false);
+            memberContractTypes["OrderType"] = new TypeAndNameAndIsProperty(typeof(EnumContract), "order_type", true);
+            memberContractTypes["OrderDate"] = new TypeAndNameAndIsProperty(typeof(DateTimeContract), "order_date", true);
+            memberContractTypes["ClassLevel"] = new TypeAndNameAndIsProperty(typeof(NullableTypeContract), "class_level", false);
+            memberContractTypes["OrderPoint"] = new TypeAndNameAndIsProperty(typeof(ObjectContract), "order_point", true);
+            memberContractTypes["Items"] = new TypeAndNameAndIsProperty(typeof(ArrayContract), "items", true);
 
             Assert.AreEqual(memberContractTypes.Count, contract.Members.Count);
             foreach (var m in contract.Members)
             {
                 Console.WriteLine(m.Name);
 
-                MemberContractInfo resultAssertion;
+                TypeAndNameAndIsProperty resultAssertion;
                 Assert.IsTrue(memberContractTypes.TryGetValue(m.Name, out resultAssertion));
-                Assert.IsInstanceOf(resultAssertion.ContractType, m.Contract);
-                Assert.AreEqual(resultAssertion.JsonPropertyName, m.JsonPropertyName);
+                Assert.IsInstanceOf(resultAssertion.Type, m.Contract);
+                Assert.AreEqual(resultAssertion.Name, m.JsonPropertyName);
                 Assert.AreEqual(resultAssertion.IsProperty, m.IsProperty);
 
                 MemberInfo memberInfo = typeof(SaleOrderWithJsonAttr).GetProperty(
@@ -194,20 +195,6 @@ namespace cmstar.Serialization.Json
                 memberInfo = memberInfo ?? typeof(SaleOrderWithJsonAttr).GetField(
                     m.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 Assert.AreEqual(memberInfo, m.MemberInfo);
-            }
-        }
-
-        private class MemberContractInfo
-        {
-            public readonly Type ContractType;
-            public readonly string JsonPropertyName;
-            public readonly bool IsProperty;
-
-            public MemberContractInfo(Type contractType, string jsonPropertyName, bool isProperty)
-            {
-                ContractType = contractType;
-                JsonPropertyName = jsonPropertyName;
-                IsProperty = isProperty;
             }
         }
 
@@ -384,6 +371,20 @@ namespace cmstar.Serialization.Json
             var contract = resolver.ResolveContract(type);
             Assert.IsInstanceOf<TContract>(contract);
             return (TContract)contract;
+        }
+
+        private class TypeAndNameAndIsProperty
+        {
+            public Type Type { get; private set; }
+            public string Name { get; private set; }
+            public bool IsProperty { get; private set; }
+
+            public TypeAndNameAndIsProperty(Type type, string name, bool isProperty)
+            {
+                Type = type;
+                Name = name;
+                IsProperty = isProperty;
+            }
         }
 
         private class A : List<B>
