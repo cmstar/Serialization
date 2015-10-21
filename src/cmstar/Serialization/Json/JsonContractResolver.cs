@@ -363,8 +363,20 @@ namespace cmstar.Serialization.Json
 
                 foreach (var memberInfoDescription in memberInfoDescriptions)
                 {
-                    var contractMemberInfo = CreateContractMemberInfo(
-                        memberInfoDescription, useJsonPropertyAttribute);
+                    ContractMemberInfo contractMemberInfo;
+                    try
+                    {
+                        contractMemberInfo = CreateContractMemberInfo(
+                            memberInfoDescription, useJsonPropertyAttribute);
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg = string.Format(
+                            "Failed on create a JsonContract for member '{0}' of type {1}.",
+                            memberInfoDescription.MemberInfo.Name,
+                            memberInfoDescription.MemberInfo.DeclaringType);
+                        throw new JsonContractException(msg, ex);
+                    }
 
                     if (contractMemberInfo == null)
                         continue;
