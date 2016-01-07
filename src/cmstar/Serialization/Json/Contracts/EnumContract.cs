@@ -22,6 +22,9 @@
 #endregion
 
 using System;
+#if NET35
+using System.Collections.Generic;
+#endif
 
 namespace cmstar.Serialization.Json.Contracts
 {

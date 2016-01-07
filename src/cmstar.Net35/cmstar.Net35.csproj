@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{65645441-7FC4-4633-9BBD-754B885C6001}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>cmstar.Net35</RootNamespace>
+    <AssemblyName>cmstar.Net35</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\cmstar\ArgAssert.cs">
+      <Link>ArgAssert.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\ConstructorInvokerGenerator.cs">
+      <Link>RapidReflection\Emit\ConstructorInvokerGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\EmitUtils.cs">
+      <Link>RapidReflection\Emit\EmitUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\FieldAccessorGenerator.cs">
+      <Link>RapidReflection\Emit\FieldAccessorGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\MethodInvokerGenerator.cs">
+      <Link>RapidReflection\Emit\MethodInvokerGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\OpCodeExtention.cs">
+      <Link>RapidReflection\Emit\OpCodeExtention.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\RapidReflection\Emit\PropertyAccessorGenerator.cs">
+      <Link>RapidReflection\Emit\PropertyAccessorGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Formatting.cs">
+      <Link>Serialization\Formatting.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\IndentedTextWriter.cs">
+      <Link>Serialization\IndentedTextWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\ArrayContract.cs">
+      <Link>Serialization\Json\Contracts\ArrayContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\BooleanContract.cs">
+      <Link>Serialization\Json\Contracts\BooleanContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\ContractMemberCollection.cs">
+      <Link>Serialization\Json\Contracts\ContractMemberCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\ContractMemberInfo.cs">
+      <Link>Serialization\Json\Contracts\ContractMemberInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\CustomFormatDateTimeContract.cs">
+      <Link>Serialization\Json\Contracts\CustomFormatDateTimeContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DateTimeContract.cs">
+      <Link>Serialization\Json\Contracts\DateTimeContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DictionaryContract.cs">
+      <Link>Serialization\Json\Contracts\DictionaryContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\EnumContract.cs">
+      <Link>Serialization\Json\Contracts\EnumContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\GuidContract.cs">
+      <Link>Serialization\Json\Contracts\GuidContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\NullableTypeContract.cs">
+      <Link>Serialization\Json\Contracts\NullableTypeContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\NumberContract.cs">
+      <Link>Serialization\Json\Contracts\NumberContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\ObjectContract.cs">
+      <Link>Serialization\Json\Contracts\ObjectContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\StringContract.cs">
+      <Link>Serialization\Json\Contracts\StringContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\IJsonContractResolver.cs">
+      <Link>Serialization\Json\IJsonContractResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonContract.cs">
+      <Link>Serialization\Json\JsonContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonContractErrors.cs">
+      <Link>Serialization\Json\JsonContractErrors.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonContractException.cs">
+      <Link>Serialization\Json\JsonContractException.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonContractResolver.cs">
+      <Link>Serialization\Json\JsonContractResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonConvert.cs">
+      <Link>Serialization\Json\JsonConvert.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonDeserializingState.cs">
+      <Link>Serialization\Json\JsonDeserializingState.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonFormatException.cs">
+      <Link>Serialization\Json\JsonFormatException.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonIgnoreAttribute.cs">
+      <Link>Serialization\Json\JsonIgnoreAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonPropertyAttribute.cs">
+      <Link>Serialization\Json\JsonPropertyAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonReader.cs">
+      <Link>Serialization\Json\JsonReader.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonSerializer.cs">
+      <Link>Serialization\Json\JsonSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonSerializingState.cs">
+      <Link>Serialization\Json\JsonSerializingState.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonToken.cs">
+      <Link>Serialization\Json\JsonToken.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonTokenValidator.cs">
+      <Link>Serialization\Json\JsonTokenValidator.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonWriter.cs">
+      <Link>Serialization\Json\JsonWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\JsonWriterImproved.cs">
+      <Link>Serialization\Json\JsonWriterImproved.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\SimpleStack.cs">
+      <Link>Serialization\Json\SimpleStack.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Util\ReflectionUtils.cs">
+      <Link>Util\ReflectionUtils.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

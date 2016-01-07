@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar", "src\cmstar\cmstar.csproj", "{87564CC7-CB46-4250-9F19-1CD1D145CA67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Tests", "src\cmstar.Tests\cmstar.Tests.csproj", "{7D9015FA-FBAD-4E8C-80FA-165A6138752B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Net35", "src\cmstar.Net35\cmstar.Net35.csproj", "{65645441-7FC4-4633-9BBD-754B885C6001}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Tests.Net35", "src\cmstar.Tests.Net35\cmstar.Tests.Net35.csproj", "{88990785-FF43-464B-AD75-02E07FF74692}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +25,14 @@ Global
 		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D9015FA-FBAD-4E8C-80FA-165A6138752B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65645441-7FC4-4633-9BBD-754B885C6001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65645441-7FC4-4633-9BBD-754B885C6001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65645441-7FC4-4633-9BBD-754B885C6001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65645441-7FC4-4633-9BBD-754B885C6001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88990785-FF43-464B-AD75-02E07FF74692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88990785-FF43-464B-AD75-02E07FF74692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88990785-FF43-464B-AD75-02E07FF74692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88990785-FF43-464B-AD75-02E07FF74692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

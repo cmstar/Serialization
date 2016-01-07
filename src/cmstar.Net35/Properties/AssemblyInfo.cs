@@ -1,15 +1,14 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("cmstar.Serialization.Test")]
+[assembly: AssemblyTitle("cmstar.Serialization")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("cmstar.Serialization.Test")]
+[assembly: AssemblyProduct("cmstar.Serialization.Common")]
 [assembly: AssemblyCopyright("Copyright © Eric Ruan 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8c1620cf-3907-4f44-94d0-54b1db4d0ffb")]
+[assembly: Guid("27604845-26c2-4a4c-8c45-3eb89fe5aaeb")]
 
 // Version information for an assembly consists of the following four values:
 //
