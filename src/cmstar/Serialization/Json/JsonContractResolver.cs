@@ -37,14 +37,14 @@ namespace cmstar.Serialization.Json
     public class JsonContractResolver : IJsonContractResolver
     {
         private static readonly JsonContract NullValueContract = new ObjectContract(typeof(object));
-
-        /// <summary>
-        /// An object that can be used to synchronize access the cache of JSON contracts.
-        /// </summary>
-        public readonly object SyncRoot = new object();
-
-        private readonly Dictionary<Type, JsonContract> _contractCache = new Dictionary<Type, JsonContract>();
         private bool _caseSensitive = true;
+
+#if NET35
+        private readonly Dictionary<Type, JsonContract> _contractCache = new Dictionary<Type, JsonContract>();
+#else
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract> _contractCache
+            = new System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract>();
+#endif
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonContractResolver"/>.
@@ -62,6 +62,7 @@ namespace cmstar.Serialization.Json
         /// </param>
         public JsonContractResolver(IDictionary<Type, JsonContract> contracts)
         {
+            var cache = (IDictionary<Type, JsonContract>)_contractCache;
             foreach (var c in contracts)
             {
                 if (c.Value == null)
@@ -70,7 +71,7 @@ namespace cmstar.Serialization.Json
                         "The contract in the dictionary should not be null.", "contracts");
                 }
 
-                _contractCache.Add(c.Key, c.Value);
+                cache.Add(c.Key, c.Value);
             }
         }
 
@@ -103,22 +104,20 @@ namespace cmstar.Serialization.Json
         {
             ArgAssert.NotNull(type, "type");
 
-            JsonContract contract;
-            if (_contractCache.TryGetValue(type, out contract))
-                return contract;
-
-            lock (SyncRoot)
+#if NET35
+            lock (_contractCache)
             {
-                try
-                {
-                    return DoResolve(type);
-                }
-                catch (Exception ex)
-                {
-                    var msg = string.Format("Failed on resolving the JsonContract for type {0}.", type);
-                    throw new JsonContractException(msg, ex);
-                }
+                JsonContract contract;
+                if (_contractCache.TryGetValue(type, out contract))
+                    return contract;
+
+                contract = InternalResolveContract(type);
+                _contractCache.Add(type, contract);
+                return contract;
             }
+#else
+            return _contractCache.GetOrAdd(type, InternalResolveContract);
+#endif
         }
 
         /// <summary>
@@ -129,20 +128,31 @@ namespace cmstar.Serialization.Json
         /// <returns>The instance of <see cref="JsonContract"/> for the type.</returns>
         protected virtual JsonContract DoResolve(Type type)
         {
-            var innerResolver = new InnerContractResolver(_contractCache, _caseSensitive);
+            var innerResolver = new InnerContractResolver(_caseSensitive);
             return innerResolver.ResolveContract(type);
+        }
+
+        private JsonContract InternalResolveContract(Type type)
+        {
+            try
+            {
+                return DoResolve(type);
+            }
+            catch (Exception ex)
+            {
+                var msg = string.Format("Failed on resolving the JsonContract for type {0}.", type);
+                throw new JsonContractException(msg, ex);
+            }
         }
 
         private class InnerContractResolver : IJsonContractResolver
         {
-            private readonly Dictionary<Type, JsonContract> _contractCache;
             private readonly bool _caseSensitive;
 
             private Dictionary<Type, JsonContract> _buffer;
 
-            public InnerContractResolver(Dictionary<Type, JsonContract> contractCache, bool caseSensitive)
+            public InnerContractResolver(bool caseSensitive)
             {
-                _contractCache = contractCache;
                 _caseSensitive = caseSensitive;
             }
 
@@ -153,15 +163,10 @@ namespace cmstar.Serialization.Json
 
             public JsonContract ResolveContract(Type type)
             {
-                JsonContract contract;
-                if (_contractCache.TryGetValue(type, out contract))
-                    return contract;
-
                 if (_buffer == null)
                     _buffer = new Dictionary<Type, JsonContract>();
 
-                contract = DoResolve(type);
-                _contractCache[type] = contract;
+                var contract = DoResolve(type);
                 return contract;
             }
 
