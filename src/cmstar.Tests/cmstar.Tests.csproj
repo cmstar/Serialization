@@ -50,6 +50,8 @@
     <Compile Include="Serialization\Json\Contracts\BooleanContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\ContractTestBase.cs" />
     <Compile Include="Serialization\Json\Contracts\CustomFormatDateTimeContractTests.cs" />
+    <Compile Include="Serialization\Json\Contracts\DataRowContractTests.cs" />
+    <Compile Include="Serialization\Json\Contracts\DataTableContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\DateTimeContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\DictionaryContractTests.cs" />
     <Compile Include="Serialization\Json\Contracts\EnumContractTests.cs" />

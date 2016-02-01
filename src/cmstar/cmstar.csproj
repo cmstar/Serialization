@@ -48,6 +48,8 @@
     <Compile Include="RapidReflection\Emit\PropertyAccessorGenerator.cs" />
     <Compile Include="Serialization\Formatting.cs" />
     <Compile Include="Serialization\Json\Contracts\ContractMemberCollection.cs" />
+    <Compile Include="Serialization\Json\Contracts\DataRowContract.cs" />
+    <Compile Include="Serialization\Json\Contracts\DataTableContract.cs" />
     <Compile Include="Serialization\Json\Contracts\DictionaryContract.cs" />
     <Compile Include="Serialization\Json\Contracts\GuidContract.cs" />
     <Compile Include="Serialization\Json\JsonContractErrors.cs" />

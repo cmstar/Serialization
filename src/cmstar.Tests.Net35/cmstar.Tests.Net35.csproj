@@ -57,6 +57,12 @@
     <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\CustomFormatDateTimeContractTests.cs">
       <Link>Serialization\Json\Contracts\CustomFormatDateTimeContractTests.cs</Link>
     </Compile>
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataRowContractTests.cs">
+      <Link>Serialization\Json\Contracts\DataRowContractTests.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataTableContractTests.cs">
+      <Link>Serialization\Json\Contracts\DataTableContractTests.cs</Link>
+    </Compile>
     <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DateTimeContractTests.cs">
       <Link>Serialization\Json\Contracts\DateTimeContractTests.cs</Link>
     </Compile>

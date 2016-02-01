@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using cmstar.RapidReflection.Emit;
@@ -195,6 +196,12 @@ namespace cmstar.Serialization.Json
 
                 if (type.IsSubclassOf(typeof(Enum)))
                     return new EnumContract(type);
+
+                if (type == typeof(DataRow))
+                    return new DataRowContract();
+
+                if (type == typeof(DataTable))
+                    return new DataTableContract();
 
                 //the contract for Nullable<>
                 if (ReflectionUtils.IsNullableType(type))

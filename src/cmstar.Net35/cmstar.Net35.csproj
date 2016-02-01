@@ -79,6 +79,12 @@
     <Compile Include="..\cmstar\Serialization\Json\Contracts\CustomFormatDateTimeContract.cs">
       <Link>Serialization\Json\Contracts\CustomFormatDateTimeContract.cs</Link>
     </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DataRowContract.cs">
+      <Link>Serialization\Json\Contracts\DataRowContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DataTableContract.cs">
+      <Link>Serialization\Json\Contracts\DataTableContract.cs</Link>
+    </Compile>
     <Compile Include="..\cmstar\Serialization\Json\Contracts\DateTimeContract.cs">
       <Link>Serialization\Json\Contracts\DateTimeContract.cs</Link>
     </Compile>

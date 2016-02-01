@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 using NUnit.Framework;
 using cmstar.Serialization.Json.Contracts;
@@ -48,6 +49,8 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<DateTimeContract>(resolver, typeof(DateTime));
             AssertTypeContract<EnumContract>(resolver, typeof(SaleOrderType));
             AssertTypeContract<GuidContract>(resolver, typeof(Guid));
+            AssertTypeContract<DataRowContract>(resolver, typeof(DataRow));
+            AssertTypeContract<DataTableContract>(resolver, typeof(DataTable));
 
             var contract = AssertTypeContract<NullableTypeContract>(resolver, typeof(SaleOrderPoint?));
             Assert.IsInstanceOf<ObjectContract>(contract.UnderlyingTypeContract);
