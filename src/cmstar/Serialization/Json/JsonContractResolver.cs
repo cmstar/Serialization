@@ -322,6 +322,10 @@ namespace cmstar.Serialization.Json
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var propertyInfo in propertyInfos)
                 {
+                    // ignore the indexers
+                    if (propertyInfo.GetIndexParameters().Length > 0)
+                        continue;
+
                     var memberInfoDescription = GetMemberInfoDescription(propertyInfo);
                     memberInfoDescriptions.Add(memberInfoDescription);
 

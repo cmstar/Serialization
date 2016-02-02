@@ -342,51 +342,33 @@ namespace cmstar.Serialization.Json.Contracts
     }
 
     [TestFixture]
-    public class CaseInsensitivePropertynameObjectContractTests : ContractTestBase
+    public class IndexedObjectContractTests : ContractTestBase
     {
-        private class CaseTestClass
+        private class TestClassWithIndexer
         {
-            public int number;
-            public int Number { get; set; }
-            public string LongValue { get; set; }
+            public int this[int i]
+            {
+                get { return i; }
+            }
         }
 
         protected override Type UnderlyingType
         {
-            get { return typeof(CaseTestClass); }
-        }
-
-        protected override IJsonContractResolver GetContractResolver()
-        {
-            return new JsonContractResolver { CaseSensitive = false };
+            get { return typeof(TestClassWithIndexer); }
         }
 
         [Test]
         public void WriteObject()
         {
-            var json = DoWrite(new CaseTestClass { Number = 123, number = 321, LongValue = "string" }, false);
-            Assert.AreEqual("{\"Number\":123,\"LongValue\":\"string\"}", json);
+            var json = DoWrite(new TestClassWithIndexer(), false);
+            Assert.AreEqual("{}", json);
         }
 
         [Test]
         public void ReadObject()
         {
-            var result = DoRead("{\"Number\":123,\"LongValue\":\"string\"}") as CaseTestClass;
-            CheckValues(result);
-
-            result = DoRead("{\"number\":123,\"Longvalue\":\"string\"}") as CaseTestClass;
-            CheckValues(result);
-
-            result = DoRead("{\"NumbeR\":123,\"LONGVALUE\":\"string\"}") as CaseTestClass;
-            CheckValues(result);
-        }
-
-        private void CheckValues(CaseTestClass result)
-        {
-            Assert.NotNull(result);
-            Assert.AreEqual(123, result.Number);
-            Assert.AreEqual(0, result.number);
-            Assert.AreEqual("string", result.LongValue);
+            var result = DoRead("{}") as TestClassWithIndexer;
+            Assert.IsNotNull(result);
         }
     }
 }
