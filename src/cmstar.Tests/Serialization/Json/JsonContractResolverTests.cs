@@ -51,6 +51,8 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<GuidContract>(resolver, typeof(Guid));
             AssertTypeContract<DataRowContract>(resolver, typeof(DataRow));
             AssertTypeContract<DataTableContract>(resolver, typeof(DataTable));
+            AssertTypeContract<DataRecordContract>(resolver, typeof(DataRowRecord));
+            AssertTypeContract<DbNullContract>(resolver, typeof(DBNull));
 
             var contract = AssertTypeContract<NullableTypeContract>(resolver, typeof(SaleOrderPoint?));
             Assert.IsInstanceOf<ObjectContract>(contract.UnderlyingTypeContract);

@@ -79,6 +79,9 @@
     <Compile Include="..\cmstar\Serialization\Json\Contracts\CustomFormatDateTimeContract.cs">
       <Link>Serialization\Json\Contracts\CustomFormatDateTimeContract.cs</Link>
     </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DataRecordContract.cs">
+      <Link>Serialization\Json\Contracts\DataRecordContract.cs</Link>
+    </Compile>
     <Compile Include="..\cmstar\Serialization\Json\Contracts\DataRowContract.cs">
       <Link>Serialization\Json\Contracts\DataRowContract.cs</Link>
     </Compile>
@@ -87,6 +90,9 @@
     </Compile>
     <Compile Include="..\cmstar\Serialization\Json\Contracts\DateTimeContract.cs">
       <Link>Serialization\Json\Contracts\DateTimeContract.cs</Link>
+    </Compile>
+    <Compile Include="..\cmstar\Serialization\Json\Contracts\DbNullContract.cs">
+      <Link>Serialization\Json\Contracts\DbNullContract.cs</Link>
     </Compile>
     <Compile Include="..\cmstar\Serialization\Json\Contracts\DictionaryContract.cs">
       <Link>Serialization\Json\Contracts\DictionaryContract.cs</Link>

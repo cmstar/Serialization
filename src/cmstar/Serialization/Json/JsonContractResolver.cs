@@ -203,6 +203,12 @@ namespace cmstar.Serialization.Json
                 if (type == typeof(DataTable))
                     return new DataTableContract();
 
+                if (typeof(IDataRecord).IsAssignableFrom(type))
+                    return new DataRecordContract(type);
+
+                if (type == typeof(DBNull))
+                    return new DbNullContract();
+
                 //the contract for Nullable<>
                 if (ReflectionUtils.IsNullableType(type))
                     return ResolveNullableTypeContract(type);
