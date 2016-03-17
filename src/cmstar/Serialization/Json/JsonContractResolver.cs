@@ -40,12 +40,8 @@ namespace cmstar.Serialization.Json
         private static readonly JsonContract NullValueContract = new ObjectContract(typeof(object));
         private bool _caseSensitive = true;
 
-#if NET35
-        private readonly Dictionary<Type, JsonContract> _contractCache = new Dictionary<Type, JsonContract>();
-#else
         private readonly System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract> _contractCache
             = new System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract>();
-#endif
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonContractResolver"/>.
@@ -104,21 +100,7 @@ namespace cmstar.Serialization.Json
         public JsonContract ResolveContract(Type type)
         {
             ArgAssert.NotNull(type, "type");
-
-#if NET35
-            lock (_contractCache)
-            {
-                JsonContract contract;
-                if (_contractCache.TryGetValue(type, out contract))
-                    return contract;
-
-                contract = InternalResolveContract(type);
-                _contractCache.Add(type, contract);
-                return contract;
-            }
-#else
             return _contractCache.GetOrAdd(type, InternalResolveContract);
-#endif
         }
 
         /// <summary>

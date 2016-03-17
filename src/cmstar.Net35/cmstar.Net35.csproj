@@ -172,6 +172,7 @@
     <Compile Include="..\cmstar\Util\ReflectionUtils.cs">
       <Link>Util\ReflectionUtils.cs</Link>
     </Compile>
+    <Compile Include="Net35Compact\ConcurrentDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
