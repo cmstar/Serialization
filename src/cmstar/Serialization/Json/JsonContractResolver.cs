@@ -129,7 +129,7 @@ namespace cmstar.Serialization.Json
         /// <returns>The instance of <see cref="JsonContract"/> for the type.</returns>
         protected virtual JsonContract DoResolve(Type type)
         {
-            var innerResolver = new InnerContractResolver(_caseSensitive);
+            var innerResolver = new InnerContractResolver(_contractCache, _caseSensitive);
             return innerResolver.ResolveContract(type);
         }
 
@@ -148,12 +148,14 @@ namespace cmstar.Serialization.Json
 
         private class InnerContractResolver : IJsonContractResolver
         {
+            private readonly IDictionary<Type, JsonContract> _contractCache;
             private readonly bool _caseSensitive;
 
             private Dictionary<Type, JsonContract> _buffer;
 
-            public InnerContractResolver(bool caseSensitive)
+            public InnerContractResolver(IDictionary<Type, JsonContract> contractCache, bool caseSensitive)
             {
+                _contractCache = contractCache;
                 _caseSensitive = caseSensitive;
             }
 
@@ -164,10 +166,15 @@ namespace cmstar.Serialization.Json
 
             public JsonContract ResolveContract(Type type)
             {
+                JsonContract contract;
+                if (_contractCache.TryGetValue(type, out contract))
+                    return contract;
+
                 if (_buffer == null)
                     _buffer = new Dictionary<Type, JsonContract>();
 
-                var contract = DoResolve(type);
+                contract = DoResolve(type);
+                _contractCache[type] = contract;
                 return contract;
             }
 
