@@ -142,24 +142,35 @@ namespace cmstar.Serialization.Json.Contracts
                     _enumNameMap.Add(names[i], values.GetValue(i));
                 }
             }
-#endif
 
             public bool TryParse(string s, out object value)
             {
-#if NET35
-                return _enumNameMap.TryGetValue(s, out value);
+                if (_enumNameMap.TryGetValue(s, out value))
+                    return true;
+
+                int i;
+                if (int.TryParse(s, out i))
+                {
+                    value = Enum.ToObject(typeof(T), i);
+                    return true;
+                }
+
+                return false;
+            }
 #else
+            public bool TryParse(string s, out object value)
+            {
                 T v;
                 if (Enum.TryParse(s, out v))
                 {
                     value = v;
                     return true;
                 }
-#endif
 
                 value = null;
                 return false;
             }
+#endif
         }
     }
 }

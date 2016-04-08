@@ -66,6 +66,19 @@ namespace cmstar.Serialization.Json.Contracts
         }
 
         [Test]
+        public void ReadStringIndex()
+        {
+            var result = DoRead("'0'");
+            Assert.AreEqual(SaleOrderType.Normal, result);
+
+            result = DoRead("'1'");
+            Assert.AreEqual(SaleOrderType.Emergency, result);
+
+            result = DoRead("'-35'");
+            Assert.AreEqual((SaleOrderType)(-35), result);
+        }
+
+        [Test]
         public void ReadIllegalIndex()
         {
             Assert.Throws<JsonContractException>(() => DoRead("1.5"));
