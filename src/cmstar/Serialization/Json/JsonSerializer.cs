@@ -93,28 +93,12 @@ namespace cmstar.Serialization.Json
         /// <returns>The JSON string.</returns>
         public string Serialize(object obj, Formatting formatting)
         {
-            var stringBuilder = new StringBuilder(256);
-            using (var indentedTextWriter = new IndentedTextWriter(new StringWriter(stringBuilder)))
+            var buffer = new StringBuilder(256);
+            using (var jsonWriter = CreateFormattedJsonWriter(buffer, formatting))
             {
-                switch (formatting)
-                {
-                    case Formatting.None:
-                        indentedTextWriter.NewLine = string.Empty;
-                        indentedTextWriter.IndentMark = string.Empty;
-                        break;
-
-                    case Formatting.Multiple:
-                        indentedTextWriter.IndentMark = string.Empty;
-                        break;
-                }
-
-                using (var jsonWriter = new JsonWriterImproved(indentedTextWriter))
-                {
-                    jsonWriter.AutoCloseInternalWriter = false;
-                    Serialize(obj, jsonWriter);
-
-                    return stringBuilder.ToString();
-                }
+                jsonWriter.AutoCloseInternalWriter = false;
+                Serialize(obj, jsonWriter);
+                return buffer.ToString();
             }
         }
 
@@ -181,6 +165,106 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
+        /// Format a JSON using the given <see cref="Formatting"/>.
+        /// </summary>
+        /// <param name="json">The JSON.</param>
+        /// <param name="formatting">The value of <see cref="Formatting"/>.</param>
+        /// <returns>The formatted JSON.</returns>
+        public string Format(string json, Formatting formatting = Formatting.Indented)
+        {
+            var buffer = new StringBuilder(256);
+            using (var jsonWriter = CreateFormattedJsonWriter(buffer, formatting))
+            {
+                CopyTo(json, jsonWriter);
+                return buffer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Format a JSON using the given indent-mark and new-line character(s).
+        /// </summary>
+        /// <param name="json">The JSON.</param>
+        /// <param name="indentMark">
+        /// The indent-mark.
+        /// If the given value is null, <see cref="IndentedTextWriter.DefaultIndentMark"/> is to be used.
+        /// </param>
+        /// <param name="newLine">
+        /// The new-line character(s).
+        /// If the given value is null, <see cref="Environment.NewLine"/> is to be used.
+        /// </param>
+        /// <returns>The formatted JSON.</returns>
+        public string Format(string json, string indentMark = null, string newLine = null)
+        {
+            var buffer = new StringBuilder(256);
+            using (var jsonWriter = CreateFormattedJsonWriter(buffer, indentMark, newLine))
+            {
+                CopyTo(json, jsonWriter);
+                return buffer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Parse a JSON string and write the result into the specified <see cref="JsonWriter"/>.
+        /// </summary>
+        /// <param name="json">The JSON.</param>
+        /// <param name="jsonWriter">The <see cref="JsonWriter"/>.</param>
+        public void CopyTo(string json, JsonWriter jsonWriter)
+        {
+            using (var jsonReader = new JsonReader(new StringReader(json)))
+            {
+                while (jsonReader.Read())
+                {
+                    switch (jsonReader.Token)
+                    {
+                        case JsonToken.ObjectStart:
+                            jsonWriter.WriteObjectStart();
+                            break;
+
+                        case JsonToken.ObjectEnd:
+                            jsonWriter.WriteObjectEnd();
+                            break;
+
+                        case JsonToken.ArrayStart:
+                            jsonWriter.WriteArrayStart();
+                            break;
+
+                        case JsonToken.ArrayEnd:
+                            jsonWriter.WriteArrayEnd();
+                            break;
+
+                        case JsonToken.PropertyName:
+                            jsonWriter.WritePropertyName((string)jsonReader.Value);
+                            break;
+
+                        case JsonToken.NullValue:
+                            jsonWriter.WriteNullValue();
+                            break;
+
+                        case JsonToken.StringValue:
+                            jsonWriter.WriteStringValue((string)jsonReader.Value);
+                            break;
+
+                        case JsonToken.NumberValue:
+                            jsonWriter.WriteNumberValue((double)jsonReader.Value);
+                            break;
+
+                        case JsonToken.BooleanValue:
+                            jsonWriter.WriteBooleanValue((bool)jsonReader.Value);
+                            break;
+
+                        case JsonToken.UndefinedValue:
+                            jsonWriter.WriteUndefinedValue();
+                            break;
+
+                        case JsonToken.Comma:
+                            jsonWriter.WriteComma();
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Deserializes a string which represents a JSON to a CLR object.
         /// </summary>
         /// <typeparam name="T">The type of the CLR object.</typeparam>
@@ -242,6 +326,38 @@ namespace cmstar.Serialization.Json
         {
             var contract = ContractResolver.ResolveContract(type);
             return contract.Read(jsonReader, state);
+        }
+
+        private JsonWriterImproved CreateFormattedJsonWriter(StringBuilder buffer, Formatting formatting)
+        {
+            switch (formatting)
+            {
+                case Formatting.None:
+                    return CreateFormattedJsonWriter(buffer, string.Empty, string.Empty);
+
+                case Formatting.Multiple:
+                    return CreateFormattedJsonWriter(buffer, string.Empty, null);
+
+                default:
+                    return CreateFormattedJsonWriter(buffer, null, null);
+            }
+        }
+
+        private JsonWriterImproved CreateFormattedJsonWriter(StringBuilder buffer, string indentMark, string newLine)
+        {
+            var indentedTextWriter = new IndentedTextWriter(new StringWriter(buffer));
+
+            if (indentMark != null)
+            {
+                indentedTextWriter.IndentMark = indentMark;
+            }
+
+            if (newLine != null)
+            {
+                indentedTextWriter.NewLine = newLine;
+            }
+
+            return new JsonWriterImproved(indentedTextWriter);
         }
     }
 }

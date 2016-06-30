@@ -33,6 +33,57 @@ namespace cmstar.Serialization.Json
     public class JsonSerializerTests
     {
         [Test]
+        public void Format()
+        {
+            var input =
+@"{A:'value', 'B':123
+, ""C"":  null, 'D':
+undefined
+}";
+
+            // Indented
+            var expected =
+@"{
+    ""A"":""value"",
+    ""B"":123,
+    ""C"":null,
+    ""D"":undefined
+}";
+            var output = JsonSerializer.Default.Format(input, Formatting.Indented);
+            Assert.AreEqual(expected, output);
+
+            // Multiple
+            expected =
+@"{
+""A"":""value"",
+""B"":123,
+""C"":null,
+""D"":undefined
+}";
+            output = JsonSerializer.Default.Format(input, Formatting.Multiple);
+            Assert.AreEqual(expected, output);
+
+            // None
+            expected = @"{""A"":""value"",""B"":123,""C"":null,""D"":undefined}";
+            output = JsonSerializer.Default.Format(input, Formatting.None);
+            Assert.AreEqual(expected, output);
+        }
+
+        [Test]
+        public void FormatCustom()
+        {
+            var input =
+@"{A:'value', 'B':123
+, ""C"":  null, 'D':
+undefined
+}";
+
+            var expected = "{\t  \"A\":\"value\",\t  \"B\":123,\t  \"C\":null,\t  \"D\":undefined\t}";
+            var output = JsonSerializer.Default.Format(input, "  ", "\t");
+            Assert.AreEqual(expected, output);
+        }
+
+        [Test]
         public void SerializeDictionaryWithObjectValues()
         {
             var order = SaleOrder.CreateExample();
@@ -179,6 +230,7 @@ namespace cmstar.Serialization.Json
 
         private class C
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public C Other { get; set; }
         }
 
@@ -189,13 +241,6 @@ namespace cmstar.Serialization.Json
             var writer = new JsonWriterImproved(new IndentedTextWriter(new StringWriter(sb)));
             s.Serialize(obj, writer);
             return sb.ToString();
-        }
-
-        private T DoDeserialize<T>(string json)
-        {
-            var s = new JsonSerializer();
-            var result = s.Deserialize<T>(json);
-            return result;
         }
     }
 }
