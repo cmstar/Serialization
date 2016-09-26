@@ -7,8 +7,8 @@
     <ProjectGuid>{65645441-7FC4-4633-9BBD-754B885C6001}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cmstar.Net35</RootNamespace>
-    <AssemblyName>cmstar.Net35</AssemblyName>
+    <RootNamespace>cmstar</RootNamespace>
+    <AssemblyName>cmstar.Serialization</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
