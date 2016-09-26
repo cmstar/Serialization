@@ -29,6 +29,11 @@ using System.Reflection;
 using cmstar.RapidReflection.Emit;
 using cmstar.Serialization.Json.Contracts;
 using cmstar.Util;
+#if NET35
+using cmstar.Net35Compact;
+#else
+using System.Collections.Concurrent;
+#endif
 
 namespace cmstar.Serialization.Json
 {
@@ -40,8 +45,8 @@ namespace cmstar.Serialization.Json
         private static readonly JsonContract NullValueContract = new ObjectContract(typeof(object));
         private bool _caseSensitive = true;
 
-        private readonly System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract> _contractCache
-            = new System.Collections.Concurrent.ConcurrentDictionary<Type, JsonContract>();
+        private readonly ConcurrentDictionary<Type, JsonContract> _contractCache
+            = new ConcurrentDictionary<Type, JsonContract>();
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonContractResolver"/>.

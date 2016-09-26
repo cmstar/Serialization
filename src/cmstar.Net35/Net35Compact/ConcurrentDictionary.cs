@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace System.Collections.Concurrent
+namespace cmstar.Net35Compact
 {
     /// <summary>
     /// Represents a thread-safe collection of key-value pairs that can be accessed by multiple threads concurrently.
