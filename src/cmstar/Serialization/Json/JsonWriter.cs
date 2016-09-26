@@ -280,29 +280,10 @@ namespace cmstar.Serialization.Json
                 char c = value[i];
                 string escaped = null;
 
-                if (c == _quoteChar)
-                {
-                    escaped = @"\" + _quoteChar;
-                }
-                else
+                if (c < 32 || c == 127) // ascii controllers
                 {
                     switch (c)
                     {
-                        case '/':
-                            if (_escapeSolidus)
-                            {
-                                escaped = @"\/";
-                            }
-                            else
-                            {
-                                len++;
-                            }
-                            break;
-
-                        case '\\':
-                            escaped = @"\\";
-                            break;
-
                         case '\n':
                             escaped = @"\n";
                             break;
@@ -324,9 +305,25 @@ namespace cmstar.Serialization.Json
                             break;
 
                         default:
-                            len++;
+                            escaped = @"\u00" + ((byte)c).ToString("x2");
                             break;
                     }
+                }
+                else if (c == _quoteChar)
+                {
+                    escaped = @"\" + _quoteChar;
+                }
+                else if (c == '\\')
+                {
+                    escaped = @"\\";
+                }
+                else if (c == '/' && _escapeSolidus)
+                {
+                    escaped = @"\/";
+                }
+                else
+                {
+                    len++;
                 }
 
                 i++;

@@ -106,6 +106,13 @@ namespace cmstar.Serialization.Json
                 w.WriteStringValue(@"\/\/");
                 Assert.AreEqual(@"""\\/\\/""", sb.ToString());
             }
+
+            sb = new StringBuilder();
+            using (var w = CreateWriterWithoutFormatting(sb))
+            {
+                w.WriteStringValue("\u000b \u0016 \u0001 \u007f"); // VT SYN SOH DEL
+                Assert.AreEqual(@"""\u000b \u0016 \u0001 \u007f""", sb.ToString());
+            }
         }
 
         [Test]
