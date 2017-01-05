@@ -27,8 +27,8 @@ namespace cmstar.Serialization.Json.Contracts
             dt.Columns.Add("colDecimal", typeof(decimal));
 
             dt.Rows.Add(1, "value", 'a', 0.009M);
-            dt.Rows.Add(-9999, string.Empty, 'g', 16M);
-            dt.Rows.Add(0, "line1\nline2", 'b', 0M);
+            dt.Rows.Add(-9999, string.Empty, null, 16M);
+            dt.Rows.Add(0, "line1\nline2", 'b', DBNull.Value);
 
             var json = DoWrite(dt, true);
             var expected =
@@ -41,13 +41,13 @@ namespace cmstar.Serialization.Json.Contracts
     },{
         ""colInt"":-9999,
         ""colString"":"""",
-        ""colChar"":""g"",
+        ""colChar"":null,
         ""colDecimal"":16
     },{
         ""colInt"":0,
         ""colString"":""line1\nline2"",
         ""colChar"":""b"",
-        ""colDecimal"":0
+        ""colDecimal"":null
     }
 ]";
             Assert.AreEqual(expected, json);

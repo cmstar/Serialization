@@ -34,9 +34,17 @@ namespace cmstar.Serialization.Json.Contracts
                 }
 
                 writer.WritePropertyName(record.GetName(i));
+
                 var val = record.GetValue(i);
-                var contract = contractResolver.ResolveContract(val);
-                contract.Write(writer, state, contractResolver, val);
+                if (val == null || val == DBNull.Value)
+                {
+                    writer.WriteNullValue();
+                }
+                else
+                {
+                    var contract = contractResolver.ResolveContract(val);
+                    contract.Write(writer, state, contractResolver, val);
+                }
             }
 
             writer.WriteObjectEnd();
