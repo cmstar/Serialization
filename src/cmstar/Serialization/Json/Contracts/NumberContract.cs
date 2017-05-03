@@ -32,6 +32,10 @@ namespace cmstar.Serialization.Json.Contracts
     {
         private readonly TypeCode _typeCode;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="NumberContract"/>.
+        /// </summary>
+        /// <param name="type">The type of the number.</param>
         public NumberContract(Type type)
             : base(type)
         {
@@ -124,13 +128,19 @@ namespace cmstar.Serialization.Json.Contracts
                 case JsonToken.NumberValue:
                     value = (double)reader.Value;
                     break;
-
                 case JsonToken.StringValue:
                     var s = (string)reader.Value;
                     if (!double.TryParse(s, out value))
                         throw JsonContractErrors.CannotConverType(s, typeof(double), null);
-
                     break;
+
+                case JsonToken.NullValue:
+                    if (state.NullValueHandling == JsonDeserializationNullValueHandling.AsDefaultValue)
+                    {
+                        value = 0;
+                        break;
+                    }
+                    throw JsonContractErrors.CannotConverType(null, typeof(double), null);
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(JsonToken.NumberValue, reader.Token);

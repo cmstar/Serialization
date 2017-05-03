@@ -12,6 +12,11 @@ namespace cmstar.Serialization.Json.Contracts
             get { return typeof(DataTable); }
         }
 
+        protected override bool CanRead
+        {
+            get { return false; }
+        }
+
         protected override bool SupportsNullValue
         {
             get { return false; }

@@ -26,10 +26,13 @@ using System;
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// The contract for boolean values.
+    /// The contract for booleans.
     /// </summary>
     public class BooleanContract : JsonContract
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="BooleanContract"/>.
+        /// </summary>
         public BooleanContract()
             : base(typeof(bool))
         {
@@ -63,6 +66,12 @@ namespace cmstar.Serialization.Json.Contracts
                     {
                         throw JsonContractErrors.CannotConverType(reader.Value, typeof(bool), ex);
                     }
+
+                case JsonToken.NullValue:
+                    if (state.NullValueHandling == JsonDeserializationNullValueHandling.AsDefaultValue)
+                        return false;
+
+                    throw JsonContractErrors.CannotConverType(null, typeof(double), null);
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(JsonToken.BooleanValue, reader.Token);

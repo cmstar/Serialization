@@ -269,10 +269,14 @@ namespace cmstar.Serialization.Json
         /// </summary>
         /// <typeparam name="T">The type of the CLR object.</typeparam>
         /// <param name="json">The JSON.</param>
+        /// <param name="state">
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
+        /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
-        public T Deserialize<T>(string json)
+        public T Deserialize<T>(string json, JsonDeserializingState state = null)
         {
-            return (T)Deserialize(json, typeof(T));
+            return (T)Deserialize(json, typeof(T), state);
         }
 
         /// <summary>
@@ -282,10 +286,14 @@ namespace cmstar.Serialization.Json
         /// <typeparam name="T">The type of the CLR object.</typeparam>
         /// <param name="json">The JSON.</param>
         /// <param name="template">The template object for the deserialization.</param>
+        /// <param name="state">
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
+        /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
-        public T Deserialize<T>(string json, T template) where T : class
+        public T DeserializeByTemplate<T>(string json, T template, JsonDeserializingState state = null) where T : class
         {
-            return (T)Deserialize(json, typeof(T));
+            return (T)Deserialize(json, typeof(T), state);
         }
 
         /// <summary>
@@ -293,10 +301,14 @@ namespace cmstar.Serialization.Json
         /// </summary>
         /// <param name="json">The JSON.</param>
         /// <param name="type">The type of the CLR object.</param>
+        /// <param name="state">
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
+        /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
-        public object Deserialize(string json, Type type)
+        public object Deserialize(string json, Type type, JsonDeserializingState state = null)
         {
-            return Deserialize(new StringReader(json), type);
+            return Deserialize(new StringReader(json), type, state);
         }
 
         /// <summary>
@@ -304,15 +316,19 @@ namespace cmstar.Serialization.Json
         /// </summary>
         /// <param name="textReader">The <see cref="TextReader"/> from which to read the JSON.</param>
         /// <param name="type">The type of the CLR object.</param>
+        /// <param name="state">
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
+        /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
-        public object Deserialize(TextReader textReader, Type type)
+        public object Deserialize(TextReader textReader, Type type, JsonDeserializingState state = null)
         {
             ArgAssert.NotNull(textReader, "reader");
             ArgAssert.NotNull(type, "type");
 
             using (var jsonReader = new JsonReader(textReader))
             {
-                return DoDeserialize(jsonReader, type, new JsonDeserializingState());
+                return DoDeserialize(jsonReader, type, state ?? JsonDeserializingState.Default);
             }
         }
 

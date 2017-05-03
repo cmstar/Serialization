@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Text;
+using cmstar.Util;
 using NUnit.Framework;
 
 namespace cmstar.Serialization.Json.Contracts
@@ -33,7 +34,22 @@ namespace cmstar.Serialization.Json.Contracts
     {
         protected abstract Type UnderlyingType { get; }
 
+        protected virtual bool CanRead
+        {
+            get { return true; }
+        }
+
+        protected virtual bool CanWrite
+        {
+            get { return true; }
+        }
+
         protected virtual bool SupportsNullValue
+        {
+            get { return true; }
+        }
+
+        protected virtual bool CanReadNullAsDefaultValue
         {
             get { return true; }
         }
@@ -41,29 +57,42 @@ namespace cmstar.Serialization.Json.Contracts
         [Test]
         public void WriteNull()
         {
+            if (!CanWrite)
+                return;
+
             if (SupportsNullValue)
             {
                 var result = DoWrite(null);
                 Assert.AreEqual("null", result);
-            }
-            else
-            {
-                Assert.Pass();
             }
         }
 
         [Test]
         public void ReadNull()
         {
+            if (!CanRead)
+                return;
+
             if (SupportsNullValue)
             {
                 var result = DoRead("null");
                 Assert.IsNull(result);
             }
-            else
+        }
+
+        [Test]
+        public void ReadNullAsDefaultValue()
+        {
+            if (!CanRead || !CanReadNullAsDefaultValue)
+                return;
+
+            var state = new JsonDeserializingState
             {
-                Assert.Pass();
-            }
+                NullValueHandling = JsonDeserializationNullValueHandling.AsDefaultValue
+            };
+            var result = DoRead("null", state);
+            var expected = ReflectionUtils.GetDefaultValue(UnderlyingType);
+            Assert.AreEqual(expected, result);
         }
 
         protected virtual JsonContract GetContarct()
@@ -102,7 +131,7 @@ namespace cmstar.Serialization.Json.Contracts
 
         protected object DoRead(string json)
         {
-            return DoRead(json, new JsonDeserializingState());
+            return DoRead(json, JsonDeserializingState.Default);
         }
 
         protected object DoRead(string json, JsonDeserializingState state)

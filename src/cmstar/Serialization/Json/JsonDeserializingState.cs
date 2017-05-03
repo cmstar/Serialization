@@ -21,11 +21,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace cmstar.Serialization.Json
 {
     /// <summary>
@@ -33,5 +28,33 @@ namespace cmstar.Serialization.Json
     /// </summary>
     public class JsonDeserializingState
     {
+        /// <summary>
+        /// The default instance of the <seealso cref="JsonDeserializingState"/> class.
+        /// Change the values of the members to customize the default behavior of the deserialization.
+        /// </summary>
+        public static readonly JsonDeserializingState Default = new JsonDeserializingState();
+
+        /// <summary>
+        /// How to treat JSON null.
+        /// </summary>
+        public JsonDeserializationNullValueHandling NullValueHandling = JsonDeserializationNullValueHandling.AsIs;
+    }
+
+    /// <summary>
+    /// How to treat JSON null.
+    /// </summary>
+    public enum JsonDeserializationNullValueHandling
+    {
+        /// <summary>
+        /// Keeps the original value.
+        /// Deserialize a JSON null to a value type (e.g. int) may lead to an error. 
+        /// </summary>
+        AsIs,
+
+        /// <summary>
+        /// A JSON null can be treated as the default value for value-types.
+        /// For a number it is 0; for a date it is 0001-1-1; etc.
+        /// </summary>
+        AsDefaultValue
     }
 }

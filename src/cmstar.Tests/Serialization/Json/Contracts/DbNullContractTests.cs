@@ -15,6 +15,11 @@ namespace cmstar.Serialization.Json.Contracts
             get { return false; }
         }
 
+        protected override bool CanReadNullAsDefaultValue
+        {
+            get { return false; }
+        }
+
         [Test]
         public void Write()
         {

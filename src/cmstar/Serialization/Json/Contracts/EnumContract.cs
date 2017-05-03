@@ -102,7 +102,6 @@ namespace cmstar.Serialization.Json.Contracts
                             value, UnderlyingType);
                         throw new JsonContractException(msg);
                     }
-
                     return Enum.ToObject(UnderlyingType, (int)value);
 
                 case JsonToken.StringValue:
@@ -113,8 +112,13 @@ namespace cmstar.Serialization.Json.Contracts
                             "Cannot cast the string value \"{0}\" to enumeration {1}.", reader.Value, UnderlyingType);
                         throw new JsonContractException(msg);
                     }
-
                     return enumValue;
+
+                case JsonToken.NullValue:
+                    if (state.NullValueHandling == JsonDeserializationNullValueHandling.AsDefaultValue)
+                        return Enum.ToObject(UnderlyingType, 0);
+
+                    throw JsonContractErrors.CannotConverType(null, UnderlyingType, null);
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(reader.Token);

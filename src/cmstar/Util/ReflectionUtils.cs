@@ -1,11 +1,19 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+#if NET35
+using cmstar.Net35Compact;
+#else
+using System.Collections.Concurrent;
+#endif
 
 namespace cmstar.Util
 {
     public static class ReflectionUtils
     {
+        private static readonly ConcurrentDictionary<Type, object> DefaultValues
+            = new ConcurrentDictionary<Type, object>();
+
         public static bool IsNullable(Type t)
         {
             ArgAssert.NotNull(t, "t");
@@ -94,6 +102,21 @@ namespace cmstar.Util
                 return false;
 
             return type.Name.Contains("AnonymousType");
+        }
+
+        public static object GetDefaultValue(Type type)
+        {
+            if (!type.IsValueType)
+                return null;
+
+            object value;
+            if (!DefaultValues.TryGetValue(type, out value))
+            {
+                value = Activator.CreateInstance(type);
+                DefaultValues.TryAdd(type, value);
+            }
+
+            return value;
         }
     }
 }

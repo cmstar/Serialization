@@ -55,6 +55,12 @@ namespace cmstar.Serialization.Json.Contracts
         {
             reader.Read();
 
+            if (reader.Token == JsonToken.NullValue
+                && state.NullValueHandling == JsonDeserializationNullValueHandling.AsDefaultValue)
+            {
+                return new DateTime();
+            }
+
             if (reader.Token != JsonToken.StringValue)
                 throw JsonContractErrors.UnexpectedToken(JsonToken.StringValue, reader.Token);
 

@@ -200,8 +200,21 @@ undefined
             var template = new { Foo = "foooo", Bar = 3.1415926 };
             var json = "{\"Foo\":\"foooo\",\"Bar\":3.1415926}";
             var s = new JsonSerializer();
-            var result = s.Deserialize(json, template);
+            var result = s.DeserializeByTemplate(json, template);
             Assert.AreEqual(template, result);
+        }
+
+        [Test]
+        public void SerializeWithCustomState()
+        {
+            var json = "{ Level: null, Quantity: 3 }";
+            var state = new JsonDeserializingState
+            {
+                NullValueHandling = JsonDeserializationNullValueHandling.AsDefaultValue
+            };
+            var result = JsonSerializer.Default.Deserialize<SaleOrderPoint>(json, state);
+            var expected = new SaleOrderPoint { Level = 0, Quantity = 3 };
+            Assert.AreEqual(expected, result);
         }
 
         [Test]

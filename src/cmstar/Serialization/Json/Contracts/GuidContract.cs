@@ -25,8 +25,14 @@ using System;
 
 namespace cmstar.Serialization.Json.Contracts
 {
+    /// <summary>
+    /// The contract for <see cref="Guid"/>.
+    /// </summary>
     public class GuidContract : JsonContract
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="GuidContract"/>.
+        /// </summary>
         public GuidContract()
             : base(typeof(Guid))
         {
@@ -45,6 +51,12 @@ namespace cmstar.Serialization.Json.Contracts
         protected override object DoRead(JsonReader reader, JsonDeserializingState state)
         {
             reader.Read();
+
+            if (reader.Token == JsonToken.NullValue
+                && state.NullValueHandling == JsonDeserializationNullValueHandling.AsDefaultValue)
+            {
+                return new Guid();
+            }
 
             if (reader.Token != JsonToken.StringValue)
                 throw JsonContractErrors.UnexpectedToken(JsonToken.StringValue, reader.Token);
