@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar", "src\cmstar\cmstar.csproj", "{87564CC7-CB46-4250-9F19-1CD1D145CA67}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Net35", "src\cmstar.Net35\cmstar.Net35.csproj", "{65645441-7FC4-4633-9BBD-754B885C6001}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmstar.Tests.Net35", "src\cmstar.Tests.Net35\cmstar.Tests.Net35.csproj", "{88990785-FF43-464B-AD75-02E07FF74692}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net35", "net35", "{C540A6A6-2355-4CF7-BD2F-86039E2592DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net45", "net45", "{5C94A246-7A96-4782-9A32-F881CCE78F8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +40,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{87564CC7-CB46-4250-9F19-1CD1D145CA67} = {5C94A246-7A96-4782-9A32-F881CCE78F8A}
+		{7D9015FA-FBAD-4E8C-80FA-165A6138752B} = {5C94A246-7A96-4782-9A32-F881CCE78F8A}
+		{65645441-7FC4-4633-9BBD-754B885C6001} = {C540A6A6-2355-4CF7-BD2F-86039E2592DB}
+		{88990785-FF43-464B-AD75-02E07FF74692} = {C540A6A6-2355-4CF7-BD2F-86039E2592DB}
 	EndGlobalSection
 EndGlobal
