@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("cmstar.Serialization.Common")]
-[assembly: AssemblyCopyright("Copyright © Eric Ruan 2016")]
+[assembly: AssemblyCopyright("Copyright © Eric Ruan 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
