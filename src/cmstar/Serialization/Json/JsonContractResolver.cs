@@ -109,6 +109,20 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
+        /// Specify the <see cref="JsonContract"/> for the given type.
+        /// If there's already a contract for the type, it will be replaced.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="contract">The instance of <see cref="JsonContract"/>.</param>
+        public void RegisterContract(Type type, JsonContract contract)
+        {
+            ArgAssert.NotNull(type, nameof(type));
+            ArgAssert.NotNull(contract, nameof(contract));
+
+            _contractCache.AddOrUpdate(type, contract, (k, v) => contract);
+        }
+
+        /// <summary>
         /// Performs the contract resolving.
         /// Override this method to customize the resolving.
         /// </summary>
@@ -133,7 +147,7 @@ namespace cmstar.Serialization.Json
             }
         }
 
-        private class InnerContractResolver : IJsonContractResolver
+        private class InnerContractResolver
         {
             private readonly IDictionary<Type, JsonContract> _contractCache;
             private readonly bool _caseSensitive;
@@ -144,11 +158,6 @@ namespace cmstar.Serialization.Json
             {
                 _contractCache = contractCache;
                 _caseSensitive = caseSensitive;
-            }
-
-            public JsonContract ResolveContract(object obj)
-            {
-                return obj == null ? NullValueContract : ResolveContract(obj.GetType());
             }
 
             public JsonContract ResolveContract(Type type)

@@ -49,10 +49,6 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<DateTimeContract>(resolver, typeof(DateTime));
             AssertTypeContract<EnumContract>(resolver, typeof(SaleOrderType));
             AssertTypeContract<GuidContract>(resolver, typeof(Guid));
-            AssertTypeContract<DataRowContract>(resolver, typeof(DataRow));
-            AssertTypeContract<DataTableContract>(resolver, typeof(DataTable));
-            AssertTypeContract<DataRecordContract>(resolver, typeof(DataRowRecord));
-            AssertTypeContract<DbNullContract>(resolver, typeof(DBNull));
 
             var contract = AssertTypeContract<NullableTypeContract>(resolver, typeof(SaleOrderPoint?));
             Assert.IsInstanceOf<ObjectContract>(contract.UnderlyingTypeContract);
@@ -350,6 +346,22 @@ namespace cmstar.Serialization.Json
 
             Assert.IsTrue(contractB.Members.TryGetValue("RefC", out member));
             Assert.AreEqual(contractC, member.Contract);
+        }
+
+        [Test]
+        public void TestRegisterContract()
+        {
+            // newly created
+            var resolver = new JsonContractResolver();
+            resolver.RegisterContract(typeof(int), new DateTimeContract());
+            AssertTypeContract<DateTimeContract>(resolver, typeof(int));
+
+            // replacement
+            resolver = new JsonContractResolver();
+            AssertTypeContract<NumberContract>(resolver, typeof(int));
+
+            resolver.RegisterContract(typeof(int), new StringContract());
+            AssertTypeContract<StringContract>(resolver, typeof(int));
         }
 
         private void AssertContractDEFromB(ObjectContract contractB)

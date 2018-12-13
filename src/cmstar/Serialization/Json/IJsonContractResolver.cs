@@ -43,5 +43,13 @@ namespace cmstar.Serialization.Json
         /// <param name="type">The type to resolve.</param>
         /// <returns>The instance of <see cref="JsonContract"/> for the type.</returns>
         JsonContract ResolveContract(Type type);
+
+        /// <summary>
+        /// Specify the <see cref="JsonContract"/> for the given type.
+        /// If there's already a contract for the type, it will be replaced.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="contract">The instance of <see cref="JsonContract"/>.</param>
+        void RegisterContract(Type type, JsonContract contract);
     }
 }
