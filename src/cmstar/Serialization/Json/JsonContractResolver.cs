@@ -181,7 +181,7 @@ namespace cmstar.Serialization.Json
                     return contract;
 
                 if (type == typeof(string) || type == typeof(char))
-                    return new StringContract();
+                    return new StringContract(type);
 
                 if (type == typeof(bool))
                     return new BooleanContract();

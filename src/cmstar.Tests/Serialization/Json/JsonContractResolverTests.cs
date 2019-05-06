@@ -24,7 +24,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Reflection;
 using NUnit.Framework;
 using cmstar.Serialization.Json.Contracts;
@@ -44,6 +43,7 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<NumberContract>(resolver, typeof(float));
             AssertTypeContract<NumberContract>(resolver, typeof(decimal));
             AssertTypeContract<NumberContract>(resolver, typeof(ushort));
+            AssertTypeContract<StringContract>(resolver, typeof(char));
             AssertTypeContract<StringContract>(resolver, typeof(string));
             AssertTypeContract<BooleanContract>(resolver, typeof(bool));
             AssertTypeContract<DateTimeContract>(resolver, typeof(DateTime));
@@ -136,6 +136,7 @@ namespace cmstar.Serialization.Json
             memberContractTypes["Name"] = typeof(StringContract);
             memberContractTypes["OrderDate"] = typeof(DateTimeContract);
             memberContractTypes["OrderType"] = typeof(EnumContract);
+            memberContractTypes["TypeFlag"] = typeof(StringContract);
             memberContractTypes["Mobile"] = typeof(StringContract);
             memberContractTypes["Remark"] = typeof(StringContract);
             memberContractTypes["Attributes"] = typeof(StringContract);
@@ -360,7 +361,7 @@ namespace cmstar.Serialization.Json
             resolver = new JsonContractResolver();
             AssertTypeContract<NumberContract>(resolver, typeof(int));
 
-            resolver.RegisterContract(typeof(int), new StringContract());
+            resolver.RegisterContract(typeof(int), new StringContract(typeof(string)));
             AssertTypeContract<StringContract>(resolver, typeof(int));
         }
 

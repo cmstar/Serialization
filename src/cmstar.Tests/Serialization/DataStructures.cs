@@ -123,6 +123,7 @@ namespace cmstar.Serialization
                 OrderId = 1234567890123456,
                 OrderDate = new DateTime(2012, 5, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                 OrderType = SaleOrderType.WaitNotifying,
+                TypeFlag = 'D',
                 Rate = 0.56F,
                 Remark = "\"Hello\r\nWorld!\"",
                 OrderPoint = new SaleOrderPoint { Level = 2, Quantity = 335 },
@@ -141,6 +142,7 @@ namespace cmstar.Serialization
         public string Name { get; set; }
         public DateTime OrderDate { get; set; }
         public SaleOrderType OrderType { get; set; }
+        public char TypeFlag { get; set; }
         public string Mobile { get; set; }
         public string Remark { get; set; }
         public string Attributes { get; set; }
@@ -159,6 +161,7 @@ namespace cmstar.Serialization
             if (other.OrderId != OrderId
                 || other.Name != Name
                 || other.OrderType != OrderType
+                || other.TypeFlag != TypeFlag
                 || other.Mobile != Mobile
                 || other.Remark != Remark
                 || other.Attributes != Attributes

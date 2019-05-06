@@ -109,6 +109,48 @@ namespace cmstar.Serialization.Json.Contracts
     }
 
     [TestFixture]
+    public class CharListArrayContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType
+        {
+            get { return typeof(List<char>); }
+        }
+
+        [Test]
+        public void WriteList()
+        {
+            var result = DoWrite(new List<char> { 'a', 'b', '\t', '\0' }, true);
+            var expected =
+                @"[
+    ""a"",
+    ""b"",
+    ""\t"",
+    ""\u0000""
+]";
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public void ReadList()
+        {
+            var json =
+                @"[
+    ""a"",
+    ""b"",
+    ""\t""
+]";
+            var result = DoRead(json);
+            var castResult = result as List<char>;
+
+            Assert.NotNull(castResult);
+            Assert.AreEqual(3, castResult.Count);
+            Assert.AreEqual('a', castResult[0]);
+            Assert.AreEqual('b', castResult[1]);
+            Assert.AreEqual('\t', castResult[2]);
+        }
+    }
+
+    [TestFixture]
     public class StringListArrayContractTests : ContractTestBase
     {
         protected override Type UnderlyingType

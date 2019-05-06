@@ -90,4 +90,51 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual("false", result);
         }
     }
+
+    [TestFixture]
+    public class CharStringContractTests : ContractTestBase
+    {
+        protected override Type UnderlyingType => typeof(char);
+
+        protected override bool SupportsNullValue => false;
+
+        protected override bool CanReadNullAsDefaultValue => false;
+
+        [Test]
+        public void Write()
+        {
+            var json = DoWrite('a');
+            Assert.AreEqual("\"a\"", json);
+
+            json = DoWrite('\t');
+            Assert.AreEqual("\"\\t\"", json);
+        }
+
+        [Test]
+        public void Read()
+        {
+            var result = DoRead(@"'\t'");
+            Assert.AreEqual('\t', result);
+
+            result = DoRead("\"a\"");
+            Assert.AreEqual('a', result);
+
+            result = DoRead("3");
+            Assert.AreEqual('3', result);
+
+            result = DoRead("'\\u0005'");
+            Assert.AreEqual((char)5, result);
+        }
+
+        [Test]
+        public void ReadInvalidValue()
+        {
+            Assert.Throws<JsonContractException>(()=> DoRead("\"\""));
+            Assert.Throws<JsonContractException>(()=> DoRead("'abc'"));
+            Assert.Throws<JsonContractException>(()=> DoRead("123"));
+            Assert.Throws<JsonContractException>(()=> DoRead("-2"));
+            Assert.Throws<JsonContractException>(()=> DoRead("null"));
+            Assert.Throws<JsonContractException>(()=> DoRead("true"));
+        }
+    }
 }

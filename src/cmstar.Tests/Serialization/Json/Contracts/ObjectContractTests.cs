@@ -42,6 +42,7 @@ namespace cmstar.Serialization.Json.Contracts
     ""Name"":""Someone"",
     ""OrderDate"":""\/Date(1337472000000)\/"",
     ""OrderType"":2,
+    ""TypeFlag"":""D"",
     ""Mobile"":""1234567890"",
     ""Remark"":""\""Hello\r\nWorld!\"""",
     ""Attributes"":null,

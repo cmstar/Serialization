@@ -21,6 +21,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
+
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
@@ -28,11 +30,31 @@ namespace cmstar.Serialization.Json.Contracts
     /// </summary>
     public class StringContract : JsonContract
     {
-        public StringContract()
-            : base(typeof(string))
+        private readonly bool _underlyingTypeIsChar;
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="StringContract"/>.
+        /// </summary>
+        /// <param name="type">The underlying type. Can be <see cref="string"/> or <see cref="char"/>.</param>
+        public StringContract(Type type)
+            : base(type)
         {
+            if (type == typeof(string))
+            {
+                _underlyingTypeIsChar = false;
+            }
+            else if (type == typeof(char))
+            {
+                _underlyingTypeIsChar = true;
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"The type {type} is not supported in this contract.", nameof(type));
+            }
         }
 
+        /// <inheritdoc />
         protected override void DoWrite(
             JsonWriter writer,
             JsonSerializingState state,
@@ -50,27 +72,45 @@ namespace cmstar.Serialization.Json.Contracts
             }
         }
 
+        /// <inheritdoc />
         protected override object DoRead(JsonReader reader, JsonDeserializingState state)
         {
             reader.Read();
 
+            string result;
             switch (reader.Token)
             {
                 case JsonToken.StringValue:
-                    return reader.Value;
+                    result = (string)reader.Value;
+                    break;
 
                 case JsonToken.NullValue:
                 case JsonToken.UndefinedValue:
-                    return null;
+                    result = null;
+                    break;
 
                 case JsonToken.NumberValue:
-                    return reader.Value.ToString();
+                    result = reader.Value.ToString();
+                    break;
 
                 case JsonToken.BooleanValue:
-                    return ((bool)reader.Value) ? "true" : "false";
+                    result = (bool)reader.Value ? "true" : "false";
+                    break;
 
                 default:
                     throw JsonContractErrors.UnexpectedToken(reader.Token);
+            }
+
+            if (!_underlyingTypeIsChar)
+                return result;
+
+            try
+            {
+                return Convert.ToChar(result);
+            }
+            catch (Exception ex)
+            {
+                throw JsonContractErrors.CannotConverType(result, typeof(char), ex);
             }
         }
     }
