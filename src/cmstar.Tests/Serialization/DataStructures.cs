@@ -79,8 +79,7 @@ namespace cmstar.Serialization
                 return false;
             }
 
-            if (TimeZone.CurrentTimeZone.ToUniversalTime(other.OrderDate)
-                != TimeZone.CurrentTimeZone.ToUniversalTime(OrderDate))
+            if (other.OrderDate.ToUniversalTime() != OrderDate.ToUniversalTime())
             {
                 return false;
             }
@@ -172,8 +171,7 @@ namespace cmstar.Serialization
                 return false;
             }
 
-            if (TimeZone.CurrentTimeZone.ToUniversalTime(other.OrderDate)
-                != TimeZone.CurrentTimeZone.ToUniversalTime(OrderDate))
+            if (other.OrderDate.ToUniversalTime() != OrderDate.ToUniversalTime())
             {
                 return false;
             }

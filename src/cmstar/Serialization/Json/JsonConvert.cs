@@ -84,7 +84,7 @@ namespace cmstar.Serialization.Json
             stringBuilder.Append(jsTicks);
 
             //write the timezone
-            var offset = TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
+            var offset = new DateTimeOffset(dateTime).Offset;
             if (offset.Ticks != 0)
             {
                 stringBuilder.Append((offset.Ticks > 0) ? '+' : '-');
@@ -185,7 +185,7 @@ namespace cmstar.Serialization.Json
                     return false;
             }
 
-            dateTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(clrTicks, DateTimeKind.Utc));
+            dateTime = new DateTime(clrTicks, DateTimeKind.Utc).ToLocalTime();
             return true;
         }
 
@@ -209,7 +209,7 @@ namespace cmstar.Serialization.Json
             return true;
         }
 
-        //Ignores the prefix an suffix in the string:
+        //Ignores the prefix and suffix in the string:
         ///\Date(1xxxxxxxxxxxx+yyyy)\
         //      |start          |end
         //or:

@@ -61,32 +61,32 @@ namespace cmstar.Serialization.Json.Contracts
             var result = DoRead("\"\\/Date(1359116793123)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);
             var expected = new DateTime(2013, 1, 25, 12, 26, 33, 123, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
             result = DoRead("\"\\/Date(1331792735152)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
             result = DoRead("\"\\/Date(1331792735152)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
             result = DoRead("\"\\/Date(218418145765)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(1976, 12, 2, 23, 42, 25, 765, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
             result = DoRead("\"/Date(218418145765+0400)/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(1976, 12, 2, 23, 42, 25, 765, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
             result = DoRead("\"/Date(218418145765-0800)/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(1976, 12, 2, 23, 42, 25, 765, DateTimeKind.Utc);
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime((DateTime)result));
+            Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
         }
 
         [Test]

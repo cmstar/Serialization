@@ -52,27 +52,27 @@ namespace cmstar.Serialization.Json
             var dateString = @"/Date(1331792735152)/";
             var expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime(datetime));
+            Assert.AreEqual(expected, datetime.ToUniversalTime());
 
             dateString = @"Date(1331792735152)";
             expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime(datetime));
+            Assert.AreEqual(expected, datetime.ToUniversalTime());
 
             dateString = @"/Date(-62135596800000)/";
             expected = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime(datetime));
+            Assert.AreEqual(expected, datetime.ToUniversalTime());
 
             dateString = @"/Date(1331763935152+0800)/";
             expected = new DateTime(2012, 3, 14, 22, 25, 35, 152, DateTimeKind.Utc);
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime(datetime));
+            Assert.AreEqual(expected, datetime.ToUniversalTime());
 
             dateString = @"Date(1331763935152-0600)";
             expected = new DateTime(2012, 3, 14, 22, 25, 35, 152, DateTimeKind.Utc);
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, TimeZone.CurrentTimeZone.ToUniversalTime(datetime));
+            Assert.AreEqual(expected, datetime.ToUniversalTime());
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace cmstar.Serialization.Json
 
             DateTime datetimeConvertBack;
             Assert.IsTrue(JsonConvert.TryParseJsonDateTimeValue(jsonTime, out datetimeConvertBack));
-            var expected = TimeZone.CurrentTimeZone.ToLocalTime(datetime);
+            var expected = datetime.ToLocalTime();
             Assert.AreEqual(expected, datetimeConvertBack);
         }
     }
