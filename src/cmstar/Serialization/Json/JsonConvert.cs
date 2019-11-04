@@ -84,7 +84,11 @@ namespace cmstar.Serialization.Json
             stringBuilder.Append(jsTicks);
 
             //write the timezone
-            var offset = new DateTimeOffset(dateTime).Offset;
+#if NETSTANDARD
+            var offset = TimeZoneInfo.Local.GetUtcOffset(dateTime);
+#else
+            var offset = TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
+#endif
             if (offset.Ticks != 0)
             {
                 stringBuilder.Append((offset.Ticks > 0) ? '+' : '-');
