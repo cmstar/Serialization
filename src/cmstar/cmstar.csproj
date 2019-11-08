@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--Build options-->
-    <TargetFrameworks>net46;net35;</TargetFrameworks>
+    <TargetFrameworks>net46;net35;netstandard2.0;</TargetFrameworks>
     <RootNamespace>cmstar</RootNamespace>
     <AssemblyName>cmstar.Serialization</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -25,6 +25,10 @@
     <DefineConstants>NET35;</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+  </PropertyGroup>
+
   <!--net46-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
@@ -39,6 +43,13 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+
+  <!--netstandard2.0-->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

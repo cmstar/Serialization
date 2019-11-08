@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\cmstar.Tests\Serialization\DataStructures.cs" Link="Serialization\DataStructures.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\IndentedTextWriterTests.cs" Link="Serialization\IndentedTextWriterTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\ArrayContractTests.cs" Link="Serialization\Json\Contracts\ArrayContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\BooleanContractTests.cs" Link="Serialization\Json\Contracts\BooleanContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\ContractTestBase.cs" Link="Serialization\Json\Contracts\ContractTestBase.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\CustomFormatDateTimeContractTests.cs" Link="Serialization\Json\Contracts\CustomFormatDateTimeContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataRecordContractTests.cs" Link="Serialization\Json\Contracts\DataRecordContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataRowContractTests.cs" Link="Serialization\Json\Contracts\DataRowContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataRowRecord.cs" Link="Serialization\Json\Contracts\DataRowRecord.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DataTableContractTests.cs" Link="Serialization\Json\Contracts\DataTableContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DateTimeContractTests.cs" Link="Serialization\Json\Contracts\DateTimeContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DbNullContractTests.cs" Link="Serialization\Json\Contracts\DbNullContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\DictionaryContractTests.cs" Link="Serialization\Json\Contracts\DictionaryContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\EnumContractTests.cs" Link="Serialization\Json\Contracts\EnumContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\GuidContractTests.cs" Link="Serialization\Json\Contracts\GuidContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\NullableTypeContractTests.cs" Link="Serialization\Json\Contracts\NullableTypeContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\NumberContractTests.cs" Link="Serialization\Json\Contracts\NumberContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\ObjectContractTests.cs" Link="Serialization\Json\Contracts\ObjectContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\Contracts\StringContractTests.cs" Link="Serialization\Json\Contracts\StringContractTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonContractResolverTests.cs" Link="Serialization\Json\JsonContractResolverTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonConvertTests.cs" Link="Serialization\Json\JsonConvertTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonReaderTests.cs" Link="Serialization\Json\JsonReaderTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonSerializerTests.cs" Link="Serialization\Json\JsonSerializerTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonWriterImprovedTests.cs" Link="Serialization\Json\JsonWriterImprovedTests.cs" />
+    <Compile Include="..\cmstar.Tests\Serialization\Json\JsonWriterTests.cs" Link="Serialization\Json\JsonWriterTests.cs" />
+    <Compile Include="..\cmstar.Tests\Util\ReflectionUtilsTests.cs" Link="Util\ReflectionUtilsTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\cmstar\cmstar.csproj" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+  </ItemGroup>
+
+</Project>
