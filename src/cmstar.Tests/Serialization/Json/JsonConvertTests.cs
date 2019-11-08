@@ -34,14 +34,14 @@ namespace cmstar.Serialization.Json
         {
             var datetime = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
             var result = JsonConvert.ToJsonDateTimeValue(datetime, true);
-            Assert.AreEqual(@"/Date(1331792735152)/", result);
+            Assert.AreEqual(@"/Date(1331792735152+0000)/", result);
 
             result = JsonConvert.ToJsonDateTimeValue(datetime, false);
-            Assert.AreEqual(@"Date(1331792735152)", result);
+            Assert.AreEqual(@"Date(1331792735152+0000)", result);
 
             datetime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             result = JsonConvert.ToJsonDateTimeValue(datetime, true);
-            Assert.AreEqual(@"/Date(-62135596800000)/", result);
+            Assert.AreEqual(@"/Date(-62135596800000+0000)/", result);
         }
 
         [Test]

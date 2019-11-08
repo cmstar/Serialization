@@ -44,15 +44,15 @@ namespace cmstar.Serialization.Json.Contracts
         {
             var date = new DateTime(2013, 1, 25, 12, 26, 33, 123, DateTimeKind.Utc);
             var json = DoWrite(date);
-            Assert.AreEqual("\"\\/Date(1359116793123)\\/\"", json);
+            Assert.AreEqual("\"\\/Date(1359116793123+0000)\\/\"", json);
 
             date = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
             json = DoWrite(date);
-            Assert.AreEqual("\"\\/Date(1331792735152)\\/\"", json);
+            Assert.AreEqual("\"\\/Date(1331792735152+0000)\\/\"", json);
 
             date = new DateTime(1976, 12, 2, 23, 42, 25, 765, DateTimeKind.Utc);
             json = DoWrite(date);
-            Assert.AreEqual("\"\\/Date(218418145765)\\/\"", json);
+            Assert.AreEqual("\"\\/Date(218418145765+0000)\\/\"", json);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace cmstar.Serialization.Json.Contracts
             expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
             Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());
 
-            result = DoRead("\"\\/Date(218418145765)\\/\"");
+            result = DoRead("\"\\/Date(218418145765+0000)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);
             expected = new DateTime(1976, 12, 2, 23, 42, 25, 765, DateTimeKind.Utc);
             Assert.AreEqual(expected, ((DateTime)result).ToUniversalTime());

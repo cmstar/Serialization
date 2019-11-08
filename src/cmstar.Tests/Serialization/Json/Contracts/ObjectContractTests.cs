@@ -40,7 +40,7 @@ namespace cmstar.Serialization.Json.Contracts
 @"{
     ""OrderId"":1234567890123456,
     ""Name"":""Someone"",
-    ""OrderDate"":""\/Date(1337472000000)\/"",
+    ""OrderDate"":""\/Date(1337472000000+0000)\/"",
     ""OrderType"":2,
     ""TypeFlag"":""D"",
     ""Mobile"":""1234567890"",
