@@ -120,9 +120,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cmstar.Net35\cmstar.Net35.csproj">
-      <Project>{65645441-7fc4-4633-9bbd-754b885c6001}</Project>
-      <Name>cmstar.Net35</Name>
+    <ProjectReference Include="..\cmstar\cmstar.csproj">
+      <Project>{87564cc7-cb46-4250-9f19-1cd1d145ca67}</Project>
+      <Name>cmstar</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

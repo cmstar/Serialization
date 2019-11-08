@@ -1,101 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{87564CC7-CB46-4250-9F19-1CD1D145CA67}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <!--Build options-->
+    <TargetFrameworks>net46;net35;</TargetFrameworks>
     <RootNamespace>cmstar</RootNamespace>
     <AssemblyName>cmstar.Serialization</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591;1701;1702;3021</NoWarn>
+
+    <!--Package info-->
+    <Copyright>Copyright ©cmstar 2013</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <!--Compiling contants-->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\cmstar.Serialization.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
+    <DefineConstants>NET35;</DefineConstants>
+  </PropertyGroup>
+
+  <!--net46-->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="RapidReflection\Emit\ConstructorInvokerGenerator.cs" />
-    <Compile Include="RapidReflection\Emit\EmitUtils.cs" />
-    <Compile Include="RapidReflection\Emit\FieldAccessorGenerator.cs" />
-    <Compile Include="RapidReflection\Emit\MethodInvokerGenerator.cs" />
-    <Compile Include="RapidReflection\Emit\OpCodeExtention.cs" />
-    <Compile Include="RapidReflection\Emit\PropertyAccessorGenerator.cs" />
-    <Compile Include="Serialization\Formatting.cs" />
-    <Compile Include="Serialization\Json\Contracts\ContractMemberCollection.cs" />
-    <Compile Include="Serialization\Json\Contracts\DataRecordContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\DataRowContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\DataTableContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\DbNullContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\DictionaryContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\GuidContract.cs" />
-    <Compile Include="Serialization\Json\JsonContractErrors.cs" />
-    <Compile Include="Serialization\Json\JsonContractException.cs" />
-    <Compile Include="Serialization\Json\JsonDeserializingState.cs" />
-    <Compile Include="Serialization\Json\JsonFormatException.cs" />
-    <Compile Include="Serialization\Json\JsonContractResolver.cs" />
-    <Compile Include="Serialization\Json\Contracts\ContractMemberInfo.cs" />
-    <Compile Include="Serialization\Json\Contracts\CustomFormatDateTimeContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\EnumContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\NullableTypeContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\BooleanContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\DateTimeContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\ArrayContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\StringContract.cs" />
-    <Compile Include="Serialization\Json\JsonConvert.cs" />
-    <Compile Include="Serialization\Json\JsonIgnoreAttribute.cs" />
-    <Compile Include="Serialization\Json\JsonSerializingState.cs" />
-    <Compile Include="Serialization\Json\JsonTokenValidator.cs" />
-    <Compile Include="Serialization\Json\JsonWriter.cs" />
-    <Compile Include="Serialization\Json\IJsonContractResolver.cs" />
-    <Compile Include="Serialization\Json\JsonContract.cs" />
-    <Compile Include="Serialization\Json\JsonPropertyAttribute.cs" />
-    <Compile Include="Serialization\Json\JsonReader.cs" />
-    <Compile Include="Serialization\Json\JsonSerializer.cs" />
-    <Compile Include="Serialization\Json\JsonToken.cs" />
-    <Compile Include="Serialization\Json\JsonWriterImproved.cs" />
-    <Compile Include="Serialization\Json\Contracts\NumberContract.cs" />
-    <Compile Include="Serialization\Json\Contracts\ObjectContract.cs" />
-    <Compile Include="Serialization\IndentedTextWriter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ArgAssert.cs" />
-    <Compile Include="Serialization\Json\SimpleStack.cs" />
-    <Compile Include="Util\ReflectionUtils.cs" />
+
+  <!--net35-->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

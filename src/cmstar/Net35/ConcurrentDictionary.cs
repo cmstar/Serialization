@@ -1,8 +1,9 @@
-﻿using System;
+﻿#if NET35
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace cmstar.Net35Compact
+namespace cmstar.Serialization.Net35
 {
     /// <summary>
     /// Represents a thread-safe collection of key-value pairs that can be accessed by multiple threads concurrently.
@@ -381,3 +382,4 @@ namespace cmstar.Net35Compact
         }
     }
 }
+#endif

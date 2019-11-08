@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 #if NET35
-using cmstar.Net35Compact;
+using cmstar.Serialization.Net35;
 #else
 using System.Collections.Concurrent;
 #endif

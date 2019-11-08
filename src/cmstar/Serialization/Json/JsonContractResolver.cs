@@ -30,7 +30,7 @@ using cmstar.RapidReflection.Emit;
 using cmstar.Serialization.Json.Contracts;
 using cmstar.Util;
 #if NET35
-using cmstar.Net35Compact;
+using cmstar.Serialization.Net35;
 #else
 using System.Collections.Concurrent;
 #endif
