@@ -164,7 +164,7 @@ namespace cmstar.Serialization.Net35
                 var newValue = valueFactory(key);
 
                 // the factory method may set the value, so...
-                // recheck after the invokation of the factory method
+                // recheck after the invocation of the factory method
                 if (_dictionary.TryGetValue(key, out oldValue))
                     return oldValue;
 
@@ -226,7 +226,7 @@ namespace cmstar.Serialization.Net35
                     newValue = addValueFactory(key);
 
                     // the factory method may set the value, so...
-                    // recheck after the invokation of the factory method
+                    // recheck after the invocation of the factory method
                     if (_dictionary.TryGetValue(key, out oldValue))
                         goto updateValue;
 

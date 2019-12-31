@@ -43,9 +43,9 @@ namespace cmstar.Serialization.Json.Contracts
 
         /// <summary>
         /// Initializes a new instance of <see cref="ArrayContract"/>
-        /// with the type of the colletion.
+        /// with the type of the collection.
         /// </summary>
-        /// <param name="type">The type of the colletion.</param>
+        /// <param name="type">The type of the collection.</param>
         public ArrayContract(Type type)
             : base(type)
         {
@@ -94,9 +94,9 @@ namespace cmstar.Serialization.Json.Contracts
                 {
                     _collectionCreator = CreateTypeInstance;
 
-                    // check if the type implementes ICollection<>, while deserializing, elements are 
+                    // check if the type implements ICollection<>, while deserializing, elements are 
                     // appended to the collection using the 'Add' method, which is defined in 
-                    // the ICollection<> interface; if the type only implementes IEnumerable<>, it
+                    // the ICollection<> interface; if the type only implements IEnumerable<>, it
                     // can not be deserialized except the collection is empty
                     _canAppendElement = ReflectionUtils.GetGenericArguments(type, GenericArrayTypeDefinition) != null;
                 }

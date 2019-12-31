@@ -69,7 +69,7 @@ namespace cmstar.Serialization.Json
         /// the exception was thrown.
         /// </param>
         /// <param name="lastToken">
-        /// The lastest <see cref="JsonToken"/> before the <paramref name="currentToken"/>.
+        /// The last <see cref="JsonToken"/> before the <paramref name="currentToken"/>.
         /// </param>
         /// <param name="containerToken">
         /// The <see cref="JsonToken"/> represents the JSON container in which 
@@ -98,7 +98,7 @@ namespace cmstar.Serialization.Json
         /// the exception was thrown.
         /// </param>
         /// <param name="lastToken">
-        /// The lastest <see cref="JsonToken"/> before the <paramref name="currentToken"/>.
+        /// The last <see cref="JsonToken"/> before the <paramref name="currentToken"/>.
         /// </param>
         /// <param name="containerToken">
         /// The <see cref="JsonToken"/> represents the JSON container in which 
@@ -117,13 +117,13 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Gets the line number where the format error was found in the JSON.
-        /// Returns -1 if not specfied.
+        /// Returns -1 if not specified.
         /// </summary>
         public int LineNumber { get; private set; }
 
         /// <summary>
         /// Gets the column number where the format error was found in the JSON.
-        /// Returns -1 if not specfied.
+        /// Returns -1 if not specified.
         /// </summary>
         public int ColumnNumber { get; private set; }
 
@@ -135,7 +135,7 @@ namespace cmstar.Serialization.Json
         public JsonToken CurrentToken { get; private set; }
 
         /// <summary>
-        /// Gets or sets the lastest <see cref="JsonToken"/> before the <see cref="CurrentToken"/>.
+        /// Gets or sets the last <see cref="JsonToken"/> before the <see cref="CurrentToken"/>.
         /// Returns <see cref="JsonToken.None"/> if not specified.
         /// </summary>
         public JsonToken LastToken { get; private set; }

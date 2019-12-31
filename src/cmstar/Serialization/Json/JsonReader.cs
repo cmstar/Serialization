@@ -47,7 +47,7 @@ namespace cmstar.Serialization.Json
         /// and specified the internal instance of <see cref="TextReader"/>.
         /// </summary>
         /// <param name="textReader">
-        /// The instance of <see cref="TextReader"/> whith the JSON text is read from.
+        /// The instance of <see cref="TextReader"/> which the JSON text is read from.
         /// </param>
         public JsonReader(TextReader textReader)
         {
@@ -107,7 +107,7 @@ namespace cmstar.Serialization.Json
         /// <c>NULL</c> for <see cref="JsonToken.NullValue"/> and <see cref="JsonToken.UndefinedValue"/>.
         /// 
         /// If the <see cref="Token"/> property is <see cref="JsonToken.PropertyName"/>,
-        /// the value is the propery name (a string).
+        /// the value is the property name (a string).
         ///  
         /// In other case, the value has no meaning.
         /// </remarks>
@@ -133,7 +133,7 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Try to determind the next <see cref="JsonToken"/> in the Json
+        /// Try to determine the next <see cref="JsonToken"/> in the Json
         /// without changing current <see cref="JsonToken"/> and value.
         /// </summary>
         /// <returns>

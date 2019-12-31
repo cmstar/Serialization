@@ -30,8 +30,8 @@ using cmstar.Util;
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// The <see cref="JsonContract"/> for objects or stucts.
-    /// The contract maps propertys in JSON from/to propertys/fields of CLR objects.
+    /// The <see cref="JsonContract"/> for objects or structs.
+    /// The contract maps properties in JSON from/to propertys/fields of CLR objects.
     /// </summary>
     public class ObjectContract : JsonContract
     {
@@ -40,7 +40,7 @@ namespace cmstar.Serialization.Json.Contracts
         private readonly Func<object[], object> _anonymousInstanceCreator;
         private readonly bool _underlyingTypeIsAnonymous;
         private readonly Dictionary<string, IndexType> _constructorArgumentIndexTypes;
-
+        
         /// <summary>
         /// Initializes a new instance of <see cref="ObjectContract"/>
         /// with the given underlying type.
@@ -84,7 +84,7 @@ namespace cmstar.Serialization.Json.Contracts
         }
 
         /// <summary>
-        /// Gets the colleciton of <see cref="ContractMemberInfo"/> which describes
+        /// Gets the collection of <see cref="ContractMemberInfo"/> which describes
         /// how to serialize the properties or fields of the underlying type.
         /// </summary>
         public ContractMemberCollection Members
@@ -104,7 +104,7 @@ namespace cmstar.Serialization.Json.Contracts
                 return;
             }
 
-            //try serialize memebers of derived types
+            // try serialize members of derived types
             var objType = obj.GetType();
             if (objType != UnderlyingType)
             {
@@ -286,7 +286,7 @@ namespace cmstar.Serialization.Json.Contracts
             return instance;
         }
 
-        //keeps the index and type of an pararmeter of the type constructor
+        // keeps the index and type of an parameter of the type constructor
         private class IndexType : IEqualityComparer<IndexType>
         {
             public int Index;

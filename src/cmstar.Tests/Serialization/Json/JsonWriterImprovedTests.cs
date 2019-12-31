@@ -55,7 +55,7 @@ namespace cmstar.Serialization.Json
                 Console.WriteLine(sb.ToString());
             }
 
-            //embeded array
+            // embedded array
             sb = new StringBuilder();
             using (var w = CreateWriterWithoutFormatting(sb))
             {
@@ -140,7 +140,7 @@ namespace cmstar.Serialization.Json
         }
 
         [Test]
-        public void WriteEmbededArray()
+        public void WriteEmbeddedArray()
         {
             var sb = new StringBuilder();
             var w = CreateWriterWithFormattingIndented(sb);

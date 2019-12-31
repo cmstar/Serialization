@@ -31,24 +31,24 @@ using cmstar.Util;
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// The contract for dictonaries.
+    /// The contract for dictionaries.
     /// It maps the key-value pairs in the dictionary to JSON properties.
     /// </summary>
     public class DictionaryContract : JsonContract
     {
         /// <summary>
-        /// The type definition for generic dictionries.
+        /// The type definition for generic dictionaries.
         /// </summary>
         public static readonly Type GenericDictionaryTypeDefinition = typeof(IDictionary<,>);
 
         /// <summary>
-        /// The type definition for non-generic dictionries.
+        /// The type definition for non-generic dictionaries.
         /// </summary>
         public static readonly Type DictionaryTypeDefinition = typeof(IDictionary);
 
         private readonly Type _keyType; //the type of the dictionary keys
         private readonly Type _valueType; //the type of the dictionary values
-        private readonly Func<object> _dictionaryCreator; //medthod for creating an instance of the dictionary
+        private readonly Func<object> _dictionaryCreator; // method for creating an instance of the dictionary
         private readonly IDictionaryManager _dictionaryManager;
         private readonly bool _isGenericDictionary;
         private TypeConverter _keyConverter;

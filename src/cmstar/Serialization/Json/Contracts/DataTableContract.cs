@@ -5,7 +5,7 @@ namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
     /// The contract for <see cref="DataTable"/>.
-    /// Treat the whole table as a colleciton of <see cref="DataRow"/>s,
+    /// Treat the whole table as a collection of <see cref="DataRow"/>s,
     /// and each <see cref="DataRow"/> as a POCO.
     /// </summary>
     public class DataTableContract : JsonContract

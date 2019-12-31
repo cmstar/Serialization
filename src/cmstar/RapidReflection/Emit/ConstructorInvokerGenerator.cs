@@ -73,7 +73,7 @@ namespace cmstar.RapidReflection.Emit
         /// <paramref name="constructorInfo"/> is null.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// The declaring type of the construcor is abstract.
+        /// The declaring type of the constructor is abstract.
         /// </exception>
         public static Func<object[], object> CreateDelegate(ConstructorInfo constructorInfo)
         {
@@ -99,7 +99,7 @@ namespace cmstar.RapidReflection.Emit
         /// <paramref name="constructorInfo"/> is null.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// The declaring type of the construcor is abstract.
+        /// The declaring type of the constructor is abstract.
         /// </exception>
         public static Func<object[], object> CreateDelegate(ConstructorInfo constructorInfo, bool validateArguments)
         {
@@ -130,13 +130,13 @@ namespace cmstar.RapidReflection.Emit
             {
                 var lableCheckArgumentsLength = il.DefineLabel();
 
-                // if (arguments == null) throw new ArgumentNullExcpeiton("arguments");
+                // if (arguments == null) throw new ArgumentNullException("arguments");
                 il.Ldarg_0();
                 il.Brtrue_S(lableCheckArgumentsLength);
 
                 il.ThrowArgumentsNullExcpetion("arguments");
 
-                // if (arguments.Length < $(args.Length)) throw new ArgumentExcpeiton(msg, "arguments");
+                // if (arguments.Length < $(args.Length)) throw new ArgumentNullException(msg, "arguments");
                 il.MarkLabel(lableCheckArgumentsLength);
                 il.Ldarg_0();
                 il.Ldlen();

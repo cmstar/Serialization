@@ -66,7 +66,7 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Indicates whether to escape the soliduses('/') in strings (to '\/').
+        /// Indicates whether to escape the solidi('/') in strings (to '\/').
         /// The default value is <c>true</c>.
         /// </summary>
         public bool EscapeSolidus

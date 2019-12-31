@@ -52,10 +52,10 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Initializes a new instance of <see cref="JsonSerializer"/>
-        /// with the given implemntation of <see cref="IJsonContractResolver"/>.
+        /// with the given implementation of <see cref="IJsonContractResolver"/>.
         /// </summary>
         /// <param name="contractResolver">
-        /// The implemntation of <see cref="IJsonContractResolver"/> which is used for
+        /// The implementation of <see cref="IJsonContractResolver"/> which is used for
         /// resolving <see cref="JsonContract"/>s for objects.
         /// </param>
         public JsonSerializer(IJsonContractResolver contractResolver)
@@ -270,7 +270,7 @@ namespace cmstar.Serialization.Json
         /// <typeparam name="T">The type of the CLR object.</typeparam>
         /// <param name="json">The JSON.</param>
         /// <param name="state">
-        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the deserialization.
         /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
         /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
@@ -287,7 +287,7 @@ namespace cmstar.Serialization.Json
         /// <param name="json">The JSON.</param>
         /// <param name="template">The template object for the deserialization.</param>
         /// <param name="state">
-        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the deserialization.
         /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
         /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
@@ -302,7 +302,7 @@ namespace cmstar.Serialization.Json
         /// <param name="json">The JSON.</param>
         /// <param name="type">The type of the CLR object.</param>
         /// <param name="state">
-        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the deserialization.
         /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
         /// </param>
         /// <returns>The object deserialized from the JSON.</returns>
@@ -317,7 +317,7 @@ namespace cmstar.Serialization.Json
         /// <param name="textReader">The <see cref="TextReader"/> from which to read the JSON.</param>
         /// <param name="type">The type of the CLR object.</param>
         /// <param name="state">
-        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the desialization.
+        /// Specify the instance of <seealso cref="JsonDeserializingState"/> for the deserialization.
         /// If <c>null</c> is given, <seealso cref="JsonDeserializingState.Default"/> will be used.
         /// </param>
         /// <returns>The object deserialized from the JSON.</returns>

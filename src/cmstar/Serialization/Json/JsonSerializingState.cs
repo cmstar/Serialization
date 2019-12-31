@@ -34,7 +34,7 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Gets or sets a value that indicates whether to check for 
-        /// the cycle reference during serailizing.
+        /// the cycle reference during serializing.
         /// </summary>
         public bool CheckCycleReference { get; set; }
 

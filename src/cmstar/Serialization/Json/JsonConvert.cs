@@ -67,7 +67,7 @@ namespace cmstar.Serialization.Json
         /// <param name="wrappedInSlashes">
         /// Indicates whether to wrap the datetime value in a pair of slashes.
         /// If <c>true</c>, the datetime value will be in this format:'/Date(1xxxxxxxxxxxx+yyyy)/';
-        /// otherwise, no prefix and surfix:'Date(1xxxxxxxxxxxx+yyyy)'.
+        /// otherwise, no prefix and suffix:'Date(1xxxxxxxxxxxx+yyyy)'.
         /// </param>
         /// <returns>A string represents a datetime value in a JSON.</returns>
         public static string ToJsonDateTimeValue(DateTime dateTime, bool wrappedInSlashes)

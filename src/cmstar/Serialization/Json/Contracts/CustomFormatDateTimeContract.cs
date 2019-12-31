@@ -26,7 +26,7 @@ using System;
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// An extention of <see cref="DateTimeContract"/> that allows to specify
+    /// An extension of <see cref="DateTimeContract"/> that allows to specify
     /// the format for serializing the date.
     /// </summary>
     public class CustomFormatDateTimeContract : DateTimeContract

@@ -94,7 +94,7 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Read the JSON represents a intance of the <see cref="UnderlyingType"/> from
+        /// Read the JSON represents a instance of the <see cref="UnderlyingType"/> from
         /// the <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">
@@ -104,7 +104,7 @@ namespace cmstar.Serialization.Json
         /// A instance of <see cref="JsonDeserializingState"/> that may contains some 
         /// options for deserializing.
         /// </param>
-        /// <returns>An intance of the <see cref="UnderlyingType"/>.</returns>
+        /// <returns>An instance of the <see cref="UnderlyingType"/>.</returns>
         public object Read(JsonReader reader, JsonDeserializingState state)
         {
             ArgAssert.NotNull(reader, "reader");
@@ -146,7 +146,7 @@ namespace cmstar.Serialization.Json
         /// A instance of <see cref="JsonDeserializingState"/> that may contains some 
         /// options for deserializing.
         /// </param>
-        /// <returns>An intance of the <see cref="UnderlyingType"/>.</returns>
+        /// <returns>An instance of the <see cref="UnderlyingType"/>.</returns>
         protected abstract object DoRead(JsonReader reader, JsonDeserializingState state);
 
         /// <summary>

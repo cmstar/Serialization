@@ -151,7 +151,7 @@ namespace cmstar.Serialization.Json.Contracts
         public void WriteAndReadObject()
         {
             //since the property order in the JSON is not absolute,
-            //we just serialize the object then deserialize and comapare
+            //we just serialize the object then deserialize and compare
             //the original object with the deserialized result
             var example = CreateExample();
             var json = DoWrite(example, true);
