@@ -76,58 +76,58 @@ namespace cmstar.Serialization.Json
             {
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ObjectStart, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 AssertPosition(r, 1, 5);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.PropertyName, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual("string", r.Value);
                 AssertPosition(r, 2, 10);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.StringValue, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual("s", r.Value);
                 AssertPosition(r, 2, 14);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.Comma, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 AssertPosition(r, 2, 15);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.PropertyName, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual("$number", r.Value);
                 AssertPosition(r, 2, 29);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.NumberValue, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual(double.NegativeInfinity, r.Value);
                 AssertPosition(r, 3, 10);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.Comma, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 AssertPosition(r, 3, 13);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.PropertyName, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual("null_prop", r.Value);
                 AssertPosition(r, 4, 13);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.NullValue, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
                 Assert.AreEqual(null, r.Value);
                 AssertPosition(r, 4, 17);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ObjectEnd, r.Token);
-                Assert.AreEqual(JsonToken.None, r.Containter);
+                Assert.AreEqual(JsonToken.None, r.Container);
                 AssertPosition(r, 4, 18);
 
                 Assert.IsFalse(r.Read());
@@ -142,7 +142,7 @@ namespace cmstar.Serialization.Json
             {
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ObjectStart, r.Token);
-                Assert.AreEqual(JsonToken.ObjectStart, r.Containter);
+                Assert.AreEqual(JsonToken.ObjectStart, r.Container);
 
                 Assert.Throws<JsonFormatException>(() => r.Read());
             }
@@ -254,42 +254,42 @@ namespace cmstar.Serialization.Json
             {
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayStart, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayStart, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayEnd, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.Comma, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayStart, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayEnd, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.Comma, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayStart, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.NumberValue, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
                 Assert.AreEqual(1D, r.Value);
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayEnd, r.Token);
-                Assert.AreEqual(JsonToken.ArrayStart, r.Containter);
+                Assert.AreEqual(JsonToken.ArrayStart, r.Container);
 
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(JsonToken.ArrayEnd, r.Token);
-                Assert.AreEqual(JsonToken.None, r.Containter);
+                Assert.AreEqual(JsonToken.None, r.Container);
                 Assert.IsFalse(r.Read());
             }
         }
@@ -389,7 +389,7 @@ namespace cmstar.Serialization.Json
         {
             Assert.AreEqual(token, reader.PeekNextToken());
             AssertPosition(reader, lineNumber, columnNumber);
-            Assert.AreEqual(container, reader.Containter);
+            Assert.AreEqual(container, reader.Container);
         }
 
         private void AssertReading(JsonReader reader, JsonToken token,
@@ -404,7 +404,7 @@ namespace cmstar.Serialization.Json
                 Assert.AreEqual(value, reader.Value);
             }
 
-            Assert.AreEqual(container, reader.Containter);
+            Assert.AreEqual(container, reader.Container);
 
             if (lineNumber > 0)
             {
@@ -426,7 +426,7 @@ namespace cmstar.Serialization.Json
                 Assert.IsTrue(r.Read());
                 Assert.AreEqual(tokenExpected, r.Token);
                 Assert.AreEqual(valueExpected, r.Value);
-                Assert.AreEqual(JsonToken.None, r.Containter);
+                Assert.AreEqual(JsonToken.None, r.Container);
                 Assert.IsFalse(r.Read());
             }
         }

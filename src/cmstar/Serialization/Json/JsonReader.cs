@@ -89,7 +89,7 @@ namespace cmstar.Serialization.Json
         /// <summary>
         /// Gets the <see cref="JsonToken"/> that indicates which JSON container the current position is in.
         /// </summary>
-        public JsonToken Containter
+        public JsonToken Container
         {
             get
             {
