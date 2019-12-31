@@ -1,22 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using cmstar.Serialization;
-using cmstar.Serialization.Json;
-using cmstar.Util;
-using cmstar.RapidReflection.Emit;
+﻿using NUnit.Framework;
 
-namespace cmstar
+namespace cmstar.Tests.NetStandard
 {
-    class Program
+    public static class Program
     {
-        static void Main()
+        [Test]
+        public static void Tmp()
         {
+            Assert.Pass();
         }
     }
 }
