@@ -366,7 +366,7 @@ namespace cmstar.Serialization.Json
             // ensure there's a ':' follows the property name
             var next = NextNonSpace();
             if (next != ':')
-                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+                throw FormatError("Incorrect property name format.", JsonToken.PropertyName);
 
             return value;
         }
@@ -374,7 +374,7 @@ namespace cmstar.Serialization.Json
         private string ParseUnQuotedPropertyName(char firstChar)
         {
             if (!IsValidVariableChar(firstChar))
-                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+                throw FormatError("Incorrect property name format.", JsonToken.PropertyName);
 
             var buffer = new StringBuilder();
             buffer.Append(firstChar);
@@ -408,7 +408,7 @@ namespace cmstar.Serialization.Json
             }
 
             if (formatError || buffer.Length == 0)
-                throw FormatError("Incorrect propery name format.", JsonToken.PropertyName);
+                throw FormatError("Incorrect property name format.", JsonToken.PropertyName);
 
             return buffer.ToString();
         }

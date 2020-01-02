@@ -228,7 +228,7 @@ namespace cmstar.Serialization.Json
             Assert.IsTrue(contract.Members.TryGetValue("pub_field", out contractMemberInfo));
             Assert.IsInstanceOf<NumberContract>(contractMemberInfo.Contract);
 
-            Assert.IsTrue(contract.Members.TryGetValue("NoExplicicName", out contractMemberInfo));
+            Assert.IsTrue(contract.Members.TryGetValue("NoExplicitName", out contractMemberInfo));
             Assert.IsInstanceOf<GuidContract>(contractMemberInfo.Contract);
         }
 
@@ -461,7 +461,7 @@ namespace cmstar.Serialization.Json
             public int IngoredPropertyWithJsonProperty { get; set; }
 
             [JsonProperty]
-            public Guid NoExplicicName { get; set; }
+            public Guid NoExplicitName { get; set; }
         }
 
         private class ClassWithReadOnlyWriteOnlyProperty

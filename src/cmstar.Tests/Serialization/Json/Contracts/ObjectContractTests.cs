@@ -117,16 +117,16 @@ namespace cmstar.Serialization.Json.Contracts
         {
             var json =
 @"{
-    ""unknonwString1"": ""v1"",
+    ""unknownString1"": ""v1"",
     ""Mobile"": ""12345"",
-    ""unknonwArray"": [1, 3, 5, 7],
+    ""unknownArray"": [1, 3, 5, 7],
     ""Rate"": '3.3',
-    ""unknonwObject"": {
+    ""unknownObject"": {
         ""prop1"": ""value1"",
         ""Mobile"": ""54321"",
         ""Rate"": 1.1
     },
-    ""unknonwString2"": ""v2"",
+    ""unknownString2"": ""v2"",
     ""Amount"": 10
 }";
             var result = DoRead(json);
