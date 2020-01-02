@@ -222,6 +222,102 @@ namespace cmstar.Serialization.Json
         }
 
         [Test]
+        public void ReadPureComment()
+        {
+            void DoRead(string value)
+            {
+                Console.WriteLine("Testing... " + value);
+
+                using (var r = CreateReader(value))
+                {
+                    Assert.IsFalse(r.Read(), "Read");
+                    Assert.AreEqual(JsonToken.None, r.Token);
+                }
+
+                using (var r = CreateReader(value))
+                {
+                    Assert.AreEqual(JsonToken.None, r.PeekNextToken(), "Peek");
+                    Assert.IsFalse(r.Read());
+                }
+            }
+
+            DoRead("//");
+            DoRead("  //");
+            DoRead("//  ");
+            DoRead("\n// ");
+
+            DoRead("/* comment */");
+            DoRead(" /* \r\n*/  ");
+            DoRead("  /*/  */ ");
+
+            DoRead(" ///* */");
+            DoRead("/* comment1 */ \r // comment2 \n // comment3 \r\n /**/");
+        }
+
+        [Test]
+        public void ReadCommentMixed()
+        {
+            var json =
+@" // this is comment
+//
+/*{*}*/{
+    array:[/**/]
+    /*c*/,
+//line1
+num:/*comment*/NaN,
+//line2    
+    ""object"":{
+        // line
+    }
+}//";
+            using (var r = CreateReader(json))
+            {
+                AssertPeeking(r, JsonToken.ObjectStart, 3, 8, JsonToken.None);
+                AssertReading(r, JsonToken.ObjectStart, false, null, JsonToken.ObjectStart, 3, 9);
+
+                // array
+                AssertPeeking(r, JsonToken.PropertyName, 4, 5, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.PropertyName, true, "array", JsonToken.ObjectStart, 4, 11);
+
+                AssertPeeking(r, JsonToken.ArrayStart, 4, 11, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.ArrayStart, false, null, JsonToken.ArrayStart, 4, 12);
+
+                AssertPeeking(r, JsonToken.ArrayEnd, 4, 16, JsonToken.ArrayStart);
+                AssertReading(r, JsonToken.ArrayEnd, false, null, JsonToken.ObjectStart, 4, 17);
+
+                AssertPeeking(r, JsonToken.Comma, 5, 10, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.Comma, false, null, JsonToken.ObjectStart, 5, 11);
+
+                // num
+                AssertPeeking(r, JsonToken.PropertyName, 7, 1, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.PropertyName, true, "num", JsonToken.ObjectStart, 7, 5);
+
+                AssertPeeking(r, JsonToken.NumberValue, 7, 16, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.NumberValue, true, double.NaN, JsonToken.ObjectStart, 7, 19);
+
+                AssertPeeking(r, JsonToken.Comma, 7, 19, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.Comma, false, null, JsonToken.ObjectStart, 7, 20);
+
+                // object
+                AssertPeeking(r, JsonToken.PropertyName, 9, 5, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.PropertyName, true, "object", JsonToken.ObjectStart, 9, 14);
+
+                AssertPeeking(r, JsonToken.ObjectStart, 9, 14, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.ObjectStart, false, null, JsonToken.ObjectStart, 9, 15);
+
+                AssertPeeking(r, JsonToken.ObjectEnd, 11, 5, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.ObjectEnd, false, null, JsonToken.ObjectStart, 11, 6);
+
+                AssertPeeking(r, JsonToken.ObjectEnd, 12, 1, JsonToken.ObjectStart);
+                AssertReading(r, JsonToken.ObjectEnd, false, null, JsonToken.None, 12, 2);
+
+                Assert.IsFalse(r.Read());
+                Assert.AreEqual(12, r.LineNumber, "final line");
+                Assert.AreEqual(4, r.ColumnNumber, "final column");
+            }
+        }
+
+        [Test]
         public void ReadArraySimple()
         {
             var json =
@@ -332,7 +428,7 @@ namespace cmstar.Serialization.Json
 
                 AssertPeeking(r, JsonToken.StringValue, 2, 22, JsonToken.ArrayStart);
                 AssertReading(r, JsonToken.StringValue, true, "r", JsonToken.ArrayStart, 2, 25);
-                
+
                 AssertPeeking(r, JsonToken.ArrayEnd, 2, 25, JsonToken.ArrayStart);
                 AssertReading(r, JsonToken.ArrayEnd, false, null, JsonToken.ObjectStart, 2, 26);
 
@@ -387,24 +483,28 @@ namespace cmstar.Serialization.Json
         private void AssertPeeking(
             JsonReader reader, JsonToken token, int lineNumber, int columnNumber, JsonToken container)
         {
-            Assert.AreEqual(token, reader.PeekNextToken());
+            var message = $"Peek token {token} at [{lineNumber}, {columnNumber}]";
+
+            Assert.AreEqual(token, reader.PeekNextToken(), message);
             AssertPosition(reader, lineNumber, columnNumber);
-            Assert.AreEqual(container, reader.Container);
+            Assert.AreEqual(container, reader.Container, message);
         }
 
         private void AssertReading(JsonReader reader, JsonToken token,
             bool assertValue, object value, JsonToken container,
             int lineNumber = -1, int columnNumber = -1)
         {
-            Assert.IsTrue(reader.Read());
-            Assert.AreEqual(token, reader.Token);
+            var message = $"Read token {token} at [{lineNumber}, {columnNumber}]";
+
+            Assert.IsTrue(reader.Read(), message);
+            Assert.AreEqual(token, reader.Token, message);
 
             if (assertValue)
             {
-                Assert.AreEqual(value, reader.Value);
+                Assert.AreEqual(value, reader.Value, message);
             }
 
-            Assert.AreEqual(container, reader.Container);
+            Assert.AreEqual(container, reader.Container, message);
 
             if (lineNumber > 0)
             {
@@ -414,8 +514,8 @@ namespace cmstar.Serialization.Json
 
         private void AssertPosition(JsonReader reader, int lineNumber, int columnNumber)
         {
-            Assert.AreEqual(lineNumber, reader.LineNumber, "Assertion of the line number.");
-            Assert.AreEqual(columnNumber, reader.ColumnNumber, "Assertion of the column number.");
+            Assert.AreEqual(lineNumber, reader.LineNumber, $"Assertion of the line number of [{lineNumber}, {columnNumber}].");
+            Assert.AreEqual(columnNumber, reader.ColumnNumber, $"Assertion of the column number of [{lineNumber}, {columnNumber}].");
         }
 
         private void ReadScalarOnly(string json, JsonToken tokenExpected, object valueExpected)

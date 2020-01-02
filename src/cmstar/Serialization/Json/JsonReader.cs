@@ -134,7 +134,7 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Try to determine the next <see cref="JsonToken"/> in the Json
-        /// without changing current <see cref="JsonToken"/> and value.
+        /// without changing the current <see cref="JsonToken"/> and value.
         /// </summary>
         /// <returns>
         /// The next <see cref="JsonToken"/> in the JSON.
@@ -162,6 +162,13 @@ namespace cmstar.Serialization.Json
 
                 case ',':
                     return JsonToken.Comma;
+
+                case '/':
+                    // SkipComment does not read this preceding '/', ignore it.
+                    Next();
+
+                    SkipComment();
+                    return PeekNextToken();
             }
 
             if (_containerTokenStack.Top == JsonToken.ObjectStart)
@@ -232,6 +239,10 @@ namespace cmstar.Serialization.Json
                 case ',':
                     ReachComma();
                     return true;
+
+                case '/': // comment
+                    SkipComment();
+                    return Read();
             }
 
             if (_containerTokenStack.Top == JsonToken.ObjectStart
@@ -579,6 +590,52 @@ namespace cmstar.Serialization.Json
             }
 
             return Convert.ToChar(int.Parse(new string(hex), NumberStyles.HexNumber));
+        }
+
+        private void SkipComment()
+        {
+            // Read the next char after '/'.
+            var next = Next();
+
+            switch (next)
+            {
+                // A single-line comment starts with '//', ends with a line-break.
+                case '/':
+                    while (true)
+                    {
+                        next = Next();
+
+                        if (next < 0 || next == '\r' || next == '\n')
+                            break;
+                    }
+                    break;
+
+                // A multi-line comment starts with '/*', ends with '*/'.
+                case '*':
+                    var preEnd = false;
+
+                    while (true)
+                    {
+                        next = Next();
+
+                        if (next < 0)
+                            throw FormatError("The multi-line comment does not end correctly.", JsonToken.Comment);
+
+                        if (next == '/')
+                        {
+                            if (preEnd)
+                                break;
+                        }
+                        else if (next == '*')
+                        {
+                            preEnd = true;
+                        }
+                    }
+                    break;
+
+                default:
+                    throw FormatError("The comment does not end correctly.", JsonToken.Comment);
+            }
         }
 
         private void MatchConstantString(string expected, JsonToken tokenReached)

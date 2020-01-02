@@ -36,6 +36,7 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// The start of a JSON object ('{').
+        /// This is a container-token, can be returned by <see cref="JsonReader.Container"/>.
         /// </summary>
         ObjectStart,
 
@@ -46,6 +47,7 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// The start of a JSON array ('[').
+        /// This is a container-token, can be returned by <see cref="JsonReader.Container"/>.
         /// </summary>
         ArrayStart,
 
@@ -87,6 +89,12 @@ namespace cmstar.Serialization.Json
         /// <summary>
         /// The comma used for separating the array elements or properties.
         /// </summary>
-        Comma
+        Comma,
+
+        /// <summary>
+        /// The token for comments.
+        /// Never returned by <see cref="JsonReader.Token"/> and <see cref="JsonReader.PeekNextToken"/>.
+        /// </summary>
+        Comment
     }
 }
