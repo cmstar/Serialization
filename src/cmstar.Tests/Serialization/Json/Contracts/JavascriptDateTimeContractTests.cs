@@ -6,7 +6,7 @@ namespace cmstar.Serialization.Json.Contracts
     [TestFixture]
     public class JavascriptDateTimeContractTests : DateTimeContractTests
     {
-        protected override JsonContract GetContarct()
+        protected override JsonContract GetContract()
         {
             var contract = new JavascriptDateTimeContract();
             return contract;

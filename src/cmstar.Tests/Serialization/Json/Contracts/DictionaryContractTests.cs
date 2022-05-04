@@ -199,9 +199,9 @@ namespace cmstar.Serialization.Json.Contracts
             get { return typeof(CustomDic); }
         }
 
-        protected override JsonContract GetContarct()
+        protected override JsonContract GetContract()
         {
-            var contract = (DictionaryContract)base.GetContarct();
+            var contract = (DictionaryContract)base.GetContract();
             contract.KeyConverter = new CustomKeyConverter();
             return contract;
         }

@@ -95,7 +95,7 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual(expected, result);
         }
 
-        protected virtual JsonContract GetContarct()
+        protected virtual JsonContract GetContract()
         {
             var contractResolver = GetContractResolver();
             var contract = contractResolver.ResolveContract(UnderlyingType);
@@ -122,7 +122,7 @@ namespace cmstar.Serialization.Json.Contracts
                 using (var jsonWriter = new JsonWriterImproved(textWriter))
                 {
                     var resolver = GetContractResolver();
-                    GetContarct().Write(jsonWriter, state, resolver, obj);
+                    GetContract().Write(jsonWriter, state, resolver, obj);
                 }
             }
 
@@ -138,7 +138,7 @@ namespace cmstar.Serialization.Json.Contracts
         {
             using (var reader = new JsonReader(new StringReader(json)))
             {
-                var result = GetContarct().Read(reader, state);
+                var result = GetContract().Read(reader, state);
                 return result;
             }
         }

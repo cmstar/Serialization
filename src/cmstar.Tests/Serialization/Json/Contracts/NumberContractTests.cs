@@ -186,7 +186,7 @@ namespace cmstar.Serialization.Json.Contracts
             get { return false; }
         }
 
-        protected override JsonContract GetContarct()
+        protected override JsonContract GetContract()
         {
             return new NumberContract(typeof(bool));
         }

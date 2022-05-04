@@ -106,7 +106,7 @@ namespace cmstar.Serialization.Json.Contracts
     [TestFixture]
     public class WriteNameEnumContractTests : EnumContractTests
     {
-        protected override JsonContract GetContarct()
+        protected override JsonContract GetContract()
         {
             var contract = new EnumContract(UnderlyingType);
             contract.UseEnumName = true;

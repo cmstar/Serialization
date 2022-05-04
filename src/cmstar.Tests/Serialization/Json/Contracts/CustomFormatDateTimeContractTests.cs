@@ -29,7 +29,7 @@ namespace cmstar.Serialization.Json.Contracts
     [TestFixture]
     public class CustomFormatDateTimeContractTests : DateTimeContractTests
     {
-        protected override JsonContract GetContarct()
+        protected override JsonContract GetContract()
         {
             var contract = new CustomFormatDateTimeContract();
             contract.Format = "yyyy@M@dd HH~~mm~~ss ffffff";
