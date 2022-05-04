@@ -33,7 +33,7 @@ serializer.Serialize("Hello\nWorld");
 //-> "Hellow\nWorld"
 
 serializer.Serialize(DateTime.Now.ToUniversalTime());
-//-> "\/Date(1377498441115)\/"
+//-> "2013-07-15T14:21:05.2151663Z"
 
 serializer.Serialize(new char[] { 'a', 'b' });
 //-> ["a","b"]
@@ -51,12 +51,12 @@ serializer.Serialize(new Data { Array = new int[] { 1, 2 } });
 ### Deserialize JSONs to CLR objects
 
 ```csharp
-//non-generic version
+// non-generic version
 Data data = (Data)serializer.Deserialize(
     "{\"String\":null,\"Int\":0,\"Array\":[1,2]}",
     typeof(Data));
 
-//generic version
+// generic version
 int[] array = serializer.Deserialize<int[]>("[1,2,3]");
 ```
 
@@ -78,7 +78,7 @@ To deserialize, a template object should be provided:
 var template = new { Foo = 0, Bar = (string)null };
 var json = "{\"Foo\":10,\"Bar\":\"s\"}";
 
-//call JsonSerializer.Deserialize<T>(string json, T template)
+// call JsonSerializer.Deserialize<T>(string json, T template)
 var result = JsonSerializer.Default.Deserialize(json, template);
 ```
 
@@ -217,17 +217,24 @@ This class is used to resolve the `JsonContract`s for different types.
 
 You can register custom `JsonContract`s by sending a dictionary to the constructor of `JsonContractResolver`:
 
-    var customContracts = new Dictionary<Type, JsonContract>();
-    customContracts.Add(typeof(Data), new CustomDataContract());
+```csharp
+var customContracts = new Dictionary<Type, JsonContract>();
+customContracts.Add(typeof(Data), new CustomDataContract());
 
-    var contractResolver = new JsonContractResolver(customContracts);
-    var serializer = new JsonSerializer(contractResolver);
+var contractResolver = new JsonContractResolver(customContracts);
+var serializer = new JsonSerializer(contractResolver);
+```
 
 Note: You can't register custom `JsonContract`s to `JsonSerializer.Default` at present. 
 
 ### Serializing Dates
 
-The default contract for `DateTime` is the `DateTimeContract`, which will serialize dates in the Microsoft format such as "\/Date(1377498441115+0600)\/". Another contract provided is the `CustomFormatDateTimeContract` with a property `Format`, the code below shows how to serialize dates in the format "yyyy~MM~dd HH:mm:ss":
+The default contract for `DateTime` is the `DateTimeContract`, which will serialize dates 
+in the ISO-8601 format `yyyy-MM-ddTHH:mm:ss.ffffffZ`, such as `2022-01-31T13:15:05.2151663-02:00`. 
+
+You can register `CustomFormatDateTimeContract` to customize the format, with a property `Format`, 
+the code below shows how to serialize dates in the format `yyyy~MM~dd HH:mm:ss`:
+
 ```csharp
 var dateTimeContract = new CustomFormatDateTimeContract();
 dateTimeContract.Format = "yyyy~MM~dd HH@mm@ss";
@@ -241,6 +248,9 @@ var serializer = new JsonSerializer(contractResolver);
 serializer.Serialize(DateTime.Now);
 //-> "2013~07~15 14@41@03"
 ```
+
+Another contract provided is `JavascriptDateTimeContract`, that formats time 
+in the Javascript `Date` function expression, like `/Date(1620142251000+0300)/`.
 
 ### Serializing Enums
 

@@ -26,7 +26,9 @@ using System;
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// The contract for <see cref="DateTime"/>.
+    /// The default contract for <see cref="DateTime"/>.
+    /// By default it formats a value in the ISO-8601 format.
+    /// Override the <see cref="ToStringValue"/> method to customize the format.
     /// </summary>
     public class DateTimeContract : JsonContract
     {
@@ -35,6 +37,14 @@ namespace cmstar.Serialization.Json.Contracts
         /// </summary>
         public DateTimeContract()
             : base(typeof(DateTime))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="DateTimeContract"/>, and change the underlying type.
+        /// </summary>
+        public DateTimeContract(Type type)
+            : base(type)
         {
         }
 
@@ -84,7 +94,7 @@ namespace cmstar.Serialization.Json.Contracts
         /// </returns>
         protected virtual bool TryParseDateTime(string value, out DateTime dateTime)
         {
-            return JsonConvert.TryParseJsonDateTimeValue(value, out dateTime)
+            return JsonConvert.TryParseJavascriptDateTimeValue(value, out dateTime)
                 || DateTime.TryParse(value, out dateTime);
         }
 
@@ -95,7 +105,7 @@ namespace cmstar.Serialization.Json.Contracts
         /// <returns>The string value represents the <see cref="DateTime"/>.</returns>
         protected virtual string ToStringValue(DateTime dateTime)
         {
-            return JsonConvert.ToJsonDateTimeValue(dateTime, true);
+            return dateTime.ToString("O"); // ISO-8601
         }
     }
 }

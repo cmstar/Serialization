@@ -57,7 +57,7 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Convert a value of <see cref="DateTime"/> to a string representation 
-        /// of a datetime in a JSON. 
+        /// of a Date() expression in Javascript. 
         /// </summary>
         /// <param name="dateTime">
         /// The datetime value.
@@ -69,8 +69,8 @@ namespace cmstar.Serialization.Json
         /// If <c>true</c>, the datetime value will be in this format:'/Date(1xxxxxxxxxxxx+yyyy)/';
         /// otherwise, no prefix and suffix:'Date(1xxxxxxxxxxxx+yyyy)'.
         /// </param>
-        /// <returns>A string represents a datetime value in a JSON.</returns>
-        public static string ToJsonDateTimeValue(DateTime dateTime, bool wrappedInSlashes)
+        /// <returns>A string represents a Date() expression in Javascript. </returns>
+        public static string ToJavascriptDate(DateTime dateTime, bool wrappedInSlashes)
         {
             var stringBuilder = new StringBuilder(28); //capacity=len(/Date(1xxxxxxxxxxxx+yyyy)/)
             if (wrappedInSlashes)
@@ -146,7 +146,7 @@ namespace cmstar.Serialization.Json
         /// This is a output parameter.
         /// </param>
         /// <returns><c>true</c> if the conversion succeeded; otherwise <c>false</c>.</returns>
-        public static bool TryParseJsonDateTimeValue(string value, out DateTime dateTime)
+        public static bool TryParseJavascriptDateTimeValue(string value, out DateTime dateTime)
         {
             dateTime = DateTime.MinValue;
             if (value == null || value.Length < 7) //7=len(Date(0))
