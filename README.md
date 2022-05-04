@@ -2,151 +2,170 @@
 
 A light weight JSON serialization library written in C#.
 
+Supported .NET platform:
+- .NET Framework 3.5
+- .NET Framework 4.x
+- All other platforms that support .NET Standard 2, such as .NET Core 2/3, .NET 5/6
+
+Dependency:
+- [cmstar.RapidReflection](https://www.nuget.org/packages/cmstar.RapidReflection) To emit IL for accessing type members.
+
 ## JsonSerializer
+
 The `JsonSerializer` class is the entry for serializing/deserializing.
 
 ### Serialize CLR objects to JSONs
 
-    class Data
-    {
-        public string String { get; set; }
-        public int Int { get; set; }
-        public int[] Array { get; set; }
-    }
+```csharp
+public class Data
+{
+    public string String { get; set; }
+    public int Int { get; set; }
+    public int[] Array { get; set; }
+}
 
-    var serializer = new JsonSerializer();
+var serializer = new JsonSerializer();
 
-    serializer.Serialize(123);
-    //-> 123
+serializer.Serialize(123);
+//-> 123
 
-    serializer.Serialize("Hello\nWorld");
-    //-> "Hellow\nWorld"
+serializer.Serialize("Hello\nWorld");
+//-> "Hellow\nWorld"
 
-    serializer.Serialize(DateTime.Now.ToUniversalTime());
-    //-> "\/Date(1377498441115)\/"
+serializer.Serialize(DateTime.Now.ToUniversalTime());
+//-> "\/Date(1377498441115)\/"
 
-    serializer.Serialize(new char[] { 'a', 'b' });
-    //-> ["a","b"]
+serializer.Serialize(new char[] { 'a', 'b' });
+//-> ["a","b"]
 
-    serializer.Serialize(new Dictionary<string, int> {
-        { "key1", 1 },
-        { "key2", 2 }
-    });
-    //-> {"key1":1,"key2":2}
+serializer.Serialize(new Dictionary<string, int> {
+    { "key1", 1 },
+    { "key2", 2 }
+});
+//-> {"key1":1,"key2":2}
 
-    serializer.Serialize(new Data { Array = new int[] { 1, 2 } });
-    //-> {"String":null,"Int":0,"Array":[1,2]}
+serializer.Serialize(new Data { Array = new int[] { 1, 2 } });
+//-> {"String":null,"Int":0,"Array":[1,2]}
+```
 
 ### Deserialize JSONs to CLR objects
 
-    //non-generic version
-    Data data = (Data)serializer.Deserialize(
-        "{\"String\":null,\"Int\":0,\"Array\":[1,2]}",
-        typeof(Data));
+```csharp
+//non-generic version
+Data data = (Data)serializer.Deserialize(
+    "{\"String\":null,\"Int\":0,\"Array\":[1,2]}",
+    typeof(Data));
 
-    //generic version
-    int[] array = serializer.Deserialize<int[]>("[1,2,3]");
+//generic version
+int[] array = serializer.Deserialize<int[]>("[1,2,3]");
+```
 
 ### Anonymous Objects
 
 Serializing anonymouse objects is just the same:
-
-    var anonymousObject = new {
-        Foo = 123,
-        Bar = "xx",
-        Array = new int[] { 1, 2, 3 }
-    };
-    JsonSerializer.Default.Serialize(anonymousObject);
-    //-> {"Foo":123,"Bar":"xx","Array":[1,2,3]}
+```csharp
+var anonymousObject = new {
+    Foo = 123,
+    Bar = "xx",
+    Array = new int[] { 1, 2, 3 }
+};
+JsonSerializer.Default.Serialize(anonymousObject);
+//-> {"Foo":123,"Bar":"xx","Array":[1,2,3]}
+```
 
 To deserialize, a template object should be provided:
+```csharp
+var template = new { Foo = 0, Bar = (string)null };
+var json = "{\"Foo\":10,\"Bar\":\"s\"}";
 
-    var template = new { Foo = 0, Bar = (string)null };
-    var json = "{\"Foo\":10,\"Bar\":\"s\"}";
-
-    //call JsonSerializer.Deserialize<T>(string json, T template)
-    var result = JsonSerializer.Default.Deserialize(json, template);
+//call JsonSerializer.Deserialize<T>(string json, T template)
+var result = JsonSerializer.Default.Deserialize(json, template);
+```
 
 ### The default JsonSerializer
 
 Each instance of `JsonSerializer` is isolated, it can keep different instances of `JsonContract` and can be customized separately from another `JsonSerializer`. But in most time, we need just one `JsonSerializer`, in the case we can use `JsonSerializer.Default`:
-
-    var json = JsonSerializer.Default.Serialize(new Data());
-    var data = JsonSerializer.Default.Deserialize<Data>(json);
-
+```csharp
+var json = JsonSerializer.Default.Serialize(new Data());
+var data = JsonSerializer.Default.Deserialize<Data>(json);
+```
 
 ### Using Attributes
 
 To serialize a POCO, by default, only public properties will be serialized.
 You can use the `JsonPropertyAttribute` to select the members you need:
+```csharp
+class Data
+{
+    public Data(string s) { String = s; }
 
-    class Data
-    {
-        public Data(string s) { String = s; }
+    [JsonProperty("string_value")] // mark a private field
+    private string String;
 
-        [JsonProperty("string_value")] //mark a private field
-        private string String;
+    [JsonProperty] // no name specified, will use 'Int' directly
+    public int Int { get; set; }
 
-        [JsonProperty] //no name specified, will use 'Int' directly
-        public int Int { get; set; }
+    public int WillBeIngored { get; set; }
+}
 
-        public int WillBeIngored { get; set; }
-    }
-
-    JsonSerializer.Default.Serialize(new Data("s") { Int = 3 });
-    //-> {"string_value":"s","Int":3}
+JsonSerializer.Default.Serialize(new Data("s") { Int = 3 });
+//-> {"string_value":"s","Int":3}
+```
 
 or use `JsonIgnoreAttribute`:
+```csharp
+class Data
+{
+    public string String { get; set; }
 
-    class Data
-    {
-        public string String { get; set; }
+    [JsonJsonIgnore]
+    public int Int { get; set; }
+}
 
-        [JsonJsonIgnore]
-        public int Int { get; set; }
-    }
+JsonSerializer.Default.Serialize(new Data { String = "s", Int = 3 });
+//-> {"String":"s"}
+```
 
-    JsonSerializer.Default.Serialize(new Data { String = "s", Int = 3 });
-    //-> {"String":"s"}
+> Note: If you mix `JsonIgnoreAttribute` and `JsonPropertyAttribute` together, the  serializer ignores `JsonPropertyAttribute`.
 
-Note: If you mix `JsonIgnoreAttribute` and `JsonPropertyAttribute` together, the  serializer ignores `JsonPropertyAttribute`.
-
-Note: If a property has no getter accessor (public or non-public), it will be ignored during the serialization; and the value of a property without a setter accessor will not be set.
+> Note: If a property has no getter accessor (public or non-public), it will be ignored during the serialization; and the value of a property without a setter accessor will not be set.
 
 ### Pretty-print JSON
 
 By default the JSONs outputted is compact but not much human-readable. An overload of the `JsonSerializer.Serialize()` mothod accepts an argument 'formatting' which can be used to specify the format of JSON seriliazed.
 
-    JsonSerializer.Default.Serialize(new Data { Array = new int[] { 1, 2 } });
-    //-> {"String":null,"Int":0,"Array":[1,2]}
+```csharp
+JsonSerializer.Default.Serialize(new Data { Array = new int[] { 1, 2 } });
+//-> {"String":null,"Int":0,"Array":[1,2]}
 
-    JsonSerializer.Default.Serialize(
-        new Data { Array = new int[] { 1, 2 } },
-        Formatting.Multiple);
-    /* ->
-    {
+JsonSerializer.Default.Serialize(
+    new Data { Array = new int[] { 1, 2 } },
+    Formatting.Multiple);
+/* ->
+{
+"String":null,
+"Int":0,
+"Array":[
+1,
+2
+]
+}
+*/
+
+JsonSerializer.Default.Serialize(
+    new Data { Array = new int[] { 1, 2 } },
+    Formatting.Indented);
+/* ->
+{
     "String":null,
     "Int":0,
     "Array":[
-    1,
-    2
+        1,
+        2
     ]
-    }
-    */
-
-    JsonSerializer.Default.Serialize(
-        new Data { Array = new int[] { 1, 2 } },
-        Formatting.Indented);
-    /* ->
-    {
-        "String":null,
-        "Int":0,
-        "Array":[
-            1,
-            2
-        ]
-    }
-    */
+}
+*/
+```
 
 ### Faster Serialization
 
@@ -209,61 +228,60 @@ Note: You can't register custom `JsonContract`s to `JsonSerializer.Default` at p
 ### Serializing Dates
 
 The default contract for `DateTime` is the `DateTimeContract`, which will serialize dates in the Microsoft format such as "\/Date(1377498441115+0600)\/". Another contract provided is the `CustomFormatDateTimeContract` with a property `Format`, the code below shows how to serialize dates in the format "yyyy~MM~dd HH:mm:ss":
+```csharp
+var dateTimeContract = new CustomFormatDateTimeContract();
+dateTimeContract.Format = "yyyy~MM~dd HH@mm@ss";
 
-    var dateTimeContract = new CustomFormatDateTimeContract();
-    dateTimeContract.Format = "yyyy~MM~dd HH@mm@ss";
+var customContracts = new Dictionary<Type, JsonContract>();
+customContracts.Add(typeof(DateTime), dateTimeContract);
 
-    var customContracts = new Dictionary<Type, JsonContract>();
-    customContracts.Add(typeof(DateTime), dateTimeContract);
+var contractResolver = new JsonContractResolver(customContracts);
+var serializer = new JsonSerializer(contractResolver);
 
-    var contractResolver = new JsonContractResolver(customContracts);
-    var serializer = new JsonSerializer(contractResolver);
-
-    serializer.Serialize(DateTime.Now);
-    //-> "2013~07~15 14@41@03"
+serializer.Serialize(DateTime.Now);
+//-> "2013~07~15 14@41@03"
+```
 
 ### Serializing Enums
 
 By default enums are serialized to JSON numbers using the index, if you need the name of an enum, you can setup the `EnumContract.UseEnumName` property to `true`.
+```csharp
+var stringEnumContract = new EnumContract(typeof(SomEnum));
+stringEnumContract.UseEnumName = true;
 
-    var stringEnumContract = new EnumContract(typeof(SomEnum));
-    stringEnumContract.UseEnumName = true;
+var customContracts = new Dictionary<Type, JsonContract>();
+customContracts.Add(typeof(SomEnum), stringEnumContract);
 
-    var customContracts = new Dictionary<Type, JsonContract>();
-    customContracts.Add(typeof(SomEnum), stringEnumContract);
+var contractResolver = new JsonContractResolver(customContracts);
+var serializer = new JsonSerializer(contractResolver);
 
-    var contractResolver = new JsonContractResolver(customContracts);
-    var serializer = new JsonSerializer(contractResolver);
-
-    serializer.Serialize(SomEnum.SomeItem);
-    //-> "SomeItem"
-
+serializer.Serialize(SomEnum.SomeItem);
+//-> "SomeItem"
+```
 
 ### Customize the resolving of JsonContracts
 
 Here is an example that shows how to tell the `JsonSerializer` to serialize all enums by their names.
 
 First, build a sub class of the `JsonContractResolver` and override the `DoResove` method which is the core method for contract resolving:
-
-    class StringEnumContractResolver : JsonContractResolver
+```csharp
+class StringEnumContractResolver : JsonContractResolver
+{
+    protected override JsonContract DoResolve(Type type)
     {
-        protected override JsonContract DoResolve(Type type)
-        {
-            if (type.IsSubclassOf(typeof(Enum)))
-                return new EnumContract(type) { UseEnumName = true };
+        if (type.IsSubclassOf(typeof(Enum)))
+            return new EnumContract(type) { UseEnumName = true };
 
-            return base.DoResolve(type);
-        }
+        return base.DoResolve(type);
     }
+}
+```
 
 Then you can setup the `JsonSerializer` with the class above:
+```csharp
+var contractResolver = new StringEnumContractResolver();
+var serializer = new JsonSerializer(contractResolver);
 
-    var contractResolver = new StringEnumContractResolver();
-    var serializer = new JsonSerializer(contractResolver);
-
-    serializer.Serialize(SomeEnum.SomeItem);
-    //-> "SomeItem"
-
-## JsonWriter
-
-## JsonReader
+serializer.Serialize(SomeEnum.SomeItem);
+//-> "SomeItem"
+```
