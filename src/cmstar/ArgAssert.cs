@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace cmstar
 {
-    public static class ArgAssert
+    internal static class ArgAssert
     {
         public static void NotNull(object arg, string name)
         {

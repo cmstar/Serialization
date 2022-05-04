@@ -4,7 +4,7 @@
     <!--Build options-->
     <TargetFrameworks>net46;net35;netstandard2.0;</TargetFrameworks>
     <RootNamespace>cmstar</RootNamespace>
-    <AssemblyName>cmstar.Serialization</AssemblyName>
+    <AssemblyName>cmstar.Serialization.Json</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591;1701;1702;3021</NoWarn>
 
@@ -29,27 +29,8 @@
     <DefineConstants>NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
-  <!--net46-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-
-  <!--net35-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-
-  <!--netstandard2.0-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
-    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  <ItemGroup>
+    <PackageReference Include="cmstar.RapidReflection" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

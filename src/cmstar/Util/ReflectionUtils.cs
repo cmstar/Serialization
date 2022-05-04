@@ -9,7 +9,7 @@ using System.Collections.Concurrent;
 
 namespace cmstar.Util
 {
-    public static class ReflectionUtils
+    internal static class ReflectionUtils
     {
         private static readonly ConcurrentDictionary<Type, object> DefaultValues
             = new ConcurrentDictionary<Type, object>();
