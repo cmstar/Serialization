@@ -2,14 +2,26 @@
 
   <PropertyGroup>
     <!--Build options-->
-    <TargetFrameworks>net46;net35;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net40;net35;netstandard2.0;</TargetFrameworks>
     <RootNamespace>cmstar</RootNamespace>
     <AssemblyName>cmstar.Serialization.Json</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591;1701;1702;3021</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 
-    <!--Package info-->
-    <Copyright>Copyright ©cmstar 2013</Copyright>
+    <!--Package information-->
+    <PackageId>cmstar.Serialization.Json</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Eric Ruan</Authors>
+    <Copyright>Copyright (c) Eric Ruan 2013</Copyright>
+    <Description>A light weight JSON serialization library.</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/cmstar/Serialization.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/cmstar/Serialization</PackageProjectUrl>
+    <PackageTags>serialization json</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!--Include .pdb-->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <!--Compiling contants-->
@@ -28,6 +40,10 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="cmstar.RapidReflection" Version="1.0.0" />
