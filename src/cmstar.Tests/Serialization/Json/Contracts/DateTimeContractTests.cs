@@ -55,9 +55,9 @@ namespace cmstar.Serialization.Json.Contracts
             Assert.AreEqual("\"1976-12-02T23:42:25.7650000Z\"", json);
         }
 
-        // The contract can read value in Javascript Date() format.
+        // The contract can read value in Microsoft JSON datetime format.
         [Test]
-        public void ReadJavascriptDate()
+        public void ReadMicrosoftJsonDate()
         {
             var result = DoRead("\"\\/Date(1359116793123)\\/\"");
             Assert.IsInstanceOf<DateTime>(result);

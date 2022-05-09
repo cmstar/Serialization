@@ -30,102 +30,108 @@ namespace cmstar.Serialization.Json
     public class JsonConvertTests
     {
         [Test]
-        public void ToJavascriptDateUtc()
+        public void ToMicrosoftJsonDate()
         {
             var datetime = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            var result = JsonConvert.ToJavascriptDate(datetime, true);
-            Assert.AreEqual(@"/Date(1331792735152+0000)/", result);
+            var result = JsonConvert.ToMicrosoftJsonDate(datetime, true);
+            Assert.AreEqual(@"/Date(1331792735152)/", result);
 
-            result = JsonConvert.ToJavascriptDate(datetime, false);
-            Assert.AreEqual(@"Date(1331792735152+0000)", result);
+            result = JsonConvert.ToMicrosoftJsonDate(datetime, false);
+            Assert.AreEqual(@"Date(1331792735152)", result);
 
             datetime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            result = JsonConvert.ToJavascriptDate(datetime, true);
-            Assert.AreEqual(@"/Date(-62135596800000+0000)/", result);
+            result = JsonConvert.ToMicrosoftJsonDate(datetime, true);
+            Assert.AreEqual(@"/Date(-62135596800000)/", result);
+
+            var datetimeOffset = new DateTimeOffset(2012, 3, 15, 12, 25, 35, 152, TimeSpan.FromHours(6));
+            result = JsonConvert.ToMicrosoftJsonDate(datetimeOffset, false);
+            Assert.AreEqual(@"Date(1331792735152+0600)", result);
+
+            datetimeOffset = new DateTimeOffset(2012, 3, 15, 0, 25, 35, 152, TimeSpan.FromHours(-6));
+            result = JsonConvert.ToMicrosoftJsonDate(datetimeOffset, false);
+            Assert.AreEqual(@"Date(1331792735152-0600)", result);
         }
 
         [Test]
-        public void TryParseJavascriptDateTimeValueSucceeded()
+        public void TryParseMicrosoftJsonDateSucceeded()
         {
-            DateTime datetime;
+            DateTimeOffset datetime;
 
             var dateString = @"/Date(1331792735152)/";
             var expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, datetime.ToUniversalTime());
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(dateString, out datetime));
+            Assert.AreEqual(expected, datetime.UtcDateTime);
 
             dateString = @"Date(1331792735152)";
             expected = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, datetime.ToUniversalTime());
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(dateString, out datetime));
+            Assert.AreEqual(expected, datetime.UtcDateTime);
 
             dateString = @"/Date(-62135596800000)/";
             expected = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, datetime.ToUniversalTime());
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(dateString, out datetime));
+            Assert.AreEqual(expected, datetime.UtcDateTime);
 
             dateString = @"/Date(1331763935152+0800)/";
             expected = new DateTime(2012, 3, 14, 22, 25, 35, 152, DateTimeKind.Utc);
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, datetime.ToUniversalTime());
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(dateString, out datetime));
+            Assert.AreEqual(expected, datetime.UtcDateTime);
 
             dateString = @"Date(1331763935152-0600)";
             expected = new DateTime(2012, 3, 14, 22, 25, 35, 152, DateTimeKind.Utc);
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
-            Assert.AreEqual(expected, datetime.ToUniversalTime());
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(dateString, out datetime));
+            Assert.AreEqual(expected, datetime.UtcDateTime);
         }
 
         [Test]
-        public void TryParseJavascriptDateTimeValueFailed()
+        public void TryParseMicrosoftJsonDateFailed()
         {
-            DateTime datetime;
-
             var dateString = @"./Date(1331792735152)/";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"Date(1331763935152-0600)/";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"Date(1331763935152X0600)";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"/Date(1331763935152-0600)";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"Date(1331763935152-0600).";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"DATE(1331763935152-0600)";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"/Date1331763935152-0600/";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
 
             dateString = @"\/Date(1331763935152)\/";
-            Assert.IsFalse(JsonConvert.TryParseJavascriptDateTimeValue(dateString, out datetime));
+            Assert.IsFalse(JsonConvert.TryParseMicrosoftJsonDate(dateString, out _));
         }
 
         [Test]
         public void ConvertLocalTime()
         {
             var datetime = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Local);
-            var jsonTime = JsonConvert.ToJavascriptDate(datetime, false);
+            var jsonTime = JsonConvert.ToMicrosoftJsonDate(datetime, false);
 
-            DateTime datetimeConvertBack;
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(jsonTime, out datetimeConvertBack));
-            Assert.AreEqual(datetime, datetimeConvertBack);
+            DateTimeOffset datetimeConvertBack;
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(jsonTime, out datetimeConvertBack));
+            Assert.AreEqual(datetime, datetimeConvertBack.LocalDateTime);
         }
 
         [Test]
         public void ConvertUtcTime()
         {
             var datetime = new DateTime(2012, 3, 15, 6, 25, 35, 152, DateTimeKind.Utc);
-            var jsonTime = JsonConvert.ToJavascriptDate(datetime, false);
+            var jsonTime = JsonConvert.ToMicrosoftJsonDate(datetime, false);
 
-            DateTime datetimeConvertBack;
-            Assert.IsTrue(JsonConvert.TryParseJavascriptDateTimeValue(jsonTime, out datetimeConvertBack));
+            DateTimeOffset datetimeConvertBack;
+            Assert.IsTrue(JsonConvert.TryParseMicrosoftJsonDate(jsonTime, out datetimeConvertBack));
             var expected = datetime.ToLocalTime();
-            Assert.AreEqual(expected, datetimeConvertBack);
+            Assert.AreEqual(expected, datetimeConvertBack.LocalDateTime);
         }
     }
 }

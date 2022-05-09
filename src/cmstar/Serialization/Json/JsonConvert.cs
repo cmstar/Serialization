@@ -45,8 +45,7 @@ namespace cmstar.Serialization.Json
             if (obj == null)
                 return string.Empty;
 
-            string s = obj as string;
-            if (s != null)
+            if (obj is string s)
                 return s;
 
             if (obj is IConvertible)
@@ -56,23 +55,22 @@ namespace cmstar.Serialization.Json
         }
 
         /// <summary>
-        /// Convert a value of <see cref="DateTime"/> to a string representation 
-        /// of a Date() expression in Javascript. 
+        /// Convert a value of <see cref="DateTime"/> to a string representation
+        /// in the Microsoft JSON format, such as '/Date(1xxxxxxxxxxxx+yyyy)/'.
         /// </summary>
         /// <param name="dateTime">
         /// The datetime value.
-        /// If the kind of the datetime is not <see cref="DateTimeKind.Utc"/>,
-        /// the result would contains a timezone offset.
+        /// If the value is not a UTC time, the result would contain a timezone offset.
         /// </param>
         /// <param name="wrappedInSlashes">
         /// Indicates whether to wrap the datetime value in a pair of slashes.
         /// If <c>true</c>, the datetime value will be in this format:'/Date(1xxxxxxxxxxxx+yyyy)/';
         /// otherwise, no prefix and suffix:'Date(1xxxxxxxxxxxx+yyyy)'.
         /// </param>
-        /// <returns>A string represents a Date() expression in Javascript. </returns>
-        public static string ToJavascriptDate(DateTime dateTime, bool wrappedInSlashes)
+        /// <returns>A string represents of the time in the Microsoft JSON format. </returns>
+        public static string ToMicrosoftJsonDate(DateTimeOffset dateTime, bool wrappedInSlashes)
         {
-            var stringBuilder = new StringBuilder(28); //capacity=len(/Date(1xxxxxxxxxxxx+yyyy)/)
+            var stringBuilder = new StringBuilder(28); // "/Date(1xxxxxxxxxxxx+yyyy)/".Length
             if (wrappedInSlashes)
             {
                 stringBuilder.Append("/");
@@ -80,13 +78,14 @@ namespace cmstar.Serialization.Json
             stringBuilder.Append("Date(");
 
             //write javascript ticks
-            var jsTicks = ClrTicksToJavascriptTicks(dateTime.ToUniversalTime().Ticks);
+            var clrTicks = dateTime.UtcDateTime.Ticks;
+            var jsTicks = ClrTicksToJavascriptTicks(clrTicks);
             stringBuilder.Append(jsTicks);
 
-            //write the timezone
-            if (dateTime.Kind != DateTimeKind.Unspecified)
+            // write the timezone
+            var offset = dateTime.Offset;
+            if (offset.Ticks != 0)
             {
-                var offset = GetUtcOffset(dateTime);
                 stringBuilder.Append((offset.Ticks >= 0) ? '+' : '-');
 
                 var hours = Math.Abs(offset.Hours);
@@ -136,20 +135,16 @@ namespace cmstar.Serialization.Json
 
         /// <summary>
         /// Convert the string representation of a Javascript datetime value 
-        /// to a <see cref="DateTime"/> with <see cref="DateTime.Kind"/> as <see cref="DateTimeKind.Local"/>.
+        /// to a <see cref="DateTimeOffset"/>.
         /// A return value indicates whether the conversion succeeded or failed.
         /// </summary>
         /// <param name="value">The string.</param>
-        /// <param name="dateTime">
-        /// The datetime result.
-        /// The kind of datetime is <see cref="DateTimeKind.Local"/>.
-        /// This is a output parameter.
-        /// </param>
+        /// <param name="dateTimeOffset">The result.</param>
         /// <returns><c>true</c> if the conversion succeeded; otherwise <c>false</c>.</returns>
-        public static bool TryParseJavascriptDateTimeValue(string value, out DateTime dateTime)
+        public static bool TryParseMicrosoftJsonDate(string value, out DateTimeOffset dateTimeOffset)
         {
-            dateTime = DateTime.MinValue;
-            if (value == null || value.Length < 7) //7=len(Date(0))
+            dateTimeOffset = DateTimeOffset.MinValue;
+            if (value == null || value.Length < 7) // 7 = "Date(0)".Length
                 return false;
 
             int start, end;
@@ -177,22 +172,19 @@ namespace cmstar.Serialization.Json
             if (!long.TryParse(value.Substring(start, timeZoneStart - start), out javascriptTicks))
                 return false;
 
-            long clrTicks = JavascriptTicksToClrTicks(javascriptTicks);
-            if (hasTimeZone)
-            {
-                if (!TryParseTimeZoneOffset(value, timeZoneStart, end, out _))
-                    return false;
+            var clrTicks = JavascriptTicksToClrTicks(javascriptTicks);
+            var offset = TimeSpan.Zero;
+            if (hasTimeZone && !TryParseTimeZoneOffset(value, timeZoneStart, end, out offset))
+                return false;
 
-                // The DateTime class does not contains time-zone information, so the offset is ignored.
-            }
-
-            dateTime = new DateTime(clrTicks, DateTimeKind.Utc).ToLocalTime();
+            // clrTicks uses the UTC time, but the ticks passed to DateTimeOffset represents the local time.
+            dateTimeOffset = new DateTimeOffset(clrTicks + offset.Ticks, offset);
             return true;
         }
 
-        private static bool TryParseTimeZoneOffset(string value, int startIndex, int endIndex, out long ticks)
+        private static bool TryParseTimeZoneOffset(string value, int startIndex, int endIndex, out TimeSpan offset)
         {
-            ticks = 0;
+            offset = TimeSpan.Zero;
             if (endIndex - startIndex != 4)
                 return false;
 
@@ -200,31 +192,16 @@ namespace cmstar.Serialization.Json
             if (!int.TryParse(value.Substring(startIndex + 1, 4), out v))
                 return false;
 
-            ticks = TimeSpan.FromHours(v / 100).Ticks;
-            ticks += TimeSpan.FromMinutes(v % 100).Ticks;
+            var hours = v / 100;
+            var minutes = v % 100;
+            var totalMinutes = hours * 60 + minutes;
             if (value[startIndex] == '-')
             {
-                ticks = -ticks;
+                totalMinutes = -totalMinutes;
             }
 
+            offset = TimeSpan.FromMinutes(totalMinutes);
             return true;
-        }
-
-        private static TimeSpan GetUtcOffset(DateTime value)
-        {
-            switch (value.Kind)
-            {
-                case DateTimeKind.Local:
-#if NETSTANDARD
-                    var offset = TimeZoneInfo.Local.GetUtcOffset(value);
-#else
-                    var offset = TimeZone.CurrentTimeZone.GetUtcOffset(value);
-#endif
-                    return offset;
-
-                default:
-                    return TimeSpan.Zero;
-            }
         }
 
         //Ignores the prefix and suffix in the string:
