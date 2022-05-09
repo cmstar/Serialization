@@ -1,5 +1,7 @@
 # cmstar.Serialization.Json
 
+[![NuGet](https://img.shields.io/nuget/v/cmstar.Serialization.Json.svg)](https://www.nuget.org/packages/cmstar.Serialization.Json/)
+
 A light weight JSON serialization library written in C#.
 
 Supported .NET platform:
@@ -9,6 +11,18 @@ Supported .NET platform:
 
 Dependency:
 - [cmstar.RapidReflection](https://www.nuget.org/packages/cmstar.RapidReflection) To emit IL for accessing type members.
+
+## Install
+
+Install via Package Manager:
+```
+Install-Package cmstar.Serialization.Json
+```
+
+or via dotnet-cli:
+```
+dotnet add package cmstar.Serialization.Json
+```
 
 ## JsonSerializer
 
