@@ -1,4 +1,4 @@
-# cmstar.Serialization
+# cmstar.Serialization.Json
 
 A light weight JSON serialization library written in C#.
 
