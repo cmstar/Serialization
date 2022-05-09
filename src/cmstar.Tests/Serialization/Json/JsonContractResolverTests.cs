@@ -46,6 +46,7 @@ namespace cmstar.Serialization.Json
             AssertTypeContract<StringContract>(resolver, typeof(char));
             AssertTypeContract<StringContract>(resolver, typeof(string));
             AssertTypeContract<BooleanContract>(resolver, typeof(bool));
+            AssertTypeContract<DateTimeOffsetContract>(resolver, typeof(DateTimeOffset));
             AssertTypeContract<DateTimeContract>(resolver, typeof(DateTime));
             AssertTypeContract<EnumContract>(resolver, typeof(SaleOrderType));
             AssertTypeContract<GuidContract>(resolver, typeof(Guid));
@@ -393,9 +394,9 @@ namespace cmstar.Serialization.Json
 
         private class TypeAndNameAndIsProperty
         {
-            public Type Type { get; private set; }
-            public string Name { get; private set; }
-            public bool IsProperty { get; private set; }
+            public Type Type { get; }
+            public string Name { get; }
+            public bool IsProperty { get; }
 
             public TypeAndNameAndIsProperty(Type type, string name, bool isProperty)
             {
@@ -409,6 +410,9 @@ namespace cmstar.Serialization.Json
         {
         }
 
+        // ReSharper disable UnusedMember.Global
+        // ReSharper disable ValueParameterNotUsed
+        // ReSharper disable ArrangeAccessorOwnerBody
         private class B
         {
             public A RefA { get; set; }
@@ -486,5 +490,8 @@ namespace cmstar.Serialization.Json
             [JsonProperty("internal_getter")]
             public int InternalGetter { internal get; set; }
         }
+        // ReSharper restore ArrangeAccessorOwnerBody
+        // ReSharper restore ValueParameterNotUsed
+        // ReSharper restore UnusedMember.Global
     }
 }

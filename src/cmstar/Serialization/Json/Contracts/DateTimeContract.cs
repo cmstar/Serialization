@@ -27,8 +27,8 @@ namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
     /// The default contract for <see cref="DateTime"/>.
-    /// By default it formats a value in the ISO-8601 format.
-    /// Override the <see cref="ToStringValue"/> method to customize the format.
+    /// It shares the format with the the contract for <see cref="DateTimeOffset"/>.
+    /// The time read is always a local time.
     /// </summary>
     public class DateTimeContract : JsonContract
     {
@@ -37,14 +37,6 @@ namespace cmstar.Serialization.Json.Contracts
         /// </summary>
         public DateTimeContract()
             : base(typeof(DateTime))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="DateTimeContract"/>, and change the underlying type.
-        /// </summary>
-        public DateTimeContract(Type type)
-            : base(type)
         {
         }
 
@@ -57,8 +49,9 @@ namespace cmstar.Serialization.Json.Contracts
             if (obj == null)
                 throw JsonContractErrors.NullValueNotSupported();
 
-            var dateTimeValue = ToStringValue((DateTime)obj);
-            writer.WriteStringValue(dateTimeValue);
+            var dateTimeOffsetContract = contractResolver.ResolveContract(typeof(DateTimeOffset));
+            var value = (DateTime)obj;
+            dateTimeOffsetContract.Write(writer, state, contractResolver, (DateTimeOffset)value);
         }
 
         protected override object DoRead(JsonReader reader, JsonDeserializingState state)
@@ -74,13 +67,12 @@ namespace cmstar.Serialization.Json.Contracts
             if (reader.Token != JsonToken.StringValue)
                 throw JsonContractErrors.UnexpectedToken(JsonToken.StringValue, reader.Token);
 
-            DateTime dateTime;
-            if (!TryParseDateTime((string)reader.Value, out dateTime))
+            if (!TryParseDateTime((string)reader.Value, out var d))
             {
                 var msg = string.Format("Cannot convert the value \"{0}\" to a DateTime.", reader.Value);
                 throw new JsonContractException(msg);
             }
-            return dateTime;
+            return d;
         }
 
         /// <summary>
@@ -94,18 +86,16 @@ namespace cmstar.Serialization.Json.Contracts
         /// </returns>
         protected virtual bool TryParseDateTime(string value, out DateTime dateTime)
         {
-            return JsonConvert.TryParseJavascriptDateTimeValue(value, out dateTime)
-                || DateTime.TryParse(value, out dateTime);
-        }
+            if (DateTime.TryParse(value, out dateTime))
+                return true;
 
-        /// <summary>
-        /// Converts the specified <see cref="DateTime"/> to it's corresponding string representation.
-        /// </summary>
-        /// <param name="dateTime">The <see cref="DateTime"/>.</param>
-        /// <returns>The string value represents the <see cref="DateTime"/>.</returns>
-        protected virtual string ToStringValue(DateTime dateTime)
-        {
-            return dateTime.ToString("O"); // ISO-8601
+            if (JsonConvert.TryParseMicrosoftJsonDate(value, out var d))
+            {
+                dateTime = d.LocalDateTime;
+                return true;
+            }
+
+            return false;
         }
     }
 }

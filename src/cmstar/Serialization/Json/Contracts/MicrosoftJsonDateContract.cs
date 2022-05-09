@@ -3,14 +3,14 @@
 namespace cmstar.Serialization.Json.Contracts
 {
     /// <summary>
-    /// A <see cref="DateTimeContract"/> that formats time in the Microsoft JSON format,
+    /// A <see cref="DateTimeOffsetContract"/> that formats time in the Microsoft JSON format,
     /// such as '/Date(1xxxxxxxxxxxx+yyyy)/'.
     /// </summary>
-    public class MicrosoftJsonDateContract : DateTimeContract
+    public class MicrosoftJsonDateContract : DateTimeOffsetContract
     {
-        protected override string ToStringValue(DateTime dateTime)
+        protected override string ToStringValue(DateTimeOffset value)
         {
-            return JsonConvert.ToMicrosoftJsonDate(dateTime, true);
+            return JsonConvert.ToMicrosoftJsonDate(value, true);
         }
     }
 }

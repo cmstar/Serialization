@@ -197,6 +197,7 @@ The table below gives out the default contracts, which will convert the CLR type
 |Single|NumberContarct|Number|
 |Double|NumberContarct|Number|
 |Decimal|NumberContarct|Number|
+|DateTimeOffset|DateTimeOffsetContarct|String|
 |DateTime|DateTimeContarct|String|
 |Guid|GuidContarct|String|
 |Nullable&lt;T&gt;|NullableTypeContract|Depends on typeof(T)|
@@ -229,28 +230,36 @@ Note: You can't register custom `JsonContract`s to `JsonSerializer.Default` at p
 
 ### Serializing Dates
 
-The default contract for `DateTime` is the `DateTimeContract`, which will serialize dates 
-in the ISO-8601 format `yyyy-MM-ddTHH:mm:ss.ffffffZ`, such as `2022-01-31T13:15:05.2151663-02:00`. 
+The default contract for `DateTime`/`DateTimeOffset` is the `DateTimeContract`/`DateTimeOffsetContract`, 
+which will serialize dates in the ISO-8601 format `yyyy-MM-ddTHH:mm:ss.ffffffZ`, 
+such as `2022-01-31T13:15:05.2151663-02:00`, or `2022-01-31T13:15:05.2151663Z` (UTC). 
 
-You can register `CustomFormatDateTimeContract` to customize the format, with a property `Format`, 
+You can register `CustomFormatDateTimeOffsetContract` to customize the format, with a property `Format`, 
 the code below shows how to serialize dates in the format `yyyy~MM~dd HH:mm:ss`:
 
+`DateTimeContract` shares the format of `DateTimeOffsetContract`,
+Change the format for `DateTimeOffset` will also change the format for `DateTime`.
+
 ```csharp
-var dateTimeContract = new CustomFormatDateTimeContract();
+var dateTimeContract = new CustomFormatDateTimeOffsetContract();
 dateTimeContract.Format = "yyyy~MM~dd HH@mm@ss";
 
 var customContracts = new Dictionary<Type, JsonContract>();
-customContracts.Add(typeof(DateTime), dateTimeContract);
+customContracts.Add(typeof(DateTimeOffset), dateTimeContract);
 
 var contractResolver = new JsonContractResolver(customContracts);
 var serializer = new JsonSerializer(contractResolver);
 
+serializer.Serialize(DateTimeOffset.Now);
+//-> "2013~07~15 14@41@03"
+
+// When serializing DateTime, it shares the format.
 serializer.Serialize(DateTime.Now);
 //-> "2013~07~15 14@41@03"
 ```
 
-Another contract provided is `JavascriptDateTimeContract`, that formats time 
-in the Javascript `Date` function expression, like `/Date(1620142251000+0300)/`.
+Another contract provided is `MicrosoftJsonDateContract`, which formats time 
+in the Miscrosoft JSON format, such as `/Date(1620142251000+0300)/`.
 
 ### Serializing Enums
 

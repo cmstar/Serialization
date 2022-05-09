@@ -194,6 +194,9 @@ namespace cmstar.Serialization.Json
                 if (type == typeof(DateTime))
                     return new DateTimeContract();
 
+                if (type == typeof(DateTimeOffset))
+                    return new DateTimeOffsetContract();
+
                 if (type == typeof(Guid))
                     return new GuidContract();
 
